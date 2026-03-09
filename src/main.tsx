@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { ToastContainer } from 'react-toastify'
 import App from './App'
-import { store } from './store'
+import { store } from './application/store'
 import './index.css'
 import 'react-toastify/dist/ReactToastify.css'
 
