@@ -34,10 +34,7 @@ body {
   border-color: #2d5f1b !important;
 }
 
-/* Glassmorphism Sidebar */
-.glassmorphism-sidebar {
-  position: relative !important;
-}
+
 
 .glassmorphism-sidebar::before {
   content: '' !important;

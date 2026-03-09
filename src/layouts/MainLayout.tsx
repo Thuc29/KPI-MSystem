@@ -73,13 +73,13 @@ export const MainLayout = () => {
       key: 'profile',
       icon: <User size={16} />,
       label: 'Thông tin cá nhân',
-      disabled: true,
+      onClick: () => navigate('/profile'),
     },
     {
       key: 'settings',
       icon: <Settings size={16} />,
       label: 'Cài đặt',
-      disabled: true,
+      onClick: () => navigate('/settings'),
     },
     {
       type: 'divider',
@@ -115,10 +115,10 @@ export const MainLayout = () => {
         breakpoint="lg"
         collapsedWidth="0"
         width={300}
-        className="bg-[url('./images/sibarbg.jpg')] bg-cover glassmorphism-sidebar"
+        className="bg-[url('./images/sibarbg.jpg')] bg-cover fixed top-0 bottom-0 left-0 overflow-auto glassmorphism-sidebar"
       >
         {/* Logo Section */}
-        <div className=" m-2 p-2 rounded-3xl border w-fit mx-auto border-[#ffffff1a] bg-gray-300">
+        <div className=" mt-2 px-2 rounded-2xl border w-fit mx-auto border-[#ffffff1a] bg-gray-300">
           <Link to={"/"} className="flex items-center justify-center"> 
             <img 
               src='./images/logo.png' 
@@ -146,7 +146,7 @@ export const MainLayout = () => {
         </div>
       </Sider>
       
-      <Layout>
+      <Layout className='ml-[300px]'>
         <Header 
           style={{ 
             background: '#fff', 
@@ -210,8 +210,8 @@ export const MainLayout = () => {
           </div>
         </Header>
         
-        <Content style={{ margin: '24px 24px 0', overflow: 'initial' }}>
-          <div style={{ padding: 24, background: '#fff', minHeight: 'calc(100vh - 120px)', borderRadius: '12px' }}>
+        <Content style={{ margin: '18px 18px 0', overflow: 'initial' }}>
+          <div style={{ padding: 20, background: '#fff', minHeight: 'calc(100vh - 120px)', borderRadius: '12px' }} >
             <Outlet />
           </div>
         </Content>

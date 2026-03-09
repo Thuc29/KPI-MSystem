@@ -5,16 +5,11 @@ import {
   CheckSquare,
   Users,
   BarChart3,
-  MessageSquare,
   Bell,
-  Settings,
-  Library,
   Target,
   TrendingUp,
-  Award,
   Building2,
   PieChart,
-  DollarSign,
   Activity
 } from 'lucide-react';
 import type { UserRole } from '../types';
@@ -67,13 +62,6 @@ export const menuConfig: MenuItem[] = [
     path: '/progress',
     roles: ['employee'],
   },
-  {
-    key: 'library',
-    icon: <Library size={18} />,
-    label: 'Thư viện mục tiêu',
-    path: '/library',
-    roles: ['employee'],
-  },
   
   // Manager Menu
   {
@@ -98,14 +86,7 @@ export const menuConfig: MenuItem[] = [
     roles: ['manager'],
   },
   
-  // HR Menu
-  {
-    key: 'kpi-library-management',
-    icon: <Library size={18} />,
-    label: 'Quản lý Thư viện KPI',
-    path: '/library/manage',
-    roles: ['hr'],
-  },
+//hr menu
   {
     key: 'department-management',
     icon: <Building2 size={18} />,
@@ -120,13 +101,7 @@ export const menuConfig: MenuItem[] = [
     path: '/reports/department',
     roles: ['hr'],
   },
-  {
-    key: 'salary',
-    icon: <DollarSign size={18} />,
-    label: 'Quỹ lương & Thưởng',
-    path: '/salary',
-    roles: ['hr'],
-  },
+
   
   // CEO Menu
   {
@@ -150,34 +125,14 @@ export const menuConfig: MenuItem[] = [
     path: '/organization',
     roles: ['ceo'],
   },
-  {
-    key: 'executive-reports',
-    icon: <BarChart3 size={18} />,
-    label: 'Báo cáo Điều hành',
-    path: '/reports/executive',
-    roles: ['ceo'],
-  },
+  
   
   // Common Menu Items
-  {
-    key: 'discussion',
-    icon: <MessageSquare size={18} />,
-    label: 'Phản hồi & Trao đổi',
-    path: '/discussion',
-    roles: ['employee', 'manager'],
-  },
   {
     key: 'notifications',
     icon: <Bell size={18} />,
     label: 'Thông báo',
     path: '/notifications',
-    roles: ['employee', 'manager', 'hr', 'ceo'],
-  },
-  {
-    key: 'settings',
-    icon: <Settings size={18} />,
-    label: 'Cài đặt',
-    path: '/settings',
     roles: ['employee', 'manager', 'hr', 'ceo'],
   },
 ];

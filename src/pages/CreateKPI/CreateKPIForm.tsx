@@ -203,7 +203,7 @@ export const CreateKPIForm = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Tạo KPI mới</h1>
@@ -211,43 +211,42 @@ export const CreateKPIForm = () => {
       </div>
 
       <Form form={form} layout="vertical">
-        {/* Basic Information */}
-        <Card title="Thông tin cơ bản" className="shadow-sm mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Form.Item label="Nhân viên">
-              <Input value={userName || ''} disabled />
-            </Form.Item>
-
-            <Form.Item label="Phòng ban">
-              <Input value={department || ''} disabled />
-            </Form.Item>
-
+        {/* Basic Information - Compact */}
+        <Card className="shadow-sm mb-6 border border-primary bg-primary/10">
+          <div className="flex flex-wrap items-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500">Nhân viên:</span>
+              <span className="font-medium">{userName}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500">Phòng ban:</span>
+              <span className="font-medium">{department}</span>
+            </div>
+            <Divider type="vertical" className="h-6" />
             <Form.Item
               name="year"
-              label="Năm áp dụng"
               rules={[{ required: true, message: 'Vui lòng chọn năm' }]}
               initialValue={new Date().getFullYear()}
+              className="mb-0"
             >
-              <Select size="large">
+              <Select size="middle" style={{ width: 100 }}>
                 {[2024, 2025, 2026, 2027].map(year => (
                   <Option key={year} value={year}>{year}</Option>
                 ))}
               </Select>
             </Form.Item>
-
             <Form.Item
               name="period"
-              label="Chu kỳ đánh giá"
               rules={[{ required: true, message: 'Vui lòng chọn chu kỳ' }]}
               initialValue="yearly"
+              className="mb-0"
             >
-              <Radio.Group size="large">
+              <Radio.Group size="middle">
                 <Radio.Button value="yearly">Năm</Radio.Button>
                 <Radio.Button value="quarterly">Quý</Radio.Button>
                 <Radio.Button value="monthly">Tháng</Radio.Button>
               </Radio.Group>
             </Form.Item>
-
             <Form.Item
               noStyle
               shouldUpdate={(prevValues, currentValues) => 
@@ -258,10 +257,10 @@ export const CreateKPIForm = () => {
                 getFieldValue('period') === 'quarterly' ? (
                   <Form.Item
                     name="quarter"
-                    label="Quý"
                     rules={[{ required: true, message: 'Vui lòng chọn quý' }]}
+                    className="mb-0"
                   >
-                    <Select size="large" placeholder="Chọn quý">
+                    <Select size="middle" placeholder="Chọn quý" style={{ width: 100 }}>
                       <Option value={1}>Quý 1</Option>
                       <Option value={2}>Quý 2</Option>
                       <Option value={3}>Quý 3</Option>
@@ -278,147 +277,164 @@ export const CreateKPIForm = () => {
         <Card 
           title={
             <div className="flex items-center justify-between">
-              <span>Danh sách mục tiêu KPI</span>
-              <Tag color={isWeightValid ? 'success' : 'error'}>
-                Tổng trọng số: {totalWeight}%
+              <div className="flex items-center gap-3">
+                <span className="text-lg font-semibold">Mục tiêu KPI</span>
+                <Tag color="success">{targets.length} mục tiêu</Tag>
+              </div>
+              <Tag 
+                color={isWeightValid ? 'success' : 'error'}
+                className="text-base px-3 py-1 rounded-xl"
+              >
+                Tổng: {totalWeight}%
               </Tag>
             </div>
           }
-          className="shadow-sm mb-6"
+          className="shadow-sm mb-2"
         >
-          {/* Validation Alerts */}
-          {targets.length > 0 && (
-            <div className="mb-4 space-y-2">
-              {!hasMinTargets && (
-                <Alert
-                  message="Phải có ít nhất 3 mục tiêu KPI"
-                  type="warning"
-                  showIcon
-                  icon={<AlertCircle size={16} />}
-                />
-              )}
-              {!hasMaxTargets && (
-                <Alert
-                  message="Tối đa 10 mục tiêu KPI"
-                  type="error"
-                  showIcon
-                  icon={<AlertCircle size={16} />}
-                />
-              )}
-              {!isWeightValid && hasMinTargets && (
-                <Alert
-                  message={`Tổng trọng số hiện tại: ${totalWeight}%. ${
-                    totalWeight < 100 
-                      ? `Còn thiếu ${100 - totalWeight}%` 
-                      : `Thừa ${totalWeight - 100}%`
-                  }`}
-                  type="error"
-                  showIcon
-                  icon={<AlertCircle size={16} />}
-                />
-              )}
-            </div>
+          {/* Validation Alerts - Compact */}
+          {targets.length > 0 && (!hasMinTargets || !hasMaxTargets || !isWeightValid) && (
+            <Alert
+              message={
+                <div className="flex items-center gap-4 text-sm">
+                  {!hasMinTargets && <span>• Cần ít nhất 3 mục tiêu</span>}
+                  {!hasMaxTargets && <span>• Tối đa 10 mục tiêu</span>}
+                  {!isWeightValid && hasMinTargets && (
+                    <span>
+                      • Trọng số {totalWeight < 100 ? `thiếu ${100 - totalWeight}%` : `thừa ${totalWeight - 100}%`}
+                    </span>
+                  )}
+                </div>
+              }
+              type={!hasMaxTargets ? 'error' : 'warning'}
+              showIcon
+              className="mb-4 rounded-xl"
+            />
           )}
 
           {/* Target List */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {targets.map((target, index) => (
               <Card
                 key={target.id}
                 type="inner"
-                title={`Mục tiêu #${index + 1}`}
+                className="border-l-4  border-l-blue-500"
+                title={
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-semibold">#{index + 1}</span>
+                    {target.title && (
+                      <span className="text-gray-600 font-normal">- {target.title}</span>
+                    )}
+                    {target.weight > 0 && (
+                      <Tag color="blue" className="ml-2">{target.weight}%</Tag>
+                    )}
+                  </div>
+                }
                 extra={
                   <Space>
                     <Button
                       size="small"
                       icon={<Copy size={14} />}
                       onClick={() => duplicateTarget(target)}
-                    >
-                      Sao chép
-                    </Button>
+                    />
                     <Button
                       size="small"
                       danger
                       icon={<Trash2 size={14} />}
                       onClick={() => removeTarget(target.id)}
-                    >
-                      Xóa
-                    </Button>
+                    />
                   </Space>
                 }
               >
-                <div className="space-y-4">
-                  <Input
-                    placeholder="Tên mục tiêu *"
-                    value={target.title}
-                    onChange={(e) => updateTarget(target.id, 'title', e.target.value)}
-                    maxLength={200}
-                    showCount
-                  />
+                <div className="space-y-3">
+                  {/* Row 1: Title & Category */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      placeholder="Tên mục tiêu *"
+                      value={target.title}
+                      onChange={(e) => updateTarget(target.id, 'title', e.target.value)}
+                      maxLength={200}
+                      size="large"
+                      className="font-medium"
+                    />
+                    <Select
+                      placeholder="Danh mục *"
+                      value={target.category}
+                      onChange={(value) => updateTarget(target.id, 'category', value)}
+                      size="large"
+                    >
+                      <Option value="Doanh số">Doanh số</Option>
+                      <Option value="Chất lượng">Chất lượng</Option>
+                      <Option value="Hiệu suất">Hiệu suất</Option>
+                      <Option value="Phát triển">Phát triển</Option>
+                      <Option value="Quản lý">Quản lý</Option>
+                      <Option value="Khác">Khác</Option>
+                    </Select>
+                  </div>
 
-                  <Select
-                    placeholder="Danh mục *"
-                    value={target.category}
-                    onChange={(value) => updateTarget(target.id, 'category', value)}
-                    className="w-full"
-                  >
-                    <Option value="Doanh số">Doanh số</Option>
-                    <Option value="Chất lượng">Chất lượng</Option>
-                    <Option value="Hiệu suất">Hiệu suất</Option>
-                    <Option value="Phát triển">Phát triển</Option>
-                    <Option value="Quản lý">Quản lý</Option>
-                    <Option value="Khác">Khác</Option>
-                  </Select>
-
-                  <TextArea
-                    placeholder="Mô tả chi tiết *"
-                    value={target.description}
-                    onChange={(e) => updateTarget(target.id, 'description', e.target.value)}
-                    rows={3}
-                    maxLength={1000}
-                    showCount
-                  />
-
-                  <div className="grid grid-cols-3 gap-4">
+                  {/* Row 2: Key Metrics - Highlighted */}
+                  <div className="grid grid-cols-3 gap-3 bg-blue-50 p-3 rounded-lg border border-blue-200">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Trọng số (%) *</label>
+                      <label className="block text-xs font-semibold text-blue-900 mb-1">
+                        TRỌNG SỐ (%) *
+                      </label>
                       <InputNumber
                         min={5}
                         max={50}
                         value={target.weight}
                         onChange={(value) => updateTarget(target.id, 'weight', value || 0)}
                         className="w-full"
-                        addonAfter="%"
+                        size="large"
+                        suffix="%"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Chỉ tiêu *</label>
+                      <label className="block text-xs font-semibold text-blue-900 mb-1">
+                        CHỈ TIÊU *
+                      </label>
                       <Input
                         value={target.target}
                         onChange={(e) => updateTarget(target.id, 'target', e.target.value)}
+                        size="large"
+                        className="font-medium"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Đơn vị *</label>
+                      <label className="block text-xs font-semibold text-blue-900 mb-1">
+                        ĐƠN VỊ *
+                      </label>
                       <Input
                         value={target.unit}
                         onChange={(e) => updateTarget(target.id, 'unit', e.target.value)}
-                        placeholder="VNĐ, %, số lượng..."
+                        placeholder="VNĐ, %, số..."
+                        size="large"
                       />
                     </div>
                   </div>
 
-                  <Input
-                    placeholder="Phương pháp đo lường"
-                    value={target.measurementMethod}
-                    onChange={(e) => updateTarget(target.id, 'measurementMethod', e.target.value)}
+                  {/* Row 3: Description */}
+                  <TextArea
+                    placeholder="Mô tả chi tiết mục tiêu *"
+                    value={target.description}
+                    onChange={(e) => updateTarget(target.id, 'description', e.target.value)}
+                    rows={2}
+                          maxLength={5000}
                   />
 
-                  <Input
-                    placeholder="Tiêu chí đánh giá"
-                    value={target.evaluationCriteria}
-                    onChange={(e) => updateTarget(target.id, 'evaluationCriteria', e.target.value)}
-                  />
+                  {/* Row 4: Optional Fields - Collapsed */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input
+                      placeholder="Phương pháp đo lường "
+                      value={target.measurementMethod}
+                      onChange={(e) => updateTarget(target.id, 'measurementMethod', e.target.value)}
+                      size="middle"
+                    />
+                    <Input
+                      placeholder="Tiêu chí đánh giá "
+                      value={target.evaluationCriteria}
+                      onChange={(e) => updateTarget(target.id, 'evaluationCriteria', e.target.value)}
+                      size="middle"
+                    />
+                  </div>
                 </div>
               </Card>
             ))}
@@ -442,7 +458,7 @@ export const CreateKPIForm = () => {
         <Card className="shadow-sm">
           <div className="flex justify-between items-center">
             <Button
-              size="large"
+              size="middle"
               onClick={() => navigate('/kpi')}
             >
               Hủy
@@ -450,17 +466,17 @@ export const CreateKPIForm = () => {
 
             <Space>
               <Button
-                size="large"
+                size="middle"
                 icon={<Save size={16} />}
                 onClick={() => form.validateFields().then(saveDraft)}
                 loading={loading}
                 disabled={targets.length === 0}
               >
-                Lưu nháp
+                Lưu 
               </Button>
 
               <Button
-                size="large"
+                size="middle"
                 icon={<Eye size={16} />}
                 onClick={() => setPreviewVisible(true)}
                 disabled={targets.length === 0}
@@ -470,7 +486,7 @@ export const CreateKPIForm = () => {
 
               <Button
                 type="primary"
-                size="large"
+                size="middle"
                 icon={<Send size={16} />}
                 onClick={() => form.validateFields().then(submitForApproval)}
                 loading={loading}

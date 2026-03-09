@@ -12,7 +12,7 @@ import {
   KPILibraryPage,
   ProgressPage,
   TeamManagementPage,
-  DiscussionPage,
+  ProfilePage,
   SettingsPage,
   TeamReportsPage,
   DepartmentManagementPage,
@@ -113,8 +113,8 @@ export const router = createBrowserRouter([
             element: <div className="text-center py-20"><h2 className="text-2xl font-bold text-gray-400">Báo cáo Điều hành - Coming Soon</h2></div>,
           },
           {
-            path: '/discussion',
-            element: <DiscussionPage />,
+            path: '/profile',
+            element: <ProfilePage />,
           },
           {
             path: '/notifications',

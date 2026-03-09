@@ -157,7 +157,7 @@ export const ApprovalPage = () => {
     {
       title: 'Ưu tiên',
       key: 'priority',
-      width: 100,
+      width: 95,
       align: 'center',
       render: (_, record) => {
         const days = getDaysSinceSubmit(record.submittedAt);
@@ -199,12 +199,12 @@ export const ApprovalPage = () => {
           </div>
         </div>
       ),
-      width: 300
+      width: 250
     },
     {
       title: 'Năm/Kỳ',
       key: 'period',
-      width: 120,
+      width: 80,
       render: (_, record) => (
         <div>
           <div className="font-semibold">{record.year}</div>

@@ -10,7 +10,7 @@ export { NotificationsPage } from './Notifications';
 export { ProgressPage } from './Progress';
 export { KPILibraryPage } from './KPILibrary';
 export { TeamManagementPage } from './TeamManagement';
-export { DiscussionPage } from './Discussion';
+export { ProfilePage } from './Profile';
 export { SettingsPage } from './Settings';
 export { TeamReportsPage } from './TeamReports';
 export { DepartmentManagementPage } from './DepartmentManagement';

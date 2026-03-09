@@ -171,7 +171,7 @@ export const KPIDashboardPage = () => {
             size="large"
             icon={<Plus size={20} />}
             onClick={() => navigate('/kpi/create')}
-            className="bg-primary hover:bg-primary-dark h-12 px-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+            className="bg-primary hover:bg-primary-dark h-10 px-6 shadow-lg hover:shadow-xl transition-all rounded-2xl transform hover:-translate-y-1"
           >
             Tạo KPI mới
           </Button>
