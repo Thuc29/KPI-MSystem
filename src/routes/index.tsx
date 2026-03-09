@@ -9,7 +9,6 @@ import {
   NotFoundPage,
   ApprovalPage,
   NotificationsPage,
-  KPILibraryPage,
   ProgressPage,
   TeamManagementPage,
   ProfilePage,
@@ -17,7 +16,6 @@ import {
   TeamReportsPage,
   DepartmentManagementPage,
   DepartmentReportsPage,
-  SalaryPage,
   ExecutiveDashboardPage,
   StrategicApprovalPage,
   OrganizationPage,
@@ -65,14 +63,6 @@ export const router = createBrowserRouter([
             element: <ProgressPage />,
           },
           {
-            path: '/library',
-            element: <KPILibraryPage />,
-          },
-          {
-            path: '/library/manage',
-            element: <KPILibraryPage />,
-          },
-          {
             path: '/team',
             element: <TeamManagementPage />,
           },
@@ -81,20 +71,12 @@ export const router = createBrowserRouter([
             element: <TeamReportsPage />,
           },
           {
-            path: '/library/manage',
-            element: <KPILibraryPage />,
-          },
-          {
             path: '/department',
             element: <DepartmentManagementPage />,
           },
           {
             path: '/reports/department',
             element: <DepartmentReportsPage />,
-          },
-          {
-            path: '/salary',
-            element: <SalaryPage />,
           },
           {
             path: '/executive',

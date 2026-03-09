@@ -9,7 +9,9 @@ import {
   Users,
   Crown,
   Settings,
-  Bell
+  Bell,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import type { MenuProps } from 'antd';
 import { storage, getRoleLabel } from '../utils';
@@ -46,6 +48,7 @@ export const MainLayout = () => {
   const userRole = storage.getUserRole() || 'employee';
   const userId = storage.getUserId() || '1';
   const [unreadCount, setUnreadCount] = useState(0);
+  const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
     // Update unread count
@@ -110,20 +113,24 @@ export const MainLayout = () => {
   }));
 
   return (
-    <Layout className="min-h-screen "> 
+    <Layout className="min-h-screen"> 
       <Sider
         breakpoint="lg"
         collapsedWidth="0"
         width={300}
-        className="bg-[url('./images/sibarbg.jpg')] bg-cover fixed top-0 bottom-0 left-0 overflow-auto glassmorphism-sidebar"
+        collapsed={collapsed}
+        className="bg-[url('./images/sibarbg.jpg')] bg-cover fixed top-0 bottom-0 left-0 overflow-auto glassmorphism-sidebar transition-all duration-300 z-50"
+        style={{
+          transform: collapsed ? 'translateX(-100%)' : 'translateX(0)',
+        }}
       >
         {/* Logo Section */}
-        <div className=" mt-2 px-2 rounded-2xl border w-fit mx-auto border-[#ffffff1a] bg-gray-300">
+        <div className="mt-2 px-2 rounded-2xl border w-fit mx-auto border-[#ffffff1a] bg-gray-300">
           <Link to={"/"} className="flex items-center justify-center"> 
             <img 
               src='./images/logo.png' 
               alt="Smart KPI Logo" 
-              className="h-12 w-auto object-contain transform transition-transform duration-300 hover:scale-105" 
+              className="h-12 w-auto object-contain transform transition-all duration-300 hover:scale-105"
             />
           </Link>
         </div>
@@ -145,8 +152,24 @@ export const MainLayout = () => {
           </div>
         </div>
       </Sider>
+
+      {/* Toggle Button - Always visible */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="fixed top-16 w-8 h-8 bg-white/50 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-all duration-300 z-[60] border border-gray-200"
+        style={{
+          left: collapsed ? '16px' : '316px',
+        }}
+      >
+        {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+      </button>
       
-      <Layout className='ml-[300px]'>
+      <Layout 
+        className="transition-all duration-300"
+        style={{
+          marginLeft: collapsed ? '0' : '300px',
+        }}
+      >
         <Header 
           style={{ 
             background: '#fff', 
