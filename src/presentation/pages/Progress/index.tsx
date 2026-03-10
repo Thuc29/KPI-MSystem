@@ -54,7 +54,7 @@ export const ProgressPage = () => {
       const response = await kpiApi.getList();
       if (response.data.data) {
         const myKPIs = response.data.data.filter(
-          (k: IKPIRecord) => k.employeeId === userId && k.status === 'approved'
+          (k: IKPIRecord) => k.employeeId === userId && (k.status === 'in_progress' || k.status === 'completed')
         );
         setKpiList(myKPIs);
         if (myKPIs.length > 0) {

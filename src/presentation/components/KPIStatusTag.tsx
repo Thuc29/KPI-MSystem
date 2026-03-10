@@ -8,7 +8,7 @@ interface KPIStatusTagProps {
 
 export const KPIStatusTag = ({ status }: KPIStatusTagProps) => {
   return (
-    <Tag color={getStatusColor(status)}>
+    <Tag color={getStatusColor(status)} className='rounded-xl'>
       {getStatusLabel(status)}
     </Tag>
   );

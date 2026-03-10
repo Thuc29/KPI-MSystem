@@ -30,7 +30,7 @@ export const menuConfig: MenuItem[] = [
     icon: <LayoutDashboard size={18} />,
     label: 'Dashboard',
     path: '/dashboard',
-    roles: ['employee', 'manager', 'hr', 'ceo'],
+    roles: ['employee', 'tl', 'gl', 'ceo'],
   },
   {
     key: 'my-kpi',
@@ -63,43 +63,43 @@ export const menuConfig: MenuItem[] = [
     roles: ['employee'],
   },
   
-  // Manager Menu
+  // Team Leader Menu
   {
     key: 'approval',
     icon: <CheckSquare size={18} />,
     label: 'Duyệt KPI',
     path: '/approval',
-    roles: ['manager', 'hr', 'ceo'],
+    roles: ['tl', 'gl', 'ceo'],
   },
   {
     key: 'team-management',
     icon: <Users size={18} />,
     label: 'Quản lý Team',
     path: '/team',
-    roles: ['manager'],
+    roles: ['tl'],
   },
   {
     key: 'team-reports',
     icon: <BarChart3 size={18} />,
     label: 'Báo cáo Team',
     path: '/reports/team',
-    roles: ['manager'],
+    roles: ['tl'],
   },
   
-//hr menu
+  // Group Leader menu
   {
     key: 'department-management',
     icon: <Building2 size={18} />,
     label: 'Quản lý Bộ phận',
     path: '/department',
-    roles: ['hr'],
+    roles: ['gl'],
   },
   {
     key: 'department-reports',
     icon: <PieChart size={18} />,
     label: 'Báo cáo & Phân tích',
     path: '/reports/department',
-    roles: ['hr'],
+    roles: ['gl'],
   },
 
   
@@ -133,7 +133,7 @@ export const menuConfig: MenuItem[] = [
     icon: <Bell size={18} />,
     label: 'Thông báo',
     path: '/notifications',
-    roles: ['employee', 'manager', 'hr', 'ceo'],
+    roles: ['employee', 'tl', 'gl', 'ceo'],
   },
 ];
 

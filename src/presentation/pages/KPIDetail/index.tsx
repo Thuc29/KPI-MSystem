@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Steps, Button, Table, Modal, Form, Input, InputNumber, Space, Popconfirm } from 'antd';
-import { Plus, Trash2, Save, Send, Check, X } from 'lucide-react';
+import { Plus, Trash2, Save, Send, Check, X, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { kpiApi } from '../../../infrastructure/api';
@@ -17,8 +17,11 @@ export const KPIDetailPage = () => {
   const [kpi, setKpi] = useState<IKPIRecord | null>(null);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTarget, setEditingTarget] = useState<IKPITarget | null>(null);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
   const [rejectForm] = Form.useForm();
   
   const userRole = storage.getUserRole() || 'employee';
@@ -47,6 +50,12 @@ export const KPIDetailPage = () => {
   const handleAddTarget = () => {
     form.resetFields();
     setIsModalOpen(true);
+  };
+
+  const handleEditTargetModal = (target: IKPITarget) => {
+    setEditingTarget(target);
+    editForm.setFieldsValue(target);
+    setIsEditModalOpen(true);
   };
 
   const handleSaveTarget = async (values: KPITargetFormValues) => {
@@ -80,6 +89,22 @@ export const KPIDetailPage = () => {
       toast.success('Đã xóa mục tiêu');
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Không thể xóa mục tiêu');
+    }
+  };
+
+  const handleEditTarget = async (values: KPITargetFormValues) => {
+    if (!kpi || !editingTarget) return;
+    const updatedTargets = kpi.targets.map(t =>
+      t.id === editingTarget.id ? { ...t, ...values } : t
+    );
+    try {
+      await kpiApi.update(kpi.id, { targets: updatedTargets });
+      setKpi({ ...kpi, targets: updatedTargets });
+      toast.success('Đã cập nhật mục tiêu');
+      setIsEditModalOpen(false);
+      setEditingTarget(null);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'Không thể cập nhật mục tiêu');
     }
   };
 
@@ -126,10 +151,7 @@ export const KPIDetailPage = () => {
   };
 
   const canEdit = kpi?.status === 'draft' && userRole === 'employee';
-  const canApprove = 
-    (kpi?.status === 'pending_manager' && userRole === 'manager') ||
-    (kpi?.status === 'pending_hr' && userRole === 'hr') ||
-    (kpi?.status === 'pending_ceo' && userRole === 'ceo');
+  const canApprove = kpi?.status === 'pending_approval' && userRole !== 'employee';
 
   const totalWeight = kpi ? calculateTotalWeight(kpi.targets) : 0;
   const weightPercent = totalWeight; // for progress bar animation
@@ -168,6 +190,7 @@ export const KPIDetailPage = () => {
       key: 'action',
       width: '10%',
       render: (_: any, record: IKPITarget) => (
+        <>
         <Popconfirm
           title="Xóa mục tiêu này?"
           onConfirm={() => handleDeleteTarget(record.id)}
@@ -176,7 +199,10 @@ export const KPIDetailPage = () => {
         >
           <Button type="link" danger icon={<Trash2 size={16} />} />
         </Popconfirm>
+        <Button type="link" icon={<Edit size={16} />} onClick={() => handleEditTargetModal(record)} /> 
+        </>
       ),
+      
     }] : []),
   ];
 
@@ -186,10 +212,10 @@ export const KPIDetailPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <Card className="mb-4">
-        <div className="mb-6">
+      <Card className="mb-2">
+        <div className="mb-4">
           <h1 className="text-3xl font-bold text-primary mb-2">Hồ sơ KPI: {kpi.id}</h1>
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-2 gap-2 mt-2">
             <div><span className="font-semibold">Nhân viên:</span> {kpi.employeeName}</div>
             <div><span className="font-semibold">Phòng ban:</span> {kpi.department}</div>
             <div><span className="font-semibold">Năm:</span> {kpi.year}</div>
@@ -202,9 +228,9 @@ export const KPIDetailPage = () => {
           </div>
 
           {/* Weight progress bar */}
-          <div className="mt-4">
+          <div className="mt-3">
             <div className="text-sm font-medium text-gray-700 mb-2">Phần trăm trọng số</div>
-            <div className="relative bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div className="relative bg-gray-200 rounded-full h-2 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${weightPercent}%` }}
@@ -219,7 +245,7 @@ export const KPIDetailPage = () => {
           </div>
         </div>
 
-        <Steps current={getCurrentStep(kpi.status)} items={APPROVAL_STEPS} />
+        <Steps current={getCurrentStep(kpi.status)} items={APPROVAL_STEPS} className='border'/>
       </Card>
 
       <Card
@@ -228,30 +254,33 @@ export const KPIDetailPage = () => {
           canEdit && (
             <Button
               type="primary"
-              icon={<Plus size={18} />}
+              icon={<Plus size={18} className='mt-1'/>}
               onClick={handleAddTarget}
-              className="bg-primary"
+              className="bg-primary rounded-xl"
             >
               Thêm mục tiêu
             </Button>
           )
         }
+        className='border border-primary '
       >
         <Table
           columns={columns}
           dataSource={kpi.targets}
           rowKey="id"
           pagination={false}
+          bordered
+          locale={{ emptyText: 'Chưa có mục tiêu nào' }}
         />
 
         <div className="mt-6 flex justify-end gap-4">
           {canEdit && (
             <Button
               type="primary"
-              icon={<Send size={18} />}
+              icon={<Send size={18} className='mt-1'/>}
               onClick={handleSubmit}
               disabled={!isWeightValid(kpi.targets)}
-              className="bg-primary"
+              className="bg-primary rounded-xl"
             >
               Gửi hồ sơ
             </Button>
@@ -299,7 +328,7 @@ export const KPIDetailPage = () => {
             label="Chi tiết kế hoạch"
             rules={[{ required: true, message: 'Vui lòng nhập chi tiết' }]}
           >
-            <TextArea rows={4} placeholder="Mô tả chi tiết kế hoạch thực hiện" className="bg-gray-50 rounded-xl" />
+            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder="Mô tả chi tiết kế hoạch thực hiện" className="bg-gray-50 rounded-xl" />
           </Form.Item>
 
           <Form.Item
@@ -338,6 +367,70 @@ export const KPIDetailPage = () => {
       </Modal>
 
       <Modal
+        title="Chỉnh sửa mục tiêu KPI"
+        open={isEditModalOpen}
+        onCancel={() => {
+          setIsEditModalOpen(false);
+          setEditingTarget(null);
+        }}
+        footer={null}
+      >
+        <Form form={editForm} layout="vertical" onFinish={handleEditTarget}>
+          <Form.Item
+            name="title"
+            label="Tiêu đề mục tiêu"
+            rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+          >
+            <Input placeholder="VD: Đạt doanh số cá nhân quý & năm" className="bg-gray-50 rounded-xl" />
+          </Form.Item>
+
+          <Form.Item
+            name="description"
+            label="Chi tiết kế hoạch"
+            rules={[{ required: true, message: 'Vui lòng nhập chi tiết' }]}
+          >
+            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder="Mô tả chi tiết kế hoạch thực hiện" className="bg-gray-50 rounded-xl" />
+          </Form.Item>
+
+          <Form.Item
+            name="weight"
+            label="Trọng số (%)"
+            rules={[{ required: true, message: 'Vui lòng nhập trọng số' }]}
+          >
+            <InputNumber min={0} max={100} className="w-full bg-gray-50 rounded-xl" />
+          </Form.Item>
+
+          <Form.Item
+            name="target"
+            label="Chỉ tiêu"
+            rules={[{ required: true, message: 'Vui lòng nhập chỉ tiêu' }]}
+          >
+            <Input placeholder="VD: 500 triệu" className="bg-gray-50 rounded-xl" />
+          </Form.Item>
+
+          <Form.Item
+            name="unit"
+            label="Đơn vị"
+            rules={[{ required: true, message: 'Vui lòng nhập đơn vị' }]}
+          >
+            <Input placeholder="VD: VNĐ, %, số lượng" className="bg-gray-50 rounded-xl" />
+          </Form.Item>
+
+          <Form.Item>
+            <Space className="w-full justify-end">
+              <Button onClick={() => {
+                setIsEditModalOpen(false);
+                setEditingTarget(null);
+              }}>Hủy</Button>
+              <Button type="primary" htmlType="submit" icon={<Save size={16} />}>
+                Lưu
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
         title="Từ chối hồ sơ KPI"
         open={isRejectModalOpen}
         onCancel={() => setIsRejectModalOpen(false)}
@@ -349,7 +442,7 @@ export const KPIDetailPage = () => {
             label="Lý do từ chối"
             rules={[{ required: true, message: 'Vui lòng nhập lý do' }]}
           >
-            <TextArea rows={4} placeholder="Nhập lý do từ chối hồ sơ" className="bg-gray-50 rounded-xl" />
+            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder="Nhập lý do từ chối hồ sơ" className="bg-gray-50 rounded-xl" />
           </Form.Item>
 
           <Form.Item>

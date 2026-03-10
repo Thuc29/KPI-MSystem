@@ -260,6 +260,8 @@ export const DepartmentManagementPage = () => {
           dataSource={departments}
           rowKey="id"
           pagination={{ pageSize: 10 }}
+          scroll={{x: 700}}
+          bordered
         />
       </Card>
 

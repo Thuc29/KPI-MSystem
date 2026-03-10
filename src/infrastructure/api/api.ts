@@ -1,6 +1,7 @@
 import axios from './axios';
 import { mockAuthApi, mockKpiApi } from './mockApi';
-import type { IBackendRes, IKPIRecord, IApprovalHistory, IUser } from '../../core/models';
+import { mockTaskApi } from './taskApi';
+import type { IBackendRes, IKPIRecord, IApprovalHistory, IUser, ITaskItem, ITaskFormValues, ITaskEvidenceFormValues, ITaskExtensionRequest, ITaskAppeal, ITaskAdjustmentRequest } from '../../core/models';
 
 // Toggle between mock and real API
 const USE_MOCK_API = true; // Set to false to use real API
@@ -52,5 +53,52 @@ export const kpiApi = USE_MOCK_API ? mockKpiApi : {
   
   getHistory: (kpiId: string) => {
     return axios.get<IBackendRes<IApprovalHistory[]>>(`/kpi/${kpiId}/history`);
+  },
+};
+
+// Task APIs
+export const taskApi = USE_MOCK_API ? mockTaskApi : {
+  getTasksByTarget: (targetId: string) => {
+    return axios.get<IBackendRes<ITaskItem[]>>(`/tasks/target/${targetId}`);
+  },
+  
+  createTask: (targetId: string, taskData: ITaskFormValues) => {
+    return axios.post<IBackendRes<ITaskItem>>(`/tasks/target/${targetId}`, taskData);
+  },
+  
+  updateTask: (taskId: string, taskData: Partial<ITaskItem>) => {
+    return axios.put<IBackendRes<ITaskItem>>(`/tasks/${taskId}`, taskData);
+  },
+  
+  submitTaskCompletion: (taskId: string, evidence: ITaskEvidenceFormValues) => {
+    return axios.post<IBackendRes<ITaskItem>>(`/tasks/${taskId}/complete`, evidence);
+  },
+  
+  verifyTask: (taskId: string, verifierId: string) => {
+    return axios.post<IBackendRes<ITaskItem>>(`/tasks/${taskId}/verify`, { verifierId });
+  },
+  
+  rejectTask: (taskId: string, rejectorId: string, reason: string) => {
+    return axios.post<IBackendRes<ITaskItem>>(`/tasks/${taskId}/reject`, { rejectorId, reason });
+  },
+  
+  requestExtension: (request: ITaskExtensionRequest) => {
+    return axios.post<IBackendRes<ITaskItem>>(`/tasks/${request.taskId}/extension`, request);
+  },
+  
+  approveExtension: (taskId: string) => {
+    return axios.post<IBackendRes<ITaskItem>>(`/tasks/${taskId}/extension/approve`);
+  },
+  
+  appealTask: (appeal: ITaskAppeal) => {
+    return axios.post<IBackendRes<ITaskItem>>(`/tasks/${appeal.taskId}/appeal`, appeal);
+  },
+  
+  requestAdjustment: (request: ITaskAdjustmentRequest) => {
+    return axios.post<IBackendRes<any>>('/tasks/adjustment', request);
+  },
+  
+  deleteTask: (taskId: string) => {
+    return axios.delete<IBackendRes<null>>(`/tasks/${taskId}`);
   },
 };

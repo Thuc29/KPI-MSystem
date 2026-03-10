@@ -126,12 +126,12 @@ export const OrganizationPage = () => {
                     </div>
                   </div>
                 </div>
-                <Tag color="blue" className="text-sm">
+                <Tag color="blue" className="text-xs md:text-sm">
                   {dept.employees} nhân viên
                 </Tag>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 sm:grid-cols-2  gap-4">
                 <div>
                   <p className="text-xs text-gray-600 mb-1">Hiệu suất</p>
                   <Progress 

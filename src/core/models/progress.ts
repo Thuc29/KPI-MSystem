@@ -14,13 +14,7 @@ export interface IProgressCheckin {
   isOnTrack: boolean;
 }
 
-export interface IAttachment {
-  id: string;
-  fileName: string;
-  fileUrl: string;
-  fileSize: number;
-  uploadedAt: string;
-}
+
 
 export interface ICheckinFormValues {
   currentValue: number;

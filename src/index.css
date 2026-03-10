@@ -186,8 +186,8 @@ body {
   transition: all 0.3s ease;
 }
 
-.ant-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.ant-card-body{
+  padding: 10px 20px !important;
 }
 
 /* Table Customization */
@@ -364,7 +364,8 @@ body {
 .ant-steps {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  padding: 1rem;
+  padding: 0.8rem;
+  
 }
 .ant-steps-item {
   border-radius: 8px;
@@ -372,10 +373,17 @@ body {
 .ant-steps-item-finish .ant-steps-item-icon,
 .ant-steps-item-process .ant-steps-item-icon {
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  
 }
+.ant-steps .ant-steps-item-finish 
+.ant-steps-item-icon >.ant-steps-icon {
+    color: #ffffff;
+    font-size: medium;
+}
+
 /* scale active step icon slightly */
 .ant-steps-item-process .ant-steps-item-icon {
-  transform: scale(1.1);
+  transform: scale(1.0);
 }
 .ant-steps-item-tail {
   border-radius: 2px;

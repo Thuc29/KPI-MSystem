@@ -4,24 +4,27 @@ import { Provider } from 'react-redux'
 import { ToastContainer } from 'react-toastify'
 import App from './App'
 import { store } from './application/store'
+import { I18nProvider } from './infrastructure/i18n'
 import './index.css'
 import 'react-toastify/dist/ReactToastify.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <I18nProvider>
+        <App />
+        <ToastContainer 
+          position="top-right" 
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </I18nProvider>
     </Provider>
   </StrictMode>,
 )

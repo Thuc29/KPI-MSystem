@@ -155,7 +155,7 @@ export const TeamManagementPage = () => {
           icon={<Eye size={14} />}
           onClick={() => navigate(`/team/${record.id}`)}
         >
-          Xem chi tiết
+          Chi tiết
         </Button>
       ),
     },
@@ -240,6 +240,8 @@ export const TeamManagementPage = () => {
           rowKey="id"
           loading={loading}
           pagination={false}
+          scroll={{x:700}}
+          bordered
         />
       </Card>
     </div>

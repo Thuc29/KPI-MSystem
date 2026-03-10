@@ -221,6 +221,7 @@ export const StrategicApprovalPage = () => {
       <Card>
         <Tabs
           defaultActiveKey="pending"
+          
           items={[
             {
               key: 'pending',
@@ -231,6 +232,8 @@ export const StrategicApprovalPage = () => {
                   dataSource={pendingKPIs}
                   rowKey="id"
                   pagination={{ pageSize: 10 }}
+                  scroll={{x:500}}
+                  bordered
                 />
               ),
             },
@@ -243,6 +246,8 @@ export const StrategicApprovalPage = () => {
                   dataSource={approvedKPIs}
                   rowKey="id"
                   pagination={{ pageSize: 10 }}
+                  scroll={{x:500}}
+                  bordered
                 />
               ),
             },
@@ -255,6 +260,8 @@ export const StrategicApprovalPage = () => {
                   dataSource={rejectedKPIs}
                   rowKey="id"
                   pagination={{ pageSize: 10 }}
+                   scroll={{x:500}}
+                  bordered
                 />
               ),
             },

@@ -38,25 +38,14 @@ export const KPIDashboardPage = () => {
   const getFilteredKPIList = () => {
     switch (userRole) {
       case 'employee':
-        // Employee sees only their own KPIs
         return kpiList.filter(k => k.employeeId === userId);
       
-      case 'manager':
-        // Manager sees KPIs pending their approval + approved KPIs
-        return kpiList.filter(k => 
-          k.status === 'pending_manager' || k.status === 'approved'
-        );
-      
-      case 'hr':
-        // HR sees KPIs pending their approval + approved KPIs
-        return kpiList.filter(k => 
-          k.status === 'pending_hr' || k.status === 'approved'
-        );
-      
+      case 'tl':
+      case 'gl':
       case 'ceo':
-        // CEO sees KPIs pending their approval + approved KPIs
+        // For managers, show KPIs pending approval or already approved/in progress
         return kpiList.filter(k => 
-          k.status === 'pending_ceo' || k.status === 'approved'
+          k.status === 'pending_approval' || k.status === 'in_progress' || k.status === 'completed' || k.employeeId === userId
         );
       
       default:
@@ -69,12 +58,8 @@ export const KPIDashboardPage = () => {
   // Statistics based on filtered list
   const totalKPIs = filteredKPIList.length;
   const draftKPIs = filteredKPIList.filter(k => k.status === 'draft').length;
-  const pendingKPIs = filteredKPIList.filter(k =>
-    k.status === 'pending_manager' ||
-    k.status === 'pending_hr' ||
-    k.status === 'pending_ceo'
-  ).length;
-  const approvedKPIs = filteredKPIList.filter(k => k.status === 'approved').length;
+  const pendingKPIs = filteredKPIList.filter(k => k.status === 'pending_approval').length;
+  const approvedKPIs = filteredKPIList.filter(k => k.status === 'in_progress' || k.status === 'completed').length;
   const rejectedKPIs = filteredKPIList.filter(k => k.status === 'rejected').length;
 
   const columns: ColumnsType<IKPIRecord> = [
@@ -162,16 +147,17 @@ export const KPIDashboardPage = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Danh sách KPI</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Danh sách KPI</h1>
           <p className="text-gray-500">Quản lý và theo dõi hồ sơ KPI</p>
         </div>
         {userRole === 'employee' && (
           <Button
             type="primary"
             size="large"
-            icon={<Plus size={20} />}
+            icon={<Plus size={20} className='mt-1' />}
             onClick={() => navigate('/kpi/create')}
-            className="bg-primary hover:bg-primary-dark h-10 px-6 shadow-lg hover:shadow-xl transition-all rounded-2xl transform hover:-translate-y-1"
+            className="bg-primary hover:bg-primary-dark md:h-9 h-8 px-5 shadow-lg md:text-base text-sm
+            hover:shadow-xl transition-all md:rounded-2xl rounded-xl transform hover:-translate-y-1"
           >
             Tạo KPI mới
           </Button>
@@ -242,10 +228,12 @@ export const KPIDashboardPage = () => {
             showSizeChanger: true,
             showTotal: (total) => (
               <span className="font-medium">
-                Tổng <span className="text-primary">{total}</span> hồ sơ
+                Tổng <span className="text-red-500">{total}</span> hồ sơ
               </span>
             ),
           }}
+          bordered
+          scroll={{x:500}}
           className="custom-table"
         />
       </Card>

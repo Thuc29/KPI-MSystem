@@ -41,7 +41,7 @@ export const ApprovalPage = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  const userRole = storage.getUserRole() || 'manager';
+  const userRole = storage.getUserRole() || 'tl';
 
   useEffect(() => {
     fetchKPIList();
@@ -64,19 +64,18 @@ export const ApprovalPage = () => {
   // Filter KPIs based on role
   const getPendingKPIs = () => {
     switch (userRole) {
-      case 'manager':
-        return kpiList.filter(k => k.status === 'pending_manager');
-      case 'hr':
-        return kpiList.filter(k => k.status === 'pending_hr');
+      case 'tl':
+      case 'gl':
       case 'ceo':
-        return kpiList.filter(k => k.status === 'pending_ceo');
+        // Manager sees all pending KPIs for their department
+        return kpiList.filter(k => k.status === 'pending_approval');
       default:
         return [];
     }
   };
 
   const getApprovedKPIs = () => {
-    return kpiList.filter(k => k.status === 'approved');
+    return kpiList.filter(k => k.status === 'in_progress' || k.status === 'completed');
   };
 
   const getRejectedKPIs = () => {

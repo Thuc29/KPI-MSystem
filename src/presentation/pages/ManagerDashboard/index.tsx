@@ -50,8 +50,8 @@ export const ManagerDashboardPage = () => {
   };
 
   // Filter KPIs for manager
-  const pendingKPIs = kpiList.filter(k => k.status === 'pending_manager');
-  const approvedKPIs = kpiList.filter(k => k.status === 'approved');
+  const pendingKPIs = kpiList.filter(k => k.status === 'pending_approval');
+  const approvedKPIs = kpiList.filter(k => k.status === 'in_progress' || k.status === 'completed');
   const totalKPIs = kpiList.length;
   
   // Mock off-track employees
@@ -229,7 +229,7 @@ export const ManagerDashboardPage = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Manager</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Team Leader</h1>
         <p className="text-gray-500">Tổng quan hiệu suất Team</p>
       </div>
 

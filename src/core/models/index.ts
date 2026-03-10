@@ -12,10 +12,16 @@ export interface IUser {
   name: string;
   role: UserRole;
   department: string;
+  position?: string;
+  managerId?: string;
+  managerName?: string;
+  teamMembers?: string[];
   token?: string;
+  delegations?: IDelegation[];
+  isActive?: boolean;
 }
 
-export type UserRole = 'employee' | 'manager' | 'hr' | 'ceo';
+export type UserRole = 'employee' | 'tl' | 'gl' | 'ceo';
 
 // KPI Types
 export interface IKPITarget {
@@ -32,6 +38,10 @@ export interface IKPITarget {
   endDate?: string;
   currentValue?: number;
   completionRate?: number;
+  tasks?: ITaskItem[];
+  adjustmentRequested?: boolean;
+  adjustmentReason?: string;
+  adjustmentApprovedAt?: string;
 }
 
 export interface IKPIRecord {
@@ -40,6 +50,8 @@ export interface IKPIRecord {
   employeeName: string;
   department: string;
   position?: string;
+  managerId?: string;
+  managerName?: string;
   year: number;
   quarter?: number;
   period?: 'yearly' | 'quarterly' | 'monthly';
@@ -51,15 +63,65 @@ export interface IKPIRecord {
   currentApprover?: string;
   rejectionReason?: string;
   isOnTrack?: boolean;
+  isFrozen?: boolean;
+  frozenAt?: string;
+  frozenReason?: string;
 }
 
 export type KPIStatus = 
   | 'draft' 
-  | 'pending_manager' 
-  | 'pending_hr' 
-  | 'pending_ceo' 
-  | 'approved' 
+  | 'pending_approval' 
+  | 'in_progress' 
+  | 'completed' 
   | 'rejected';
+
+export type TaskStatus =
+  | 'to_do'
+  | 'pending_verify'
+  | 'verified'
+  | 'overdue';
+
+export interface ITaskItem {
+  id: string;
+  title: string;
+  description?: string;
+  deadline: string;
+  status: TaskStatus;
+  evidenceUrl?: string;
+  evidenceFiles?: IAttachment[];
+  evidenceMessage?: string;
+  completedAt?: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
+  rejectedAt?: string;
+  rejectedBy?: string;
+  rejectionReason?: string;
+  appealMessage?: string;
+  appealedAt?: string;
+  extensionRequested?: boolean;
+  extensionReason?: string;
+  newDeadline?: string;
+}
+
+export interface IAttachment {
+  id: string;
+  fileName: string;
+  fileUrl: string;
+  fileSize: number;
+  uploadedAt: string;
+}
+
+export interface IDelegation {
+  id: string;
+  delegatorId: string;
+  delegatorName: string;
+  delegateId: string;
+  delegateName: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  createdAt: string;
+}
 
 // Approval History Types
 export interface IApprovalHistory {
@@ -76,7 +138,15 @@ export type ApprovalAction =
   | 'submit' 
   | 'approve' 
   | 'reject' 
-  | 'request_revision';
+  | 'request_revision'
+  | 'verify_task'
+  | 'reject_task'
+  | 'approve_extension'
+  | 'reject_extension'
+  | 'approve_adjustment'
+  | 'reject_adjustment'
+  | 'appeal_task'
+  | 'resolve_appeal';
 
 // Form Types
 export interface LoginFormValues {
@@ -104,3 +174,6 @@ export * from './kpiTemplate';
 
 // Export progress types
 export * from './progress';
+
+// Export task types
+export * from './task';

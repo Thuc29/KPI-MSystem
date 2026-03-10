@@ -185,7 +185,7 @@ export const mockKpiApi = {
 
     kpiRecords[index] = {
       ...kpiRecords[index],
-      status: 'pending_manager',
+      status: 'pending_approval',
       updatedAt: new Date().toISOString(),
     };
 
@@ -214,20 +214,9 @@ export const mockKpiApi = {
       };
     }
 
-    const currentStatus = kpiRecords[index].status;
-    let newStatus: IKPIRecord['status'] = 'approved';
-
-    if (currentStatus === 'pending_manager') {
-      newStatus = 'pending_hr';
-    } else if (currentStatus === 'pending_hr') {
-      newStatus = 'pending_ceo';
-    } else if (currentStatus === 'pending_ceo') {
-      newStatus = 'approved';
-    }
-
     kpiRecords[index] = {
       ...kpiRecords[index],
-      status: newStatus,
+      status: 'in_progress',
       updatedAt: new Date().toISOString(),
     };
 

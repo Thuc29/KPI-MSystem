@@ -1,4 +1,4 @@
-import { Layout, Menu, Avatar, Dropdown, Badge, Tag } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Badge, Tag, Drawer, Button } from 'antd';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { 
@@ -11,21 +11,22 @@ import {
   Settings,
   Bell,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Menu as MenuIcon
 } from 'lucide-react';
 import type { MenuProps } from 'antd';
 import { storage, getRoleLabel } from '../../infrastructure/utils';
 import { getMenuByRole } from '../../core/constants';
 import { getUnreadCount } from '../../infrastructure/api/mockNotifications';
 import type { UserRole } from '../../core/models';
-
+import { LanguageSwitcher } from '../components';
 const { Header, Sider, Content } = Layout;
 
 const getRoleIcon = (role: UserRole) => {
   const icons = {
     employee: UserCircle,
-    manager: Briefcase,
-    hr: Users,
+    tl: Briefcase,
+    gl: Users,
     ceo: Crown,
   };
   return icons[role] || UserCircle;
@@ -34,8 +35,8 @@ const getRoleIcon = (role: UserRole) => {
 const getRoleColor = (role: UserRole) => {
   const colors = {
     employee: 'blue',
-    manager: 'purple',
-    hr: 'orange',
+    tl: 'purple',
+    gl: 'orange',
     ceo: 'red',
   };
   return colors[role] || 'default';
@@ -49,6 +50,7 @@ export const MainLayout = () => {
   const userId = storage.getUserId() || '1';
   const [unreadCount, setUnreadCount] = useState(0);
   const [collapsed, setCollapsed] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Update unread count
@@ -99,38 +101,45 @@ export const MainLayout = () => {
   // Get menu items based on user role
   const roleMenuItems = getMenuByRole(userRole);
   
+  const handleMenuClick = (path: string) => {
+    navigate(path);
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
   const menuItems: MenuProps['items'] = roleMenuItems.map(item => ({
     key: item.path,
     icon: item.icon,
     label: item.label,
-    onClick: () => navigate(item.path),
+    onClick: () => handleMenuClick(item.path),
     children: item.children?.map(child => ({
       key: child.path,
       icon: child.icon,
       label: child.label,
-      onClick: () => navigate(child.path),
+      onClick: () => handleMenuClick(child.path),
     })),
   }));
 
   return (
     <Layout className="min-h-screen"> 
       <Sider
-        breakpoint="lg"
+        breakpoint="md"
         collapsedWidth="0"
-        width={300}
+        width={280}
         collapsed={collapsed}
-        className="bg-[url('./images/sibarbg.jpg')] bg-cover fixed top-0 bottom-0 left-0 overflow-auto glassmorphism-sidebar transition-all duration-300 z-50"
+        className="hidden md:block bg-[url('./images/sibarbg.jpg')] bg-cover fixed top-0 bottom-0 left-0 overflow-auto glassmorphism-sidebar transition-all duration-300 z-50"
         style={{
           transform: collapsed ? 'translateX(-100%)' : 'translateX(0)',
         }}
       >
         {/* Logo Section */}
-        <div className="mt-2 px-2 rounded-2xl border w-fit mx-auto border-[#ffffff1a] bg-gray-300">
+        <div className="mt-2 px-2 rounded-2xl  w-fit mx-auto">
           <Link to={"/"} className="flex items-center justify-center"> 
             <img 
-              src='./images/logo.png' 
+              src='./images/logoW.png' 
               alt="Smart KPI Logo" 
-              className="h-12 w-auto object-contain transform transition-all duration-300 hover:scale-105"
+              className="h-[50px] w-auto object-contain transform transition-all duration-300 hover:scale-105"
             />
           </Link>
         </div>
@@ -153,37 +162,31 @@ export const MainLayout = () => {
         </div>
       </Sider>
 
-      {/* Toggle Button - Always visible */}
+      {/* Toggle Button - Always visible on desktop */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="fixed top-16 w-8 h-8 bg-white/50 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-100 transition-all duration-300 z-[60] border border-gray-200"
+        className="hidden md:flex fixed top-14 w-8 h-8 bg-white/50 rounded-full shadow-lg items-center justify-center hover:bg-gray-100 transition-all duration-300 z-[60] border border-gray-200"
         style={{
-          left: collapsed ? '16px' : '316px',
+          left: collapsed ? '16px' : '290px',
         }}
       >
         {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
       </button>
       
       <Layout 
-        className="transition-all duration-300"
-        style={{
-          marginLeft: collapsed ? '0' : '300px',
-        }}
+        className={`transition-all duration-300 ${!collapsed ? 'md:ml-[280px]' : ''}`}
       >
-        <Header 
-          style={{ 
-            background: '#fff', 
-            padding: '0 32px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            height: '72px',
-          }}
+        <Header className='flex sticky h-16 top-0 z-10 items-center justify-between shadow-md py-0 md:px-6 px-2 bg-transparent backdrop-blur-sm'
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center md:gap-4 gap-1">
+            <Button 
+              type="text" 
+              icon={<MenuIcon size={24} className="text-primary" />} 
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden flex items-center justify-center mr-1"
+            />
             <div>
-              <h2 className="text-2xl font-bold text-primary m-0">
+              <h2 className="text-2xl font-bold  text-primary m-0">
                 Hệ thống Quản lý KPI
               </h2>
               <p className="text-xs text-gray-500 m-0">
@@ -192,22 +195,24 @@ export const MainLayout = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            
             {/* Notifications */}
             <Badge count={unreadCount} size="small">
               <button 
-                className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                 onClick={() => navigate('/notifications')}
               >
-                <Bell size={18} className="text-gray-600" />
+                <Bell size={16} className="text-yellow-500" />
               </button>
             </Badge>
 
             {/* User Dropdown */}
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-4 py-2 rounded-xl transition-colors">
-                <div className="text-right">
-                  <div className="font-semibold text-gray-800 text-sm">{userName}</div>
+              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-2 py-2 rounded-xl transition-colors">
+                <div className="text-right hidden md:block">
+                  <div className="font-semibold  text-gray-800 text-sm">{userName}</div>
                   <div className="flex items-center gap-1.5">
                     <Tag 
                       color={getRoleColor(userRole)} 
@@ -219,12 +224,12 @@ export const MainLayout = () => {
                   </div>
                 </div>
                 <Avatar 
-                  size={40}
+                  size={35}
                   icon={<User size={20} />} 
                   className={
                     userRole === 'employee' ? 'bg-blue-500' :
-                    userRole === 'manager' ? 'bg-purple-500' :
-                    userRole === 'hr' ? 'bg-orange-500' :
+                    userRole === 'tl' ? 'bg-purple-500' :
+                    userRole === 'gl' ? 'bg-orange-500' :
                     'bg-red-500'
                   }
                 />
@@ -239,6 +244,45 @@ export const MainLayout = () => {
           </div>
         </Content>
       </Layout>
+
+      {/* Mobile Bottom Menu */}
+      <Drawer
+        placement="bottom"
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        height="80vh"
+        closable={false}
+        styles={{ body: { padding: 0 } }}
+        className="md:hidden rounded-t-3xl overflow-hidden"
+      >
+        <div className="bg-[url('./images/sibarbg.jpg')] bg-cover h-full glassmorphism-sidebar relative">
+          <div className="flex flex-col h-full pt-6 relative z-10">
+            <div className="px-6 pb-2 mb-2 flex justify-between items-center w-full">
+              <img 
+                src='./images/logoW.png' 
+                alt="Smart KPI Logo" 
+                className="h-[36px] w-auto object-contain"
+              />
+              <button 
+                onClick={() => setMobileMenuOpen(false)} 
+                className="text-white hover:text-gray-200 text-sm font-medium px-4 py-2 bg-white/10 rounded-xl transition-colors hover:bg-white/20"
+              >
+                Đóng
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto mt-2">
+              <Menu
+                mode="inline"
+                selectedKeys={[location.pathname]}
+                defaultOpenKeys={roleMenuItems.filter(item => item.children).map(item => item.path)}
+                items={menuItems}
+                className="border-r-0 px-3 bg-transparent"
+              />
+            </div>
+          </div>
+        </div>
+      </Drawer>
     </Layout>
   );
 };

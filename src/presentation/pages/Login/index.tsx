@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { authApi } from '../../../infrastructure/api';
 import { storage } from '../../../infrastructure/utils';
+import { useTranslation } from '../../../infrastructure/i18n';
 import type { LoginFormValues } from '../../../core/models';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const onFinish = async (values: LoginFormValues) => {
     setLoading(true);
@@ -27,13 +29,14 @@ export const LoginPage = () => {
         storage.setUserRole(user.role);
         storage.setDepartment(user.department);
         
-        toast.success(`Chào mừng ${user.name}!`);
+        // Language is already saved in localStorage by i18n context
+        toast.success(`${t.login.welcome} ${user.name}!`);
         navigate('/kpi');
       } else {
-        toast.error('Đăng nhập thất bại');
+        toast.error(t.login.loginFailed);
       }
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || 'Đăng nhập thất bại';
+      const errorMessage = error?.response?.data?.message || t.login.loginFailed;
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -42,28 +45,29 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[url('./images/backgrlogin.jpg')] bg-cover bg-bottom p-4 sm:p-6 lg:p-8">
-      <div className="w-full max-w-[70rem] grid grid-cols-1 bg-transparent backdrop-blur-sm border border-white rounded-2xl lg:grid-cols-2 gap-0 lg:gap-8 items-center">
+      <div className="w-full max-w-[70rem] grid grid-cols-1 bg-transparent backdrop-blur-sm border border-white rounded-2xl md:grid-cols-2 gap-0 lg:gap-8 items-center">
         {/* Left Column - Login Form */}
-        <div className="w-full flex items-center justify-center  order-2 lg:order-1">
+        <div className="w-full flex items-center justify-center  order-2 md:order-1">
           <Card 
-            className="w-full max-w-md hover:shadow border-0 bg-transparent overflow-hidden"
+            className="w-full max-w-md border-0 bg-transparent overflow-hidden"
           >
             <div className="p-6 sm:p-8 lg:p-10">
               {/* Logo & Title */}
-              <div className="mb-8 text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
-                <img 
-                        src='./images/logo.png' 
-                        alt="Smart KPI Logo" 
-                        className="h-auto w-[250px] object-contain" 
-                      />
-                    </div>
+              <div className="mb-8 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-between mb-4">
+                  <img 
+                    src='./images/logoW.png' 
+                    alt="Smart KPI Logo" 
+                    className="h-auto w-[250px] object-contain" 
+                  />
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-primary-light mb-2">
-                  Đăng nhập
-                </h2>
+                  {t.login.title}
+                  </h2>
                 <p className="text-sm text-white">
-                  Vui lòng đăng nhập bằng email công ty của bạn
+                  {t.login.subtitle}
                 </p>
+                
               </div>
 
               {/* Login Form */}
@@ -77,28 +81,28 @@ export const LoginPage = () => {
               >
                 <Form.Item
                   name="username"
-                  label={<span className="text-sm font-medium text-gray-100">Email</span>}
+                  label={<span className="text-sm font-medium text-gray-100">{t.login.email}</span>}
                   rules={[
-                    { required: true, message: 'Vui lòng nhập email' },
-                    { type: 'email', message: 'Email không đúng định dạng' } 
+                    { required: true, message: t.login.emailRequired },
+                    { type: 'email', message: t.login.emailInvalid } 
                   ]}
                 >
                   <Input 
                     prefix={<Mail size={18} className="text-gray-400" />} 
-                    placeholder="example@vina.co.kr"
+                    placeholder={t.login.emailPlaceholder}
                     className="rounded-lg h-9 sm:h-10 bg-gray-50 hover:bg-white focus:bg-white transition-colors border-gray-200"
                   />
                 </Form.Item>
                 
                 <Form.Item 
                   name="password" 
-                  label={<span className="text-sm font-semibold text-gray-100">Mật khẩu</span>}
-                  rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}
+                  label={<span className="text-sm font-semibold text-gray-100">{t.login.password}</span>}
+                  rules={[{ required: true, message: t.login.passwordRequired }]}
                   className="mb-6"
                 >
                   <Input.Password 
                     prefix={<Lock size={18} className="text-gray-400" />}
-                    placeholder="Nhập mật khẩu"
+                    placeholder={t.login.passwordPlaceholder}
                     className="rounded-lg h-9 sm:h-10 bg-gray-50 hover:bg-white focus:bg-white transition-colors border-gray-200"
                   />
                 </Form.Item>
@@ -111,11 +115,12 @@ export const LoginPage = () => {
                     loading={loading}
                     className="bg-primary items-center hover:bg-primary-dark border-none h-9 sm:h-10 text-base font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all"
                   >
-                    {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                    {loading ? t.login.loggingIn : t.login.loginButton}
                     <ArrowRight  className='pt-1'/>
                   </Button>
                 </Form.Item>
               </Form>
+              
 
               
             </div>
@@ -123,7 +128,7 @@ export const LoginPage = () => {
         </div>
 
         {/* Right Column - Illustration */}
-        <div className="w-full flex flex-col items-center justify-center order-1 lg:order-2 mb-4 lg:mb-0">
+        <div className="hidden md:flex w-full flex-col items-center justify-center order-1 lg:order-2 mb-4 lg:mb-0">
           <div className="w-full max-w-2xl px-4 sm:px-6 lg:px-0">
             {/* Illustration */}
             <div className="relative mb-2 lg:mb-4">
@@ -143,6 +148,7 @@ export const LoginPage = () => {
           
             </div>
           </div>
+          
         </div>
 
       </div>

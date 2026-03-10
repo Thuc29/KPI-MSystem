@@ -46,11 +46,9 @@ export const EmployeeDashboardPage = () => {
 
   const draftKPIs = kpiList.filter(k => k.status === 'draft');
   const pendingKPIs = kpiList.filter(k => 
-    k.status === 'pending_manager' || 
-    k.status === 'pending_hr' || 
-    k.status === 'pending_ceo'
+    k.status === 'pending_approval'
   );
-  const approvedKPIs = kpiList.filter(k => k.status === 'approved');
+  const approvedKPIs = kpiList.filter(k => k.status === 'in_progress' || k.status === 'completed');
   const rejectedKPIs = kpiList.filter(k => k.status === 'rejected');
 
   // Calculate average completion rate
@@ -67,7 +65,7 @@ export const EmployeeDashboardPage = () => {
     : 0;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -281,7 +279,7 @@ export const EmployeeDashboardPage = () => {
                     <div>
                       <div className="text-sm text-gray-500">Hôm qua</div>
                       <div className="font-medium">📝 Đã gửi KPI duyệt</div>
-                      <div className="text-xs text-gray-600">Đang chờ Manager</div>
+                      <div className="text-xs text-gray-600">Đang chờ quản lý</div>
                     </div>
                   ),
                 }] : []),
