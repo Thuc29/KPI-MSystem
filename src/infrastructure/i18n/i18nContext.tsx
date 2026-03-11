@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { translations, Language, TranslationKeys } from './locales';
+import { setTranslationFunction } from '../utils/helpers';
 
 interface I18nContextType {
   language: Language;
@@ -22,15 +23,20 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   };
 
-  useEffect(() => {
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-  }, [language]);
-
   const value: I18nContextType = {
     language,
     setLanguage,
     t: translations[language],
   };
+
+  // Set translation function for helpers
+  useEffect(() => {
+    setTranslationFunction(() => translations[language]);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  }, [language]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, Row, Col, Statistic, Progress, Button, Timeline, Empty, Table, Tag, Tooltip } from 'antd';
+import { Card, Row, Col, Statistic, Progress, Button, Timeline, Empty, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { 
   FileText, 
@@ -19,11 +19,13 @@ import { toast } from 'react-toastify';
 import { kpiApi } from '../../../../infrastructure/api';
 import { storage } from '../../../../infrastructure/utils';
 import { getUnreadCount } from '../../../../infrastructure/api/mockNotifications';
-import type { IKPIRecord, IKPITarget } from '../../../../core/models';
+import type { IKPIRecord } from '../../../../core/models';
 import { KPIStatusTag } from '../../../components';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 export const EmployeeDashboardPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const userId = storage.getUserId();
@@ -44,7 +46,7 @@ export const EmployeeDashboardPage = () => {
         setKpiList(myKPIs);
       }
     } catch (error: any) {
-      toast.error('Không thể tải danh sách KPI');
+      toast.error(t.dashboard.employee.cannotLoadKPIs);
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,7 @@ export const EmployeeDashboardPage = () => {
   // Columns for recent KPIs table
   const columns: ColumnsType<IKPIRecord> = [
     {
-      title: 'Mã KPI',
+      title: t.kpiList.recordCode,
       dataIndex: 'id',
       key: 'id',
       width: 150,
@@ -106,14 +108,14 @@ export const EmployeeDashboardPage = () => {
       ),
     },
     {
-      title: 'Năm',
+      title: t.kpiList.year,
       dataIndex: 'year',
       key: 'year',
       width: 80,
       align: 'center',
     },
     {
-      title: 'Số mục tiêu',
+      title: t.kpiList.targets,
       key: 'targets',
       width: 100,
       align: 'center',
@@ -122,14 +124,14 @@ export const EmployeeDashboardPage = () => {
       ),
     },
     {
-      title: 'Trạng thái',
+      title: t.kpiList.status,
       dataIndex: 'status',
       key: 'status',
       width: 130,
       render: (status) => <KPIStatusTag status={status} />,
     },
     {
-      title: 'Hành động',
+      title: t.kpiList.action,
       key: 'action',
       width: 100,
       align: 'center',
@@ -139,7 +141,7 @@ export const EmployeeDashboardPage = () => {
           icon={<Eye size={14} />}
           onClick={() => navigate(`/kpi/${record.id}`)}
         >
-          Xem
+          {t.common.view}
         </Button>
       ),
     },
@@ -150,9 +152,9 @@ export const EmployeeDashboardPage = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Dashboard - Nhân viên
+          {t.dashboard.employee.title}
         </h1>
-        <p className="text-gray-500">Tổng quan KPI cá nhân của bạn</p>
+        <p className="text-gray-500">{t.dashboard.employee.subtitle}</p>
       </div>
 
       {/* Statistics Cards */}
@@ -160,7 +162,7 @@ export const EmployeeDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-blue-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng số KPI</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.totalKPIs}</span>}
               value={kpiList.length}
               prefix={<FileText size={24} className="text-blue-500" />}
               valueStyle={{ color: '#1890ff', fontWeight: 'bold' }}
@@ -171,7 +173,7 @@ export const EmployeeDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-orange-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Bản nháp</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.drafts}</span>}
               value={draftKPIs.length}
               prefix={<Clock size={24} className="text-orange-500" />}
               valueStyle={{ color: '#fa8c16', fontWeight: 'bold' }}
@@ -182,7 +184,7 @@ export const EmployeeDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-yellow-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Đang chờ duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.pendingApproval}</span>}
               value={pendingKPIs.length}
               prefix={<Clock size={24} className="text-yellow-500" />}
               valueStyle={{ color: '#faad14', fontWeight: 'bold' }}
@@ -193,7 +195,7 @@ export const EmployeeDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-green-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Đã duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.approved}</span>}
               value={approvedKPIs.length}
               prefix={<CheckCircle size={24} className="text-green-500" />}
               valueStyle={{ color: '#52c41a', fontWeight: 'bold' }}
@@ -207,8 +209,8 @@ export const EmployeeDashboardPage = () => {
         <Card className="shadow-sm mt-4">
           <div className="mb-3">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-base font-semibold text-gray-700">Tổng quan tiến độ mục tiêu</h3>
-              <span className="text-sm text-gray-500">{allTargets.length} mục tiêu</span>
+              <h3 className="text-base font-semibold text-gray-700">{t.dashboard.employee.targetOverview}</h3>
+              <span className="text-sm text-gray-500">{allTargets.length} {t.dashboard.employee.targets}</span>
             </div>
             
             {/* Progress Bar */}
@@ -259,27 +261,27 @@ export const EmployeeDashboardPage = () => {
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-green-500 rounded"></div>
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-700">Đúng tiến độ</div>
+                <div className="text-sm font-medium text-gray-700">{t.dashboard.employee.onTrack}</div>
                 <div className="text-xs text-gray-500">
-                  {onTrackTargets.length} mục tiêu • ≥80%
+                  {onTrackTargets.length} {t.dashboard.employee.targets} • ≥80%
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-orange-500 rounded"></div>
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-700">Cần chú ý</div>
+                <div className="text-sm font-medium text-gray-700">{t.dashboard.employee.atRisk}</div>
                 <div className="text-xs text-gray-500">
-                  {atRiskTargets.length} mục tiêu • 50-79%
+                  {atRiskTargets.length} {t.dashboard.employee.targets} • 50-79%
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-red-500 rounded"></div>
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-700">Chậm tiến độ</div>
+                <div className="text-sm font-medium text-gray-700">{t.dashboard.employee.behind}</div>
                 <div className="text-xs text-gray-500">
-                  {behindTargets.length} mục tiêu • &lt;50%
+                  {behindTargets.length} {t.dashboard.employee.targets} • &lt;50%
                 </div>
               </div>
             </div>
@@ -297,7 +299,7 @@ export const EmployeeDashboardPage = () => {
               title={
                 <div className="flex items-center gap-2">
                   <Target size={20} className="text-primary" />
-                  <span className="text-lg font-semibold">Hiệu suất tổng thể</span>
+                  <span className="text-lg font-semibold">{t.dashboard.employee.overallPerformance}</span>
                 </div>
               }
               className="shadow-sm mb-4"
@@ -315,7 +317,7 @@ export const EmployeeDashboardPage = () => {
                   format={(percent) => (
                     <div className="text-center">
                       <div className="text-5xl font-bold text-primary">{percent}%</div>
-                      <div className="text-sm text-gray-500 mt-2">Hoàn thành</div>
+                      <div className="text-sm text-gray-500 mt-2">{t.dashboard.employee.completion}</div>
                     </div>
                   )}
                 />
@@ -324,19 +326,19 @@ export const EmployeeDashboardPage = () => {
                     <div className="text-2xl font-bold text-green-600">
                       {approvedKPIs.reduce((sum, k) => sum + k.targets.length, 0)}
                     </div>
-                    <div className="text-sm text-gray-500">Mục tiêu</div>
+                    <div className="text-sm text-gray-500">{t.dashboard.employee.activeTargets}</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-blue-600">
                       {approvedKPIs.length}
                     </div>
-                    <div className="text-sm text-gray-500">KPI đang chạy</div>
+                    <div className="text-sm text-gray-500">{t.dashboard.employee.activeKPIs}</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-orange-600">
                       {unreadNotifications}
                     </div>
-                    <div className="text-sm text-gray-500">Thông báo mới</div>
+                    <div className="text-sm text-gray-500">{t.dashboard.employee.newNotifications}</div>
                   </div>
                 </div>
               </div>
@@ -344,7 +346,7 @@ export const EmployeeDashboardPage = () => {
           ) : (
             <Card className="shadow-sm mb-4">
               <Empty
-                description="Bạn chưa có KPI nào được phê duyệt"
+                description={t.dashboard.employee.noApprovedKPIs}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               >
                 <Button 
@@ -353,7 +355,7 @@ export const EmployeeDashboardPage = () => {
                   onClick={() => navigate('/kpi/create')}
                   className="bg-primary"
                 >
-                  Tạo KPI mới
+                  {t.dashboard.employee.createNewKPI}
                 </Button>
               </Empty>
             </Card>
@@ -365,7 +367,7 @@ export const EmployeeDashboardPage = () => {
               title={
                 <div className="flex items-center gap-2">
                   <Award size={20} className="text-yellow-500" />
-                  <span className="text-lg font-semibold">Top mục tiêu xuất sắc</span>
+                  <span className="text-lg font-semibold">{t.dashboard.employee.topTargets}</span>
                 </div>
               }
               className="shadow-sm"
@@ -413,16 +415,16 @@ export const EmployeeDashboardPage = () => {
                 <AlertCircle size={24} className="text-red-500 mt-1" />
                 <div className="flex-1">
                   <h3 className="font-semibold text-red-600 mb-2">
-                    KPI bị từ chối ({rejectedKPIs.length})
+                    {t.dashboard.employee.rejectedKPIs} ({rejectedKPIs.length})
                   </h3>
                   <p className="text-gray-600 mb-3">
-                    Bạn có {rejectedKPIs.length} KPI bị từ chối. Vui lòng xem lý do và chỉnh sửa lại.
+                    {t.dashboard.employee.rejectedAlert.replace('{count}', rejectedKPIs.length.toString())}
                   </p>
                   <Button 
                     danger
                     onClick={() => navigate('/kpi')}
                   >
-                    Xem chi tiết
+                    {t.dashboard.employee.viewDetails}
                   </Button>
                 </div>
               </div>
@@ -437,7 +439,7 @@ export const EmployeeDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Activity size={18} className="text-primary" />
-                <span>Hành động nhanh</span>
+                <span>{t.dashboard.employee.quickActions}</span>
               </div>
             }
             className="shadow-sm mb-4"
@@ -451,7 +453,7 @@ export const EmployeeDashboardPage = () => {
                 size="large"
                 className="bg-primary"
               >
-                Tạo KPI mới
+                {t.dashboard.employee.createNewKPI}
               </Button>
               <Button
                 icon={<TrendingUp size={16} />}
@@ -459,7 +461,7 @@ export const EmployeeDashboardPage = () => {
                 block
                 size="large"
               >
-                Check-in tiến độ
+                {t.dashboard.employee.checkInProgress}
               </Button>
               <Button
                 icon={<FileText size={16} />}
@@ -467,7 +469,7 @@ export const EmployeeDashboardPage = () => {
                 block
                 size="large"
               >
-                Xem tất cả KPI
+                {t.dashboard.employee.viewAllKPIs}
               </Button>
             </div>
           </Card>
@@ -478,7 +480,7 @@ export const EmployeeDashboardPage = () => {
               title={
                 <div className="flex items-center gap-2">
                   <Calendar size={18} className="text-primary" />
-                  <span>KPI gần đây</span>
+                  <span>{t.dashboard.employee.recentKPIs}</span>
                 </div>
               }
               className="shadow-sm mb-4"
@@ -498,7 +500,7 @@ export const EmployeeDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Clock size={18} className="text-primary" />
-                <span>Hoạt động gần đây</span>
+                <span>{t.dashboard.employee.recentActivities}</span>
               </div>
             }
             className="shadow-sm"
@@ -509,9 +511,9 @@ export const EmployeeDashboardPage = () => {
                   color: 'red',
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">Hôm nay</div>
-                      <div className="font-medium">❌ KPI bị từ chối</div>
-                      <div className="text-xs text-gray-600">Cần chỉnh sửa lại</div>
+                      <div className="text-sm text-gray-500">{t.dashboard.employee.today}</div>
+                      <div className="font-medium">{t.dashboard.employee.kpiRejected}</div>
+                      <div className="text-xs text-gray-600">{t.dashboard.employee.needsRevision}</div>
                     </div>
                   ),
                 }] : []),
@@ -519,9 +521,9 @@ export const EmployeeDashboardPage = () => {
                   color: 'blue',
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">Hôm qua</div>
-                      <div className="font-medium">📝 Đã gửi KPI duyệt</div>
-                      <div className="text-xs text-gray-600">Đang chờ quản lý</div>
+                      <div className="text-sm text-gray-500">{t.dashboard.employee.yesterday}</div>
+                      <div className="font-medium">{t.dashboard.employee.kpiSubmitted}</div>
+                      <div className="text-xs text-gray-600">{t.dashboard.employee.waitingForManager}</div>
                     </div>
                   ),
                 }] : []),
@@ -529,9 +531,9 @@ export const EmployeeDashboardPage = () => {
                   color: 'green',
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">2 ngày trước</div>
-                      <div className="font-medium">✅ KPI được duyệt</div>
-                      <div className="text-xs text-gray-600">Bắt đầu thực hiện</div>
+                      <div className="text-sm text-gray-500">{t.dashboard.employee.daysAgo.replace('{count}', '2')}</div>
+                      <div className="font-medium">{t.dashboard.employee.kpiApproved}</div>
+                      <div className="text-xs text-gray-600">{t.dashboard.employee.startExecution}</div>
                     </div>
                   ),
                 }] : []),

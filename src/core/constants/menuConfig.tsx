@@ -17,7 +17,7 @@ import type { UserRole } from '../models';
 export interface MenuItem {
   key: string;
   icon: React.ReactNode;
-  label: string;
+  labelKey: string; // Changed from label to labelKey for i18n
   path: string;
   roles: UserRole[];
   children?: MenuItem[];
@@ -28,28 +28,28 @@ export const menuConfig: MenuItem[] = [
   {
     key: 'dashboard',
     icon: <LayoutDashboard size={18} />,
-    label: 'Dashboard',
+    labelKey: 'menu.dashboard',
     path: '/dashboard',
     roles: ['employee', 'tl', 'gl', 'ceo'],
   },
   {
     key: 'my-kpi',
     icon: <FileText size={18} />,
-    label: 'KPI của tôi',
+    labelKey: 'menu.myKPI',
     path: '/kpi',
     roles: ['employee', 'tl'],
     children: [
       {
         key: 'kpi-list',
         icon: <FileText size={16} />,
-        label: 'Danh sách KPI',
+        labelKey: 'menu.kpiList',
         path: '/kpi',
         roles: ['employee', 'tl'],
       },
       {
         key: 'kpi-create',
         icon: <FilePlus size={16} />,
-        label: 'Tạo KPI mới',
+        labelKey: 'menu.createKPI',
         path: '/kpi/create',
         roles: ['employee', 'tl'],
       },
@@ -58,7 +58,7 @@ export const menuConfig: MenuItem[] = [
   {
     key: 'progress',
     icon: <TrendingUp size={18} />,
-    label: 'Tiến độ & Check-in',
+    labelKey: 'menu.progress',
     path: '/progress',
     roles: ['employee', 'tl'],
   },
@@ -67,21 +67,21 @@ export const menuConfig: MenuItem[] = [
   {
     key: 'approval',
     icon: <CheckSquare size={18} />,
-    label: 'Duyệt KPI',
+    labelKey: 'menu.approval',
     path: '/approval',
     roles: ['tl', 'gl'],
   },
   {
     key: 'team-management',
     icon: <Users size={18} />,
-    label: 'Quản lý Team',
+    labelKey: 'menu.teamManagement',
     path: '/team-management',
     roles: ['tl'],
   },
   {
     key: 'team-reports',
     icon: <BarChart3 size={18} />,
-    label: 'Báo cáo Team',
+    labelKey: 'menu.teamReports',
     path: '/reports/team',
     roles: ['tl'],
   },
@@ -90,21 +90,21 @@ export const menuConfig: MenuItem[] = [
   {
     key: 'strategic-plan',
     icon: <Target size={18} />,
-    label: 'Chiến lược',
+    labelKey: 'menu.strategy',
     path: '/strategy',
     roles: ['gl'],
     children: [
       {
         key: 'strategy-list',
         icon: <FileText size={16} />,
-        label: 'Danh sách Chiến lược',
+        labelKey: 'menu.strategyList',
         path: '/strategy',
         roles: ['gl'],
       },
       {
         key: 'strategy-create',
         icon: <FilePlus size={16} />,
-        label: 'Tạo Chiến lược mới',
+        labelKey: 'menu.createStrategy',
         path: '/strategy/create',
         roles: ['gl'],
       },
@@ -113,14 +113,14 @@ export const menuConfig: MenuItem[] = [
   {
     key: 'department-management',
     icon: <Building2 size={18} />,
-    label: 'Quản lý Bộ phận',
+    labelKey: 'menu.departmentManagement',
     path: '/department',
     roles: ['gl'],
   },
   {
     key: 'department-reports',
     icon: <PieChart size={18} />,
-    label: 'Báo cáo & Phân tích',
+    labelKey: 'menu.departmentReports',
     path: '/reports/department',
     roles: ['gl'],
   },
@@ -130,28 +130,28 @@ export const menuConfig: MenuItem[] = [
   {
     key: 'executive-dashboard',
     icon: <Activity size={18} />,
-    label: 'Executive Dashboard',
+    labelKey: 'menu.executiveDashboard',
     path: '/executive',
     roles: ['ceo'],
   },
   {
     key: 'strategic-approval',
     icon: <Target size={18} />,
-    label: 'Phê duyệt Chiến lược',
+    labelKey: 'menu.strategicApproval',
     path: '/strategic',
     roles: ['ceo'],
   },
   {
     key: 'organization',
     icon: <Building2 size={18} />,
-    label: 'Tổng quan Tổ chức',
+    labelKey: 'menu.organization',
     path: '/organization',
     roles: ['ceo'],
   },
   {
     key: 'notifications',
     icon: <Bell size={18} />,
-    label: 'Thông báo',
+    labelKey: 'menu.notifications',
     path: '/notifications',
     roles: ['employee', 'tl', 'gl', 'ceo'],
   },

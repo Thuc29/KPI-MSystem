@@ -20,6 +20,7 @@ import { getMenuByRole, BRAND_COLORS } from '../../core/constants';
 import { getUnreadCount } from '../../infrastructure/api/mockNotifications';
 import type { UserRole } from '../../core/models';
 import { LanguageSwitcher } from '../components';
+import { useTranslation } from '../../infrastructure/i18n';
 const { Header, Sider, Content } = Layout;
 
 const getRoleIcon = (role: UserRole) => {
@@ -45,6 +46,7 @@ const getRoleColor = (role: UserRole) => {
 export const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const userName = storage.getUserName() || 'User';
   const userRole = storage.getUserRole() || 'employee';
   const userId = storage.getUserId() || '1';
@@ -77,13 +79,13 @@ export const MainLayout = () => {
     {
       key: 'profile',
       icon: <User size={16} />,
-      label: 'Thông tin cá nhân',
+      label: t.sidebar.profile,
       onClick: () => navigate('/profile'),
     },
     {
       key: 'settings',
       icon: <Settings size={16} />,
-      label: 'Cài đặt',
+      label: t.sidebar.settings,
       onClick: () => navigate('/settings'),
     },
     {
@@ -92,7 +94,7 @@ export const MainLayout = () => {
     {
       key: 'logout',
       icon: <LogOut size={16} />,
-      label: 'Đăng xuất',
+      label: t.sidebar.logout,
       onClick: handleLogout,
       danger: true,
     },
@@ -108,15 +110,25 @@ export const MainLayout = () => {
     }
   };
 
+  // Helper function to get label from translation key
+  const getLabel = (labelKey: string) => {
+    const keys = labelKey.split('.');
+    let value: any = t;
+    for (const key of keys) {
+      value = value[key];
+    }
+    return value;
+  };
+
   const menuItems: MenuProps['items'] = roleMenuItems.map(item => ({
     key: item.path,
     icon: item.icon,
-    label: item.label,
+    label: getLabel(item.labelKey),
     onClick: () => handleMenuClick(item.path),
     children: item.children?.map(child => ({
       key: child.path,
       icon: child.icon,
-      label: child.label,
+      label: getLabel(child.labelKey),
       onClick: () => handleMenuClick(child.path),
     })),
   }));
@@ -156,8 +168,8 @@ export const MainLayout = () => {
         {/* Bottom Info */}
         <div className="absolute bottom-0 left-0 right-0">
           <div className="glassmorphism-info text-xs text-center">
-            <p className="font-semibold mb-1">Hỗ trợ</p>
-            <p>Liên hệ với nhóm EA Việt Nam</p>
+            <p className="font-semibold mb-1">{t.sidebar.support}</p>
+            <p>{t.sidebar.contactTeam}</p>
           </div>
         </div>
       </Sider>
@@ -187,10 +199,10 @@ export const MainLayout = () => {
             />
             <div>
               <h2 className="text-2xl font-bold text-primary-dark m-0">
-                Hệ thống Quản lý KPI
+                {t.sidebar.systemTitle}
               </h2>
               <p className="text-xs text-gray-500 m-0">
-                Quản lý hiệu suất làm việc
+                {t.sidebar.systemSubtitle}
               </p>
             </div>
           </div>
@@ -267,7 +279,7 @@ export const MainLayout = () => {
                 onClick={() => setMobileMenuOpen(false)} 
                 className="text-white hover:text-gray-200 text-sm font-medium px-4 py-2 bg-white/10 rounded-xl transition-colors hover:bg-white/20"
               >
-                Đóng
+                {t.sidebar.close}
               </button>
             </div>
             

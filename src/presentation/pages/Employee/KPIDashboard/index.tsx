@@ -8,11 +8,13 @@ import { storage } from '../../../../infrastructure/utils';
 import { KPIStatusTag } from '../../../components';
 import type { IKPIRecord } from '../../../../core/models';
 import type { ColumnsType } from 'antd/es/table';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { Panel } = Collapse;
 
 export const KPIDashboardPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const userRole = storage.getUserRole() || 'employee';
@@ -30,7 +32,7 @@ export const KPIDashboardPage = () => {
         setKpiList(response.data.data);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể tải danh sách KPI');
+      toast.error(error?.response?.data?.message || t.dashboard.employee.cannotLoadKPIs);
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,7 @@ export const KPIDashboardPage = () => {
 
   const columns: ColumnsType<IKPIRecord> = [
     {
-      title: 'Mã hồ sơ',
+      title: t.kpiList.recordCode,
       dataIndex: 'id',
       key: 'id',
       width: 180,
@@ -75,7 +77,7 @@ export const KPIDashboardPage = () => {
       ),
     },
     {
-      title: 'Nhân viên',
+      title: t.kpiList.employee,
       dataIndex: 'employeeName',
       key: 'employeeName',
       render: (text) => (
@@ -90,7 +92,7 @@ export const KPIDashboardPage = () => {
       ),
     },
     {
-      title: 'Phòng ban',
+      title: t.kpiList.department,
       dataIndex: 'department',
       key: 'department',
       render: (text) => (
@@ -98,7 +100,7 @@ export const KPIDashboardPage = () => {
       ),
     },
     {
-      title: 'Năm',
+      title: t.kpiList.year,
       dataIndex: 'year',
       key: 'year',
       width: 100,
@@ -108,7 +110,7 @@ export const KPIDashboardPage = () => {
       ),
     },
     {
-      title: 'Cấu trúc KPI',
+      title: t.kpiList.structure,
       key: 'structure',
       width: 180,
       align: 'center',
@@ -123,17 +125,17 @@ export const KPIDashboardPage = () => {
               <>
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 rounded-full text-sm font-medium text-purple-700">
                   <FolderOpen size={14} />
-                  {groupCount} nhóm
+                  {groupCount} {t.kpiList.groups}
                 </span>
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 rounded-full text-sm font-medium text-blue-700">
                   <FileText size={14} />
-                  {targetCount} mục tiêu
+                  {targetCount} {t.kpiList.targets}
                 </span>
               </>
             ) : (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm font-medium">
                 <FileText size={14} />
-                {targetCount} mục tiêu
+                {targetCount} {t.kpiList.targets}
               </span>
             )}
           </div>
@@ -141,14 +143,14 @@ export const KPIDashboardPage = () => {
       },
     },
     {
-      title: 'Trạng thái',
+      title: t.kpiList.status,
       dataIndex: 'status',
       key: 'status',
       width: 150,
       render: (status) => <KPIStatusTag status={status} />,
     },
     {
-      title: 'Hành động',
+      title: t.kpiList.action,
       key: 'action',
       width: 150,
       align: 'center',
@@ -159,7 +161,7 @@ export const KPIDashboardPage = () => {
           onClick={() => navigate(`/kpi/${record.id}`)}
           className="bg-primary hover:bg-primary-dark"
         >
-          Chi tiết
+          {t.kpiList.detail}
         </Button>
       ),
     },
@@ -286,8 +288,8 @@ export const KPIDashboardPage = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Danh sách KPI</h1>
-          <p className="text-gray-500">Quản lý và theo dõi hồ sơ KPI</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{t.kpiList.title}</h1>
+          <p className="text-gray-500">{t.kpiList.subtitle}</p>
         </div>
         {(userRole === 'employee' || userRole === 'tl') && (
           <Button
@@ -298,7 +300,7 @@ export const KPIDashboardPage = () => {
             className="bg-primary hover:bg-primary-dark md:h-9 h-8 px-5 shadow-lg md:text-base text-sm
             hover:shadow-xl transition-all md:rounded-2xl rounded-xl transform hover:-translate-y-1"
           >
-            Tạo KPI mới
+            {t.dashboard.employee.createNewKPI}
           </Button>
         )}
       </div>
@@ -308,7 +310,7 @@ export const KPIDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-blue-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng số KPI</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.totalKPIs}</span>}
               value={totalKPIs}
               prefix={<FileText size={24} className="text-blue-500" />}
               valueStyle={{ color: '#1890ff', fontWeight: 'bold' }}
@@ -318,7 +320,7 @@ export const KPIDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-orange-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Bản nháp</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.drafts}</span>}
               value={draftKPIs}
               prefix={<Clock size={24} className="text-orange-500" />}
               valueStyle={{ color: '#fa8c16', fontWeight: 'bold' }}
@@ -328,7 +330,7 @@ export const KPIDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-yellow-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Đang chờ duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.pendingApproval}</span>}
               value={pendingKPIs}
               prefix={<Clock size={24} className="text-yellow-500" />}
               valueStyle={{ color: '#faad14', fontWeight: 'bold' }}
@@ -338,7 +340,7 @@ export const KPIDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-green-500">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Đã duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.dashboard.employee.approved}</span>}
               value={approvedKPIs}
               prefix={<CheckCircle size={24} className="text-green-500" />}
               valueStyle={{ color: '#52c41a', fontWeight: 'bold' }}

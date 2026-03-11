@@ -30,6 +30,7 @@ import { kpiApi } from '../../../../infrastructure/api';
 import { storage } from '../../../../infrastructure/utils';
 import type { IKPITarget, IKPIGroup } from '../../../../core/models';
 import dayjs from 'dayjs';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -45,6 +46,7 @@ interface KPIFormValues {
 
 export const CreateKPIForm = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [groups, setGroups] = useState<IKPIGroup[]>([]);
   const [loading, setLoading] = useState(false);
@@ -151,34 +153,34 @@ export const CreateKPIForm = () => {
   // Validate all targets
   const validateTargets = (): boolean => {
     if (groups.length === 0) {
-      toast.error('Vui lòng thêm ít nhất 1 nhóm KPI');
+      toast.error(t.createKPI.addAtLeastOneGroup);
       return false;
     }
 
     // Check group names
     for (const group of groups) {
       if (!group.name.trim()) {
-        toast.error('Vui lòng nhập tên cho tất cả các nhóm KPI');
+        toast.error(t.createKPI.enterGroupNames);
         return false;
       }
       if (group.targets.length === 0) {
-        toast.error(`Nhóm "${group.name}" phải có ít nhất 1 mục tiêu`);
+        toast.error(t.createKPI.groupMustHaveTarget.replace('{name}', group.name));
         return false;
       }
     }
 
     if (!hasMinTargets) {
-      toast.error('Tổng số mục tiêu phải có ít nhất 1');
+      toast.error(t.createKPI.minTargetsRequired);
       return false;
     }
 
     if (!hasMaxTargets) {
-      toast.error('Tổng số mục tiêu tối đa 10');
+      toast.error(t.createKPI.maxTargetsExceeded);
       return false;
     }
 
     if (!isWeightValid) {
-      toast.error('Tổng trọng số phải bằng 100%');
+      toast.error(t.createKPI.totalWeightMustBe100);
       return false;
     }
 
@@ -186,23 +188,23 @@ export const CreateKPIForm = () => {
     for (const group of groups) {
       for (const target of group.targets) {
         if (!target.title.trim()) {
-          toast.error(`Vui lòng nhập tên mục tiêu trong nhóm "${group.name}"`);
+          toast.error(t.createKPI.enterTargetTitle.replace('{name}', group.name));
           return false;
         }
         if (!target.description.trim()) {
-          toast.error(`Vui lòng nhập mô tả cho mục tiêu "${target.title}"`);
+          toast.error(t.createKPI.enterTargetDescription.replace('{title}', target.title));
           return false;
         }
         if (target.weight < 5 || target.weight > 50) {
-          toast.error('Trọng số mỗi mục tiêu từ 5% đến 50%');
+          toast.error(t.createKPI.weightRange);
           return false;
         }
         if (!target.target.trim()) {
-          toast.error(`Vui lòng nhập chỉ tiêu cho "${target.title}"`);
+          toast.error(t.createKPI.enterTargetValue.replace('{title}', target.title));
           return false;
         }
         if (!target.unit.trim()) {
-          toast.error(`Vui lòng nhập đơn vị cho "${target.title}"`);
+          toast.error(t.createKPI.enterUnit.replace('{title}', target.title));
           return false;
         }
       }
@@ -214,7 +216,7 @@ export const CreateKPIForm = () => {
   // Save as draft
   const saveDraft = async (values: KPIFormValues) => {
     if (groups.length === 0) {
-      toast.error('Vui lòng thêm ít nhất 1 nhóm KPI');
+      toast.error(t.createKPI.addAtLeastOneGroup);
       return;
     }
 
@@ -233,11 +235,11 @@ export const CreateKPIForm = () => {
       });
 
       if (response.data.data) {
-        toast.success('Đã lưu bản nháp');
+        toast.success(t.createKPI.savedDraft);
         navigate(`/kpi/${response.data.data.id}`);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể lưu bản nháp');
+      toast.error(error?.response?.data?.message || t.createKPI.cannotSaveDraft);
     } finally {
       setLoading(false);
     }
@@ -264,11 +266,11 @@ export const CreateKPIForm = () => {
       });
 
       if (response.data.data) {
-        toast.success('Đã gửi KPI để phê duyệt');
+        toast.success(t.createKPI.submittedForApproval);
         navigate('/kpi');
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể gửi KPI');
+      toast.error(error?.response?.data?.message || t.createKPI.cannotSubmit);
     } finally {
       setLoading(false);
     }
@@ -278,8 +280,8 @@ export const CreateKPIForm = () => {
     <div className="space-y-3">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Tạo KPI mới</h1>
-        <p className="text-gray-500">Thiết lập mục tiêu và chỉ tiêu đánh giá hiệu suất theo nhóm</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t.createKPI.title}</h1>
+        <p className="text-gray-500">{t.createKPI.subtitle}</p>
       </div>
 
       <Form form={form} layout="vertical">
@@ -287,17 +289,17 @@ export const CreateKPIForm = () => {
         <Card className="shadow-sm mb-6 border border-primary bg-primary/10">
           <div className="flex flex-wrap items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-gray-500">Nhân viên:</span>
+              <span className="text-gray-500">{t.createKPI.employee}:</span>
               <span className="font-medium">{userName}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-gray-500">Phòng ban:</span>
+              <span className="text-gray-500">{t.createKPI.department}:</span>
               <span className="font-medium">{department}</span>
             </div>
             <Divider type="vertical" className="h-6" />
             <Form.Item
               name="year"
-              rules={[{ required: true, message: 'Vui lòng chọn năm' }]}
+              rules={[{ required: true, message: t.createKPI.selectYear }]}
               initialValue={new Date().getFullYear()}
               className="mb-0"
             >
@@ -309,14 +311,14 @@ export const CreateKPIForm = () => {
             </Form.Item>
             <Form.Item
               name="period"
-              rules={[{ required: true, message: 'Vui lòng chọn chu kỳ' }]}
+              rules={[{ required: true, message: t.createKPI.selectPeriod }]}
               initialValue="yearly"
               className="mb-0"
             >
               <Radio.Group size="middle">
-                <Radio.Button value="yearly">Năm</Radio.Button>
-                <Radio.Button value="quarterly">Quý</Radio.Button>
-                <Radio.Button value="monthly">Tháng</Radio.Button>
+                <Radio.Button value="yearly">{t.createKPI.yearly}</Radio.Button>
+                <Radio.Button value="quarterly">{t.createKPI.quarterly}</Radio.Button>
+                <Radio.Button value="monthly">{t.createKPI.monthly}</Radio.Button>
               </Radio.Group>
             </Form.Item>
             <Form.Item
@@ -329,14 +331,14 @@ export const CreateKPIForm = () => {
                 getFieldValue('period') === 'quarterly' ? (
                   <Form.Item
                     name="quarter"
-                    rules={[{ required: true, message: 'Vui lòng chọn quý' }]}
+                    rules={[{ required: true, message: t.createKPI.selectQuarter }]}
                     className="mb-0"
                   >
-                    <Select size="middle" placeholder="Chọn quý" style={{ width: 100 }}>
-                      <Option value={1}>Quý 1</Option>
-                      <Option value={2}>Quý 2</Option>
-                      <Option value={3}>Quý 3</Option>
-                      <Option value={4}>Quý 4</Option>
+                    <Select size="middle" placeholder={t.createKPI.selectQuarter} style={{ width: 100 }}>
+                      <Option value={1}>{t.createKPI.quarter} 1</Option>
+                      <Option value={2}>{t.createKPI.quarter} 2</Option>
+                      <Option value={3}>{t.createKPI.quarter} 3</Option>
+                      <Option value={4}>{t.createKPI.quarter} 4</Option>
                     </Select>
                   </Form.Item>
                 ) : null
@@ -344,21 +346,20 @@ export const CreateKPIForm = () => {
             </Form.Item>
           </div>
         </Card>
-
         {/* KPI Groups */}
         <Card
           title={
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="text-lg font-semibold">Nhóm KPI</span>
-                <Tag color="blue" className="rounded-lg">{groups.length} nhóm</Tag>
-                <Tag color="success" className="rounded-lg">{allTargets.length} mục tiêu</Tag>
+                <span className="text-lg font-semibold">{t.createKPI.kpiGroups}</span>
+                <Tag color="blue" className="rounded-lg">{groups.length} {t.kpiList.groups}</Tag>
+                <Tag color="success" className="rounded-lg">{allTargets.length} {t.kpiList.targets}</Tag>
               </div>
               <Tag 
                 color={isWeightValid ? 'success' : 'error'}
                 className="text-base px-3 py-1 rounded-xl"
               >
-                Tổng: {totalWeight}%
+                {t.createKPI.totalWeight}: {totalWeight}%
               </Tag>
             </div>
           }
@@ -369,11 +370,14 @@ export const CreateKPIForm = () => {
             <Alert
               message={
                 <div className="flex items-center gap-4 text-sm">
-                  {!hasMinTargets && <span>• Cần ít nhất 1 mục tiêu tổng</span>}
-                  {!hasMaxTargets && <span>• Tối đa 10 mục tiêu tổng</span>}
+                  {!hasMinTargets && <span>{t.createKPI.validationMinTargets}</span>}
+                  {!hasMaxTargets && <span>{t.createKPI.validationMaxTargets}</span>}
                   {!isWeightValid && hasMinTargets && (
                     <span>
-                      • Trọng số {totalWeight < 100 ? `thiếu ${100 - totalWeight}%` : `thừa ${totalWeight - 100}%`}
+                      {totalWeight < 100 
+                        ? t.createKPI.validationWeightLess.replace('{amount}', String(100 - totalWeight))
+                        : t.createKPI.validationWeightMore.replace('{amount}', String(totalWeight - 100))
+                      }
                     </span>
                   )}
                 </div>
@@ -401,9 +405,9 @@ export const CreateKPIForm = () => {
                     <div className="flex items-center justify-between w-full pr-4">
                       <div className="flex items-center gap-3">
                         <span className="font-semibold text-base">
-                          #{groupIndex + 1} {group.name || '(Chưa đặt tên)'}
+                          #{groupIndex + 1} {group.name || t.createKPI.unnamed}
                         </span>
-                        <Tag color="blue" className='rounded-lg'>{group.targets.length} mục tiêu</Tag>
+                        <Tag color="blue" className='rounded-lg'>{group.targets.length} {t.kpiList.targets}</Tag>
                         {groupWeight > 0 && (
                           <Tag color="green">{groupWeight}%</Tag>
                         )}
@@ -418,7 +422,7 @@ export const CreateKPIForm = () => {
                         }}
                         className='rounded-lg'
                       >
-                        Xóa nhóm
+                        {t.createKPI.deleteGroup}
                       </Button>
                     </div>
                   }
@@ -430,10 +434,10 @@ export const CreateKPIForm = () => {
                       <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-semibold text-purple-900 mb-1">
-                            TÊN NHÓM KPI *
+                            {t.createKPI.groupName}
                           </label>
                           <Input
-                            placeholder="Ví dụ: Mục tiêu doanh số, Phát triển kỹ năng..."
+                            placeholder={t.createKPI.groupNamePlaceholder}
                             value={group.name}
                             onChange={(e) => updateGroup(group.id, 'name', e.target.value)}
                             size="middle"
@@ -443,10 +447,10 @@ export const CreateKPIForm = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-semibold text-purple-900 mb-1">
-                            MÔ TẢ NHÓM
+                            {t.createKPI.groupDescription}
                           </label>
                           <TextArea
-                            placeholder="Mô tả ngắn gọn về nhóm KPI này..."
+                            placeholder={t.createKPI.groupDescriptionPlaceholder}
                             value={group.description}
                             onChange={(e) => updateGroup(group.id, 'description', e.target.value)}
                             rows={2}
@@ -496,7 +500,7 @@ export const CreateKPIForm = () => {
                             {/* Row 1: Title - Full Width */}
                             <div>
                               <Input
-                                placeholder="Tên mục tiêu *"
+                                placeholder={t.createKPI.targetTitlePlaceholder}
                                 value={target.title}
                                 onChange={(e) => updateTarget(group.id, target.id, 'title', e.target.value)}
                                 maxLength={200}
@@ -509,33 +513,33 @@ export const CreateKPIForm = () => {
                             <div className="grid grid-cols-4 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-200">
                               <div>
                                 <label className="block text-xs font-semibold text-blue-900 mb-1">
-                                  DANH MỤC *
+                                  {t.createKPI.category}
                                 </label>
                                 <Select
-                                  placeholder="Chọn"
+                                  placeholder={t.createKPI.categorySelect}
                                   value={target.category || undefined}
                                   onChange={(value) => updateTarget(group.id, target.id, 'category', value)}
                                   size="middle"
                                   className='w-full'
                                   showSearch>
-                                  <Option value="Doanh số">Doanh số</Option>
-                                  <Option value="Chất lượng">Chất lượng</Option>
-                                  <Option value="Hiệu suất">Hiệu suất</Option>
-                                  <Option value="Phát triển">Phát triển</Option>
-                                  <Option value="Quản lý">Quản lý</Option>
-                                  <Option value="Khác">Khác</Option>
+                                  <Option value="Doanh số">{t.createKPI.categorySales}</Option>
+                                  <Option value="Chất lượng">{t.createKPI.categoryQuality}</Option>
+                                  <Option value="Hiệu suất">{t.createKPI.categoryPerformance}</Option>
+                                  <Option value="Phát triển">{t.createKPI.categoryDevelopment}</Option>
+                                  <Option value="Quản lý">{t.createKPI.categoryManagement}</Option>
+                                  <Option value="Khác">{t.createKPI.categoryOther}</Option>
                                 </Select>
                               </div>
                               <div>
                                 <label className="block text-xs font-semibold text-blue-900 mb-1">
-                                  TRỌNG SỐ (%) *
+                                  {t.createKPI.weight}
                                 </label>
                                 <Select
                                   value={target.weight || undefined}
                                   onChange={(value) => updateTarget(group.id, target.id, 'weight', value)}
                                   className="w-full"
                                   size="middle"
-                                  placeholder="Chọn"
+                                  placeholder={t.createKPI.categorySelect}
                                 >
                                   <Option value={5}>5%</Option>
                                   <Option value={10}>10%</Option>
@@ -551,50 +555,50 @@ export const CreateKPIForm = () => {
                               </div>
                               <div>
                                 <label className="block text-xs font-semibold text-blue-900 mb-1">
-                                  CHỈ TIÊU *
+                                  {t.createKPI.target}
                                 </label>
                                 <Input
                                   value={target.target}
                                   onChange={(e) => updateTarget(group.id, target.id, 'target', e.target.value)}
                                   size="middle"
                                   className="font-medium"
-                                  placeholder="Nhập số"
+                                  placeholder={t.createKPI.targetPlaceholder}
                                 />
                               </div>
                               <div>
                                 <label className="block text-xs font-semibold text-blue-900 mb-1">
-                                  ĐƠN VỊ *
+                                  {t.createKPI.unit}
                                 </label>
                                 <Select
                                   value={target.unit || undefined}
                                   onChange={(value) => updateTarget(group.id, target.id, 'unit', value)}
                                   size="middle"
-                                  placeholder="Chọn"
+                                  placeholder={t.createKPI.categorySelect}
                                   className='w-full'
                                   showSearch
                                 >
-                                  <Option value="VNĐ">VNĐ</Option>
-                                  <Option value="USD">USD</Option>
-                                  <Option value="%">%</Option>
-                                  <Option value="Triệu VNĐ">Triệu VNĐ</Option>
-                                  <Option value="Tỷ VNĐ">Tỷ VNĐ</Option>
-                                  <Option value="Số lượng">Số lượng</Option>
-                                  <Option value="Người">Người</Option>
-                                  <Option value="Khách hàng">Khách hàng</Option>
-                                  <Option value="Dự án">Dự án</Option>
-                                  <Option value="Hợp đồng">Hợp đồng</Option>
-                                  <Option value="Giờ">Giờ</Option>
-                                  <Option value="Ngày">Ngày</Option>
-                                  <Option value="Tháng">Tháng</Option>
-                                  <Option value="Điểm">Điểm</Option>
-                                  <Option value="Lần">Lần</Option>
+                                  <Option value="VNĐ">{t.createKPI.unitVND}</Option>
+                                  <Option value="USD">{t.createKPI.unitUSD}</Option>
+                                  <Option value="%">{t.createKPI.unitPercent}</Option>
+                                  <Option value="Triệu VNĐ">{t.createKPI.unitMillionVND}</Option>
+                                  <Option value="Tỷ VNĐ">{t.createKPI.unitBillionVND}</Option>
+                                  <Option value="Số lượng">{t.createKPI.unitQuantity}</Option>
+                                  <Option value="Người">{t.createKPI.unitPerson}</Option>
+                                  <Option value="Khách hàng">{t.createKPI.unitCustomer}</Option>
+                                  <Option value="Dự án">{t.createKPI.unitProject}</Option>
+                                  <Option value="Hợp đồng">{t.createKPI.unitContract}</Option>
+                                  <Option value="Giờ">{t.createKPI.unitHour}</Option>
+                                  <Option value="Ngày">{t.createKPI.unitDay}</Option>
+                                  <Option value="Tháng">{t.createKPI.unitMonth}</Option>
+                                  <Option value="Điểm">{t.createKPI.unitPoint}</Option>
+                                  <Option value="Lần">{t.createKPI.unitTime}</Option>
                                 </Select>
                               </div>
                             </div>
 
                             {/* Row 3: Description */}
                             <TextArea
-                              placeholder="Mô tả chi tiết mục tiêu *"
+                              placeholder={t.createKPI.description}
                               value={target.description}
                               onChange={(e) => updateTarget(group.id, target.id, 'description', e.target.value)}
                               rows={2}
@@ -604,39 +608,39 @@ export const CreateKPIForm = () => {
                             {/* Row 4: Optional Fields */}
                             <div className="grid grid-cols-2 gap-3">
                               <Select
-                                placeholder="Phương pháp đo lường"
+                                placeholder={t.createKPI.measurementMethod}
                                 value={target.measurementMethod || undefined}
                                 onChange={(value) => updateTarget(group.id, target.id, 'measurementMethod', value)}
                                 size="middle"
                                 allowClear
                               >
-                                <Option value="Báo cáo hệ thống">Báo cáo hệ thống</Option>
-                                <Option value="Báo cáo thủ công">Báo cáo thủ công</Option>
-                                <Option value="Đánh giá 360 độ">Đánh giá 360 độ</Option>
-                                <Option value="KPI Dashboard">KPI Dashboard</Option>
-                                <Option value="Khảo sát khách hàng">Khảo sát khách hàng</Option>
-                                <Option value="Phản hồi quản lý">Phản hồi quản lý</Option>
-                                <Option value="Số liệu thực tế">Số liệu thực tế</Option>
-                                <Option value="Đo lường tự động">Đo lường tự động</Option>
-                                <Option value="Kiểm tra định kỳ">Kiểm tra định kỳ</Option>
+                                <Option value="Báo cáo hệ thống">{t.createKPI.measurementSystemReport}</Option>
+                                <Option value="Báo cáo thủ công">{t.createKPI.measurementManualReport}</Option>
+                                <Option value="Đánh giá 360 độ">{t.createKPI.measurement360}</Option>
+                                <Option value="KPI Dashboard">{t.createKPI.measurementDashboard}</Option>
+                                <Option value="Khảo sát khách hàng">{t.createKPI.measurementCustomerSurvey}</Option>
+                                <Option value="Phản hồi quản lý">{t.createKPI.measurementManagerFeedback}</Option>
+                                <Option value="Số liệu thực tế">{t.createKPI.measurementActualData}</Option>
+                                <Option value="Đo lường tự động">{t.createKPI.measurementAutomatic}</Option>
+                                <Option value="Kiểm tra định kỳ">{t.createKPI.measurementPeriodic}</Option>
                               </Select>
                               <Select
-                                placeholder="Tiêu chí đánh giá"
+                                placeholder={t.createKPI.evaluationCriteria}
                                 value={target.evaluationCriteria || undefined}
                                 onChange={(value) => updateTarget(group.id, target.id, 'evaluationCriteria', value)}
                                 size="middle"
                                 allowClear
                               >
-                                <Option value="Đạt 100%">Đạt 100%</Option>
-                                <Option value="Đạt trên 90%">Đạt trên 90%</Option>
-                                <Option value="Đạt trên 80%">Đạt trên 80%</Option>
-                                <Option value="Đạt trên 70%">Đạt trên 70%</Option>
-                                <Option value="Tăng trưởng so với kỳ trước">Tăng trưởng so với kỳ trước</Option>
-                                <Option value="Duy trì ổn định">Duy trì ổn định</Option>
-                                <Option value="Không giảm">Không giảm</Option>
-                                <Option value="Theo kế hoạch">Theo kế hoạch</Option>
-                                <Option value="Hoàn thành đúng hạn">Hoàn thành đúng hạn</Option>
-                                <Option value="Chất lượng cao">Chất lượng cao</Option>
+                                <Option value="Đạt 100%">{t.createKPI.criteria100}</Option>
+                                <Option value="Đạt trên 90%">{t.createKPI.criteriaAbove90}</Option>
+                                <Option value="Đạt trên 80%">{t.createKPI.criteriaAbove80}</Option>
+                                <Option value="Đạt trên 70%">{t.createKPI.criteriaAbove70}</Option>
+                                <Option value="Tăng trưởng so với kỳ trước">{t.createKPI.criteriaGrowth}</Option>
+                                <Option value="Duy trì ổn định">{t.createKPI.criteriaMaintain}</Option>
+                                <Option value="Không giảm">{t.createKPI.criteriaNoDecrease}</Option>
+                                <Option value="Theo kế hoạch">{t.createKPI.criteriaAsPlanned}</Option>
+                                <Option value="Hoàn thành đúng hạn">{t.createKPI.criteriaOnTime}</Option>
+                                <Option value="Chất lượng cao">{t.createKPI.criteriaHighQuality}</Option>
                               </Select>
                             </div>
                           </div>
@@ -654,7 +658,7 @@ export const CreateKPIForm = () => {
                       disabled={!hasMaxTargets}
                       className=" border-primary text-primary-light "
                     >
-                      Thêm mục tiêu vào nhóm này
+                      {t.createKPI.addTargetToGroup}
                     </Button>
                   </div>
                 </Panel>
@@ -670,7 +674,7 @@ export const CreateKPIForm = () => {
             size="large"
             className="bg-purple-600 hover:bg-purple-700"
           >
-            Thêm KPI mới
+            {t.createKPI.addNewGroup}
           </Button>
         </Card>
 
@@ -682,7 +686,7 @@ export const CreateKPIForm = () => {
               onClick={() => navigate('/kpi')}
               className='rounded-lg'
             >
-              Hủy
+              {t.common.cancel}
             </Button>
 
             <Space>
@@ -694,7 +698,7 @@ export const CreateKPIForm = () => {
                 disabled={groups.length === 0}
                 className="rounded-lg"
               >
-                Lưu nháp
+                {t.createKPI.saveDraft}
               </Button>
 
               <Button
@@ -704,7 +708,7 @@ export const CreateKPIForm = () => {
                 disabled={groups.length === 0}
                 className="rounded-lg"
               >
-                Xem trước
+                {t.createKPI.preview}
               </Button>
 
               <Button
@@ -717,7 +721,7 @@ export const CreateKPIForm = () => {
                 disabled={!isWeightValid || !hasMinTargets}
 
               >
-                Gửi duyệt
+                {t.createKPI.submitForApproval}
               </Button>
             </Space>
           </div>
@@ -726,7 +730,7 @@ export const CreateKPIForm = () => {
 
       {/* Preview Modal */}
       <Modal
-        title="Xem trước KPI"
+        title={t.createKPI.previewTitle}
         open={previewVisible}
         onCancel={() => setPreviewVisible(false)}
         footer={null}
@@ -734,17 +738,17 @@ export const CreateKPIForm = () => {
       >
         <div className="space-y-4">
           <div>
-            <h3 className="font-semibold mb-2">Thông tin cơ bản</h3>
-            <p>Nhân viên: {userName}</p>
-            <p>Phòng ban: {department}</p>
-            <p>Năm: {form.getFieldValue('year')}</p>
+            <h3 className="font-semibold mb-2">{t.createKPI.basicInfo}</h3>
+            <p>{t.createKPI.employee}: {userName}</p>
+            <p>{t.createKPI.department}: {department}</p>
+            <p>{t.kpiList.year}: {form.getFieldValue('year')}</p>
           </div>
 
           <Divider />
 
           <div>
             <h3 className="font-semibold mb-3">
-              Danh sách nhóm KPI ({groups.length} nhóm, {allTargets.length} mục tiêu)
+              {t.createKPI.groupList.replace('{groupCount}', String(groups.length)).replace('{targetCount}', String(allTargets.length))}
             </h3>
             {groups.map((group, groupIndex) => (
               <Card key={group.id} className="mb-3 border-l-4 border-l-purple-500">
@@ -762,7 +766,7 @@ export const CreateKPIForm = () => {
                       </h5>
                       <p className="text-gray-600 text-sm">{target.description}</p>
                       <p className="text-sm">
-                        <strong>Chỉ tiêu:</strong> {target.target} {target.unit}
+                        <strong>{t.createKPI.target}:</strong> {target.target} {target.unit}
                       </p>
                     </Card>
                   ))}
@@ -773,7 +777,7 @@ export const CreateKPIForm = () => {
 
           <div className="text-center pt-4 border-t">
             <p className="text-lg">
-              <strong>Tổng trọng số:</strong>{' '}
+              <strong>{t.createKPI.totalWeightLabel}</strong>{' '}
               <span className={isWeightValid ? 'text-green-600' : 'text-red-600'}>
                 {totalWeight}%
               </span>

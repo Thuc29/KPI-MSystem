@@ -1,16 +1,66 @@
-import { STATUS_LABELS, STATUS_COLORS, ROLE_LABELS, STATUS_TO_STEP } from '../../core/constants';
 import type { KPIStatus, UserRole, IKPITarget } from '../../core/models';
+import { STATUS_TO_STEP } from '../../core/constants';
+
+// Get translation function - will be set by i18n context
+let getTranslation: any = null;
+
+export const setTranslationFunction = (fn: any) => {
+  getTranslation = fn;
+};
 
 export const getStatusLabel = (status: KPIStatus): string => {
-  return STATUS_LABELS[status] || status;
+  if (!getTranslation) {
+    // Fallback to Vietnamese if translation not available
+    const fallback: Record<KPIStatus, string> = {
+      draft: 'Bản nháp',
+      pending_approval: 'Chờ duyệt',
+      in_progress: 'Đang thực hiện',
+      completed: 'Hoàn thành',
+      rejected: 'Từ chối',
+    };
+    return fallback[status] || status;
+  }
+  
+  const statusMap: Record<KPIStatus, string> = {
+    draft: getTranslation().status.draft,
+    pending_approval: getTranslation().status.pendingApproval,
+    in_progress: getTranslation().status.inProgress,
+    completed: getTranslation().status.completed,
+    rejected: getTranslation().status.rejected,
+  };
+  return statusMap[status] || status;
 };
 
 export const getStatusColor = (status: KPIStatus): string => {
-  return STATUS_COLORS[status] || 'default';
+  const colors: Record<KPIStatus, string> = {
+    draft: 'default',
+    pending_approval: 'warning',
+    in_progress: 'processing',
+    completed: 'success',
+    rejected: 'error',
+  };
+  return colors[status] || 'default';
 };
 
 export const getRoleLabel = (role: UserRole): string => {
-  return ROLE_LABELS[role] || role;
+  if (!getTranslation) {
+    // Fallback to Vietnamese if translation not available
+    const fallback: Record<UserRole, string> = {
+      employee: 'Nhân viên',
+      tl: 'Team Leader',
+      gl: 'Group Leader',
+      ceo: 'Giám đốc',
+    };
+    return fallback[role] || role;
+  }
+  
+  const roleMap: Record<UserRole, string> = {
+    employee: getTranslation().role.employee,
+    tl: getTranslation().role.teamLeader,
+    gl: getTranslation().role.groupLeader,
+    ceo: getTranslation().role.ceo,
+  };
+  return roleMap[role] || role;
 };
 
 export const getCurrentStep = (status: KPIStatus): number => {

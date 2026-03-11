@@ -20,12 +20,14 @@ import { kpiApi } from '../../../../infrastructure/api';
 import { mockProgressCheckins, getCheckinsByKPI } from '../../../../infrastructure/api/mockProgress';
 import type { IKPIRecord, IProgressCheckin } from '../../../../core/models';
 import type { ColumnsType } from 'antd/es/table';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { TextArea } = Input;
 const { Dragger } = Upload;
 
 export const ProgressPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [selectedKPI, setSelectedKPI] = useState<IKPIRecord | null>(null);
   const [checkins, setCheckins] = useState<IProgressCheckin[]>([]);
@@ -57,7 +59,7 @@ export const ProgressPage = () => {
         }
       }
     } catch (error: any) {
-      toast.error('Không thể tải danh sách KPI');
+      toast.error(t.progress.cannotLoadKPIs);
     } finally {
       setLoading(false);
     }
@@ -112,13 +114,13 @@ export const ProgressPage = () => {
     
     const isValidType = isImage || isPDF || isDoc || isExcel;
     if (!isValidType) {
-      message.error('Chỉ hỗ trợ file ảnh, PDF, Word, Excel!');
+      message.error(t.progress.onlySupportsFiles);
       return Upload.LIST_IGNORE;
     }
 
     const isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
-      message.error('File phải nhỏ hơn 10MB!');
+      message.error(t.progress.fileTooLarge);
       return Upload.LIST_IGNORE;
     }
 
@@ -161,7 +163,7 @@ export const ProgressPage = () => {
     mockProgressCheckins.unshift(newCheckin);
     setCheckins([newCheckin, ...checkins]);
     
-    toast.success('Đã check-in tiến độ thành công');
+    toast.success(t.progress.checkinSuccess);
     setModalVisible(false);
     setFileList([]);
     form.resetFields();
@@ -176,7 +178,7 @@ export const ProgressPage = () => {
 
   const columns: ColumnsType<any> = [
     {
-      title: 'Mục tiêu',
+      title: t.progress.target,
       dataIndex: 'title',
       key: 'title',
       render: (text, record) => (
@@ -189,7 +191,7 @@ export const ProgressPage = () => {
       ),
     },
     {
-      title: 'Chỉ tiêu',
+      title: t.progress.targetValue,
       key: 'target',
       render: (_, record) => (
         <span className="font-medium">
@@ -198,7 +200,7 @@ export const ProgressPage = () => {
       ),
     },
     {
-      title: 'Hiện tại',
+      title: t.progress.current,
       key: 'current',
       render: (_, record) => (
         <span className="text-primary font-semibold">
@@ -207,7 +209,7 @@ export const ProgressPage = () => {
       ),
     },
     {
-      title: 'Tiến độ',
+      title: t.progress.progress,
       key: 'progress',
       render: (_, record) => {
         const rate = record.completionRate || 0;
@@ -222,7 +224,7 @@ export const ProgressPage = () => {
             <div className="flex items-center gap-1 text-xs">
               {status.icon}
               <span className={`text-${status.color}-600`}>
-                {rate >= 90 ? 'Xuất sắc' : rate >= 70 ? 'Tốt' : rate >= 50 ? 'Trung bình' : 'Cần cải thiện'}
+                {rate >= 90 ? t.progress.excellent : rate >= 70 ? t.progress.good : rate >= 50 ? t.progress.average : t.progress.needsImprovement}
               </span>
             </div>
           </div>
@@ -230,7 +232,7 @@ export const ProgressPage = () => {
       },
     },
     {
-      title: 'Hành động',
+      title: t.kpiList.action,
       key: 'action',
       align: 'center',
       render: (_, record) => (
@@ -240,7 +242,7 @@ export const ProgressPage = () => {
           onClick={() => handleCheckin(record.id)}
           className="bg-primary"
         >
-          Checklist
+          {t.progress.checkin}
         </Button>
       ),
     },
@@ -252,9 +254,9 @@ export const ProgressPage = () => {
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
           <TrendingUp size={32} className="text-primary" />
-          Tiến độ & Check-in
+          {t.progress.title}
         </h1>
-        <p className="text-gray-500">Theo dõi và cập nhật tiến độ thực hiện KPI</p>
+        <p className="text-gray-500">{t.progress.subtitle}</p>
       </div>
 
       {/* KPI Selector */}
@@ -262,7 +264,7 @@ export const ProgressPage = () => {
         <>
           <Card className="shadow-md border border-primary">
             <div className="flex items-center gap-4">
-              <span className="font-semibold">Chọn KPI:</span>
+              <span className="font-semibold">{t.progress.selectKPI}</span>
               <Select
                 value={selectedKPI?.id}
                 onChange={(value) => {
@@ -279,7 +281,7 @@ export const ProgressPage = () => {
               </Select>
               {selectedKPI && (
                 <Tag color="green" className='rounded-lg'>
-                  {selectedKPI.targets.length} mục tiêu
+                  {selectedKPI.targets.length} {t.dashboard.employee.targets}
                 </Tag>
               )}
             </div>
@@ -291,7 +293,7 @@ export const ProgressPage = () => {
               title={
                 <div className="flex items-center gap-2">
                   <FileText size={20} className="text-primary" />
-                  <span>Danh sách mục tiêu</span>
+                  <span>{t.progress.targetList}</span>
                 </div>
               }
               className="shadow-sm"
@@ -314,7 +316,7 @@ export const ProgressPage = () => {
               title={
                 <div className="flex items-center gap-2">
                   <Clock size={20} className="text-primary" />
-                  <span>Lịch sử Check-in</span>
+                  <span>{t.progress.checkinHistory}</span>
                 </div>
               }
               className="shadow-sm bg-primary/10 border-primary"
@@ -402,11 +404,11 @@ export const ProgressPage = () => {
       ) : (
         <Card>
           <Empty
-            description="Bạn chưa có KPI nào được phê duyệt"
+            description={t.progress.noApprovedKPIs}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           >
             <Button type="primary" onClick={() => navigate('/kpi/create')}>
-              Tạo KPI mới
+              {t.dashboard.employee.createNewKPI}
             </Button>
           </Empty>
         </Card>
@@ -414,7 +416,7 @@ export const ProgressPage = () => {
 
       {/* Check-in Modal */}
       <Modal
-        title="Check-in tiến độ"
+        title={t.progress.checkinTitle}
         open={modalVisible}
         onCancel={() => {
           setModalVisible(false);
@@ -422,8 +424,8 @@ export const ProgressPage = () => {
           form.resetFields();
         }}
         onOk={() => form.submit()}
-        okText="Lưu check-in"
-        cancelText="Hủy"
+        okText={t.progress.saveCheckin}
+        cancelText={t.common.cancel}
         width={700}
       >
         {selectedKPI && selectedTargetId && (
@@ -437,14 +439,14 @@ export const ProgressPage = () => {
                   <div className="mb-4 p-4 bg-gray-50 rounded">
                     <h4 className="font-semibold mb-2">{target.title}</h4>
                     <p className="text-sm text-gray-600">
-                      Chỉ tiêu: {target.target} {target.unit}
+                      {t.progress.targetValue}: {target.target} {target.unit}
                     </p>
                   </div>
 
                   <Form.Item
                     name="currentValue"
-                    label="Giá trị hiện tại"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá trị' }]}
+                    label={t.progress.currentValue}
+                    rules={[{ required: true, message: t.progress.enterValue }]}
                   >
                     <InputNumber
                       min={0}
@@ -453,19 +455,19 @@ export const ProgressPage = () => {
                     />
                   </Form.Item>
 
-                  <Form.Item name="note" label="Ghi chú">
-                    <TextArea rows={3} placeholder="Mô tả tiến độ hiện tại..." />
+                  <Form.Item name="note" label={t.progress.note}>
+                    <TextArea rows={3} placeholder={t.progress.notePlaceholder} />
                   </Form.Item>
 
-                  <Form.Item name="challenges" label="Khó khăn gặp phải">
-                    <TextArea rows={2} placeholder="Những thách thức cần giải quyết..." />
+                  <Form.Item name="challenges" label={t.progress.challenges}>
+                    <TextArea rows={2} placeholder={t.progress.challengesPlaceholder} />
                   </Form.Item>
 
-                  <Form.Item name="nextSteps" label="Bước tiếp theo">
-                    <TextArea rows={2} placeholder="Kế hoạch cho giai đoạn tiếp theo..." />
+                  <Form.Item name="nextSteps" label={t.progress.nextSteps}>
+                    <TextArea rows={2} placeholder={t.progress.nextStepsPlaceholder} />
                   </Form.Item>
 
-                  <Form.Item label="File chứng minh (ảnh, PDF, Word, Excel)">
+                  <Form.Item label={t.progress.evidenceFiles}>
                     <Dragger
                       fileList={fileList}
                       onChange={handleUploadChange}
@@ -479,9 +481,9 @@ export const ProgressPage = () => {
                       <p className="ant-upload-drag-icon">
                         <UploadIcon size={48} className="mx-auto text-primary" />
                       </p>
-                      <p className="ant-upload-text">Click hoặc kéo thả file vào đây</p>
+                      <p className="ant-upload-text">{t.progress.uploadHint}</p>
                       <p className="ant-upload-hint">
-                        Hỗ trợ ảnh, PDF, Word, Excel. Tối đa 5 file, mỗi file &lt; 10MB
+                        {t.progress.uploadDescription}
                       </p>
                     </Dragger>
                   </Form.Item>
@@ -495,7 +497,7 @@ export const ProgressPage = () => {
       {/* Image Preview Modal */}
       <Modal
         open={previewOpen}
-        title="Xem trước"
+        title={t.common.preview}
         footer={null}
         onCancel={() => setPreviewOpen(false)}
       >
