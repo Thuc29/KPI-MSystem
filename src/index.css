@@ -25,8 +25,8 @@ body {
 }
 
 .ant-btn-primary:hover {
-  background-color: #3a7a23 !important;
-  border-color: #3a7a23 !important;
+  background-color: #4C9C2E !important;
+  border-color: #4C9C2E !important;
 }
 
 .ant-btn-primary:active {
@@ -175,7 +175,7 @@ body {
 }
 
 .ant-tag-success {
-  background-color: #f0f9ec;
+  background-color: #f4f7e6;
   border-color: #4C9C2E;
   color: #4C9C2E;
 }
@@ -199,7 +199,7 @@ body {
 }
 
 .custom-table .ant-table-tbody > tr:hover > td {
-  background-color: #f0f9ec !important;
+  background-color: #f4f7e6 !important;
 }
 
 .custom-table .ant-table-tbody > tr {
@@ -233,7 +233,7 @@ body {
 
 /* Dropdown */
 .ant-dropdown-menu-item:hover {
-  background-color: #f0f9ec;
+  background-color: #f4f7e6;
 }
 
 .ant-dropdown-menu-item-danger:hover {
@@ -304,11 +304,11 @@ body {
 
 /* Custom Utilities */
 .gradient-primary {
-  background: linear-gradient(135deg, #4C9C2E 0%, #3a7a23 100%);
+  background: linear-gradient(135deg, #4C9C2E 0%, #4C9C2E 100%);
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #4C9C2E 0%, #3a7a23 100%);
+  background: linear-gradient(135deg, #4C9C2E 0%, #4C9C2E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -396,4 +396,52 @@ body {
 @keyframes slideUp {
   from { transform: translateY(50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* KPI Detail Modal Styles */
+.kpi-detail-modal .ant-modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.kpi-detail-modal .ant-descriptions-item-label {
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.kpi-detail-modal .ant-descriptions-item-content {
+  color: #111827;
+}
+
+.kpi-detail-modal .ant-card-type-inner {
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.kpi-detail-modal .ant-card-type-inner:hover {
+  border-color: #4C9C2E;
+  box-shadow: 0 4px 12px rgba(76, 156, 46, 0.1);
+}
+
+.kpi-detail-modal .ant-collapse-header {
+  font-weight: 600;
+  background: #f9fafb;
+}
+
+.kpi-detail-modal .ant-collapse-content {
+  background: #ffffff;
+}
+
+/* Attachment preview styles */
+.attachment-preview {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.attachment-preview:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

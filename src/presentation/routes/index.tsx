@@ -19,6 +19,9 @@ import {
   ExecutiveDashboardPage,
   StrategicApprovalPage,
   OrganizationPage,
+  StrategyListPage,
+  CreateStrategyPage,
+  StrategyDetailPage,
 } from '../pages';
 
 export const router = createBrowserRouter([
@@ -67,6 +70,14 @@ export const router = createBrowserRouter([
             element: <TeamManagementPage />,
           },
           {
+            path: '/team-management',
+            element: <TeamManagementPage />,
+          },
+          {
+            path: '/team-reports',
+            element: <TeamReportsPage />,
+          },
+          {
             path: '/reports/team',
             element: <TeamReportsPage />,
           },
@@ -89,6 +100,22 @@ export const router = createBrowserRouter([
           {
             path: '/organization',
             element: <OrganizationPage />,
+          },
+          {
+            path: '/strategy',
+            element: <StrategyListPage />,
+          },
+          {
+            path: '/strategy/create',
+            element: <CreateStrategyPage />,
+          },
+          {
+            path: '/strategy/:id',
+            element: <StrategyDetailPage />,
+          },
+          {
+            path: '/strategy/edit/:id',
+            element: <CreateStrategyPage />,
           },
           {
             path: '/reports/executive',

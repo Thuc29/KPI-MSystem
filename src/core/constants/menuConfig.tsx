@@ -37,21 +37,21 @@ export const menuConfig: MenuItem[] = [
     icon: <FileText size={18} />,
     label: 'KPI của tôi',
     path: '/kpi',
-    roles: ['employee'],
+    roles: ['employee', 'tl'],
     children: [
       {
         key: 'kpi-list',
         icon: <FileText size={16} />,
         label: 'Danh sách KPI',
         path: '/kpi',
-        roles: ['employee'],
+        roles: ['employee', 'tl'],
       },
       {
         key: 'kpi-create',
         icon: <FilePlus size={16} />,
         label: 'Tạo KPI mới',
         path: '/kpi/create',
-        roles: ['employee'],
+        roles: ['employee', 'tl'],
       },
     ],
   },
@@ -60,7 +60,7 @@ export const menuConfig: MenuItem[] = [
     icon: <TrendingUp size={18} />,
     label: 'Tiến độ & Check-in',
     path: '/progress',
-    roles: ['employee'],
+    roles: ['employee', 'tl'],
   },
   
   // Team Leader Menu
@@ -69,13 +69,13 @@ export const menuConfig: MenuItem[] = [
     icon: <CheckSquare size={18} />,
     label: 'Duyệt KPI',
     path: '/approval',
-    roles: ['tl', 'gl', 'ceo'],
+    roles: ['tl', 'gl'],
   },
   {
     key: 'team-management',
     icon: <Users size={18} />,
     label: 'Quản lý Team',
-    path: '/team',
+    path: '/team-management',
     roles: ['tl'],
   },
   {
@@ -87,6 +87,29 @@ export const menuConfig: MenuItem[] = [
   },
   
   // Group Leader menu
+  {
+    key: 'strategic-plan',
+    icon: <Target size={18} />,
+    label: 'Chiến lược',
+    path: '/strategy',
+    roles: ['gl'],
+    children: [
+      {
+        key: 'strategy-list',
+        icon: <FileText size={16} />,
+        label: 'Danh sách Chiến lược',
+        path: '/strategy',
+        roles: ['gl'],
+      },
+      {
+        key: 'strategy-create',
+        icon: <FilePlus size={16} />,
+        label: 'Tạo Chiến lược mới',
+        path: '/strategy/create',
+        roles: ['gl'],
+      },
+    ],
+  },
   {
     key: 'department-management',
     icon: <Building2 size={18} />,
@@ -125,9 +148,6 @@ export const menuConfig: MenuItem[] = [
     path: '/organization',
     roles: ['ceo'],
   },
-  
-  
-  // Common Menu Items
   {
     key: 'notifications',
     icon: <Bell size={18} />,

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { CheckCircle, Clock, AlertCircle, XCircle, Upload, Calendar, MessageSquare } from 'lucide-react';
-import type { ITaskItem } from '../../core/models';
+import { CheckCircle, Clock, AlertCircle, XCircle, Upload as UploadIcon, Calendar, MessageSquare, File, Image as ImageIcon } from 'lucide-react';
+import { Upload, Image, message as antMessage } from 'antd';
+import type { UploadFile, UploadProps } from 'antd';
+import type { ITaskItem, IAttachment } from '../../core/models';
+
+const { Dragger } = Upload;
 
 interface TaskListProps {
   tasks: ITaskItem[];
@@ -23,10 +27,46 @@ export const TaskList: React.FC<TaskListProps> = ({
 }) => {
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const [evidenceMessage, setEvidenceMessage] = useState('');
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [rejectReason, setRejectReason] = useState('');
   const [extensionDate, setExtensionDate] = useState('');
   const [extensionReason, setExtensionReason] = useState('');
   const [appealMessage, setAppealMessage] = useState('');
+
+  const handleUploadChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const getBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const beforeUpload = (file: File) => {
+    const isImage = file.type.startsWith('image/');
+    const isPDF = file.type === 'application/pdf';
+    const isDoc = file.type === 'application/msword' || 
+                  file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    const isExcel = file.type === 'application/vnd.ms-excel' || 
+                    file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    
+    const isValidType = isImage || isPDF || isDoc || isExcel;
+    if (!isValidType) {
+      antMessage.error('Chỉ hỗ trợ file ảnh, PDF, Word, Excel!');
+      return Upload.LIST_IGNORE;
+    }
+
+    const isLt10M = file.size / 1024 / 1024 < 10;
+    if (!isLt10M) {
+      antMessage.error('File phải nhỏ hơn 10MB!');
+      return Upload.LIST_IGNORE;
+    }
+
+    return false; // Prevent auto upload
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -99,6 +139,45 @@ export const TaskList: React.FC<TaskListProps> = ({
                 </div>
               )}
 
+              {task.evidenceFiles && task.evidenceFiles.length > 0 && (
+                <div className="mt-2 p-3 bg-blue-50 rounded">
+                  <div className="text-sm font-semibold mb-2">
+                    📎 File đính kèm ({task.evidenceFiles.length}):
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {task.evidenceFiles.map((file) => {
+                      const isImage = file.fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                      
+                      return (
+                        <div key={file.id} className="relative group">
+                          {isImage ? (
+                            <Image
+                              src={file.fileUrl}
+                              alt={file.fileName}
+                              width={80}
+                              height={80}
+                              className="rounded border object-cover"
+                            />
+                          ) : (
+                            <a
+                              href={file.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-2 bg-white rounded border hover:bg-gray-50 transition-colors"
+                            >
+                              <File size={16} />
+                              <span className="text-sm max-w-[120px] truncate">
+                                {file.fileName}
+                              </span>
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {task.rejectionReason && (
                 <div className="mt-2 p-2 bg-red-50 rounded text-sm">
                   <strong>Lý do từ chối:</strong> {task.rejectionReason}
@@ -114,7 +193,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                     onClick={() => setSelectedTask(task.id)}
                     className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
                   >
-                    <Upload size={14} className="inline mr-1" />
+                    <UploadIcon size={14} className="inline mr-1" />
                     Báo cáo hoàn thành
                   </button>
                   {isOverdue(task.deadline, task.status) && (
@@ -163,19 +242,60 @@ export const TaskList: React.FC<TaskListProps> = ({
           {/* Evidence submission modal */}
           {selectedTask === task.id && (
             <div className="mt-4 p-4 bg-gray-50 rounded">
-              <h5 className="font-medium mb-2">Báo cáo hoàn thành công việc</h5>
+              <h5 className="font-medium mb-3">Báo cáo hoàn thành công việc</h5>
               <textarea
-                className="w-full p-2 border rounded mb-2"
+                className="w-full p-2 border rounded mb-3"
                 rows={3}
-                placeholder="Mô tả kết quả và đính kèm link minh chứng..."
+                placeholder="Mô tả kết quả công việc..."
                 value={evidenceMessage}
                 onChange={(e) => setEvidenceMessage(e.target.value)}
               />
+              
+              <div className="mb-3">
+                <label className="block text-sm font-medium mb-2">
+                  Đính kèm file chứng minh (ảnh, PDF, Word, Excel)
+                </label>
+                <Upload
+                  fileList={fileList}
+                  onChange={handleUploadChange}
+                  beforeUpload={beforeUpload}
+                  multiple
+                  maxCount={5}
+                  listType="picture-card"
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                >
+                  {fileList.length < 5 && (
+                    <div className="text-center">
+                      <UploadIcon size={24} className="mx-auto mb-1 text-gray-400" />
+                      <div className="text-xs text-gray-500">Upload</div>
+                    </div>
+                  )}
+                </Upload>
+                <p className="text-xs text-gray-500 mt-1">
+                  Tối đa 5 file, mỗi file &lt; 10MB
+                </p>
+              </div>
+
               <div className="flex gap-2">
                 <button
-                  onClick={() => {
-                    onTaskComplete(task.id, { message: evidenceMessage });
+                  onClick={async () => {
+                    // Convert files to base64 for demo
+                    const evidenceFiles = await Promise.all(
+                      fileList.map(async (file) => ({
+                        id: `file-${Date.now()}-${Math.random()}`,
+                        fileName: file.name,
+                        fileUrl: file.url || (await getBase64(file.originFileObj as File)),
+                        fileSize: file.size || 0,
+                        uploadedAt: new Date().toISOString(),
+                      }))
+                    );
+
+                    onTaskComplete(task.id, { 
+                      message: evidenceMessage,
+                      files: evidenceFiles 
+                    });
                     setEvidenceMessage('');
+                    setFileList([]);
                     setSelectedTask(null);
                   }}
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -186,6 +306,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                   onClick={() => {
                     setSelectedTask(null);
                     setEvidenceMessage('');
+                    setFileList([]);
                   }}
                   className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
                 >

@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { BRAND_COLORS } from '../../core/constants';
 
 interface ProgressBarProps {
   current: number;
@@ -22,9 +23,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const cappedPercentage = Math.min(percentage, 100);
 
   const getColor = () => {
-    if (cappedPercentage >= 80) return 'bg-green-500';
-    if (cappedPercentage >= 50) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (cappedPercentage >= 80) return BRAND_COLORS.apple;
+    if (cappedPercentage >= 50) return '#FFA500';
+    return '#FF4D4F';
   };
 
   const getTrend = () => {
@@ -32,7 +33,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     const prevPercentage = total > 0 ? (previousValue / total) * 100 : 0;
     const diff = percentage - prevPercentage;
     
-    if (diff > 0) return <TrendingUp className="text-green-500" size={16} />;
+    if (diff > 0) return <TrendingUp style={{ color: BRAND_COLORS.apple }} size={16} />;
     if (diff < 0) return <TrendingDown className="text-red-500" size={16} />;
     return <Minus className="text-gray-400" size={16} />;
   };
@@ -52,8 +53,8 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       )}
       <div className="w-full bg-gray-200 rounded-full h-2.5">
         <div
-          className={`h-2.5 rounded-full transition-all duration-300 ${getColor()}`}
-          style={{ width: `${cappedPercentage}%` }}
+          className="h-2.5 rounded-full transition-all duration-300"
+          style={{ width: `${cappedPercentage}%`, backgroundColor: getColor() }}
         />
       </div>
       <div className="flex justify-between text-xs text-gray-500 mt-1">

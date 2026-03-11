@@ -73,3 +73,4 @@ export const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
 
 // Export menu configuration
 export * from './menuConfig';
+export * from './colors';

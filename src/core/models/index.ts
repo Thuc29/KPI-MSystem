@@ -39,9 +39,17 @@ export interface IKPITarget {
   currentValue?: number;
   completionRate?: number;
   tasks?: ITaskItem[];
+  attachments?: IAttachment[];
   adjustmentRequested?: boolean;
   adjustmentReason?: string;
   adjustmentApprovedAt?: string;
+}
+
+export interface IKPIGroup {
+  id: string;
+  name: string;
+  description?: string;
+  targets: IKPITarget[];
 }
 
 export interface IKPIRecord {
@@ -57,6 +65,7 @@ export interface IKPIRecord {
   period?: 'yearly' | 'quarterly' | 'monthly';
   status: KPIStatus;
   targets: IKPITarget[];
+  groups?: IKPIGroup[];
   createdAt: string;
   updatedAt: string;
   submittedAt?: string;
@@ -177,3 +186,6 @@ export * from './progress';
 
 // Export task types
 export * from './task';
+
+// Export strategy types
+export * from './strategy';

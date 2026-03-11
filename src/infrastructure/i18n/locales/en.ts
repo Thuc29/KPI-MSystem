@@ -15,4 +15,5 @@ export const en = {
     emailInvalid: 'Invalid email format',
     passwordRequired: 'Please enter password',
   },
+  
 };

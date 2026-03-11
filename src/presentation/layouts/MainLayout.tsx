@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import type { MenuProps } from 'antd';
 import { storage, getRoleLabel } from '../../infrastructure/utils';
-import { getMenuByRole } from '../../core/constants';
+import { getMenuByRole, BRAND_COLORS } from '../../core/constants';
 import { getUnreadCount } from '../../infrastructure/api/mockNotifications';
 import type { UserRole } from '../../core/models';
 import { LanguageSwitcher } from '../components';
@@ -186,7 +186,7 @@ export const MainLayout = () => {
               className="md:hidden flex items-center justify-center mr-1"
             />
             <div>
-              <h2 className="text-2xl font-bold  text-primary m-0">
+              <h2 className="text-2xl font-bold text-primary-dark m-0">
                 Hệ thống Quản lý KPI
               </h2>
               <p className="text-xs text-gray-500 m-0">

@@ -1,6 +1,8 @@
 import { storage } from '../../infrastructure/utils';
-import { EmployeeDashboardPage } from '../pages/EmployeeDashboard';
-import { ManagerDashboardPage } from '../pages/ManagerDashboard';
+import { EmployeeDashboardPage } from '../pages/Employee/Dashboard';
+import { TeamLeaderDashboardPage } from '../pages/TeamLeader/Dashboard';
+import { GroupLeaderDashboardPage } from '../pages/GroupLeader/Dashboard';
+import { CEODashboardPage } from '../pages/CEO/Dashboard';
 
 export const RoleDashboard = () => {
   const userRole = storage.getUserRole();
@@ -8,10 +10,12 @@ export const RoleDashboard = () => {
   switch (userRole) {
     case 'employee':
       return <EmployeeDashboardPage />;
-    case 'manager':
-    case 'hr':
+    case 'tl':
+      return <TeamLeaderDashboardPage />;
+    case 'gl':
+      return <GroupLeaderDashboardPage />;
     case 'ceo':
-      return <ManagerDashboardPage />;
+      return <CEODashboardPage />;
     default:
       return <EmployeeDashboardPage />;
   }
