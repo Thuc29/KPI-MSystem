@@ -228,7 +228,7 @@ export const TeamManagementPage = () => {
       title: 'Nhân viên',
       key: 'member',
       fixed: 'left',
-      width: 250,
+      width: 220,
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <Avatar size={48} className="bg-gradient-to-br from-blue-500 to-purple-500 flex-shrink-0">
@@ -246,7 +246,7 @@ export const TeamManagementPage = () => {
       title: 'Số KPI',
       key: 'kpiCount',
       align: 'center',
-      width: 120,
+      width: 80,
       render: (_, record) => {
         const stats = getMemberStats(record.id);
         
@@ -268,10 +268,10 @@ export const TeamManagementPage = () => {
     {
       title: 'Hiệu suất',
       key: 'performance',
-      width: 200,
+      width: 240,
       render: (_, record) => (
         <div className="space-y-1">
-          <div className="flex justify-between text-xs mb-1">
+          <div className="flex justify-between text-xs ">
             <span className="text-gray-600">Hoàn thành</span>
             <span className="font-semibold">{record.avgCompletion}%</span>
           </div>
@@ -306,7 +306,7 @@ export const TeamManagementPage = () => {
         };
         const { color, icon, label } = config[status as keyof typeof config];
         return (
-          <Tag color={color} icon={icon} className="px-3 py-1">
+          <Tag color={color} icon={icon} className="px-2 flex items-center gap-2 w-fit mx-auto ">
             {label}
           </Tag>
         );
@@ -353,11 +353,11 @@ export const TeamManagementPage = () => {
   const approvedKPIs = kpiList.filter(k => k.status === 'in_progress' || k.status === 'completed');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
             <Users size={32} className="text-primary" />
             Quản lý Team
           </h1>
@@ -368,7 +368,7 @@ export const TeamManagementPage = () => {
           <Button
             icon={<FilePlus size={18} />}
             onClick={() => navigate('/kpi/create')}
-            size="large"
+            size="middle"
           >
             Tạo KPI
           </Button>
@@ -377,7 +377,7 @@ export const TeamManagementPage = () => {
             icon={<BarChart3 size={18} />}
             onClick={() => navigate('/team-reports')}
             className="bg-primary"
-            size="large"
+            size="middle"
           >
             Báo cáo Team
           </Button>
@@ -387,47 +387,47 @@ export const TeamManagementPage = () => {
       {/* Statistics */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-blue-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Tổng nhân viên</span>}
               value={teamMembers.length}
-              prefix={<Users size={28} className="text-blue-500" />}
-              valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Users size={20} className="text-blue-500" />}
+              valueStyle={{ color: '#1890ff', fontSize: '25px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-green-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Xuất sắc</span>}
               value={excellentCount}
-              prefix={<Award size={28} className="text-green-500" />}
-              valueStyle={{ color: '#52c41a', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Award size={20} className="text-green-500" />}
+              valueStyle={{ color: '#52c41a', fontSize: '25px', fontWeight: 'bold' }}
               suffix={<span className="text-sm text-gray-500">/ {teamMembers.length}</span>}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-purple-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Hiệu suất TB</span>}
               value={totalAvgCompletion}
-              prefix={<Target size={28} className="text-purple-500" />}
+              prefix={<Target size={20} className="text-purple-500" />}
               suffix="%"
-              valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 'bold' }}
+              valueStyle={{ color: '#722ed1', fontSize: '25px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-orange-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Tổng KPI</span>}
               value={totalTeamKPIs}
-              prefix={<FileText size={28} className="text-orange-500" />}
-              valueStyle={{ color: '#fa8c16', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<FileText size={20} className="text-orange-500" />}
+              valueStyle={{ color: '#fa8c16', fontSize: '25px', fontWeight: 'bold' }}
               suffix={pendingApprovalKPIs.length > 0 && (
                 <Badge count={pendingApprovalKPIs.length} className="ml-2" />
               )}
@@ -482,7 +482,7 @@ export const TeamManagementPage = () => {
             showSizeChanger: true,
             showTotal: (total) => `Tổng ${total} nhân viên`,
           }}
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1000 }}
           bordered
           className="custom-table"
         />
@@ -869,7 +869,7 @@ export const TeamManagementPage = () => {
             </div>
 
             {/* Summary */}
-            <div className="border-t pt-4 bg-green-50 p-4 rounded-lg">
+            <div className="border-t pt-3 bg-green-50 p-3 rounded-lg">
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Tổng trọng số</p>

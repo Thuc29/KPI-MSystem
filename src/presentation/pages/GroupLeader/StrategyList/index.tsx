@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import type { IStrategicPlan } from '../../../core/models';
+import type { IStrategicPlan } from '../../../../core/models';
 
 const { Option } = Select;
 
@@ -156,7 +156,7 @@ export const StrategyListPage = () => {
 
   const filteredStrategies = strategies.filter(strategy => {
     const matchesSearch = strategy.title.toLowerCase().includes(searchText.toLowerCase()) ||
-                         strategy.description.toLowerCase().includes(searchText.toLowerCase());
+                          strategy.description.toLowerCase().includes(searchText.toLowerCase());
     const matchesStatus = statusFilter === 'all' || strategy.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -166,7 +166,7 @@ export const StrategyListPage = () => {
       title: 'Mã',
       dataIndex: 'id',
       key: 'id',
-      width: 150,
+      width: 100,
       render: (text) => (
         <span className="font-mono text-xs font-semibold text-primary">{text}</span>
       ),
@@ -185,7 +185,7 @@ export const StrategyListPage = () => {
     {
       title: 'Kỳ',
       key: 'period',
-      width: 120,
+      width: 90,
       render: (_, record) => {
         const periodLabels: Record<string, string> = {
           yearly: 'Cả năm',
@@ -205,7 +205,7 @@ export const StrategyListPage = () => {
     {
       title: 'Số Team',
       key: 'teams',
-      width: 100,
+      width: 90,
       align: 'center',
       render: (_, record) => (
         <Badge count={record.teamPlans.length} showZero color="#1890ff" />
@@ -215,7 +215,7 @@ export const StrategyListPage = () => {
       title: 'Ngân sách',
       dataIndex: 'totalBudget',
       key: 'totalBudget',
-      width: 150,
+      width: 110,
       render: (budget) => budget ? `${(budget / 1000000).toFixed(0)}M VNĐ` : '-',
     },
     {
@@ -227,7 +227,7 @@ export const StrategyListPage = () => {
       render: (status) => {
         const config = getStatusConfig(status);
         return (
-          <Tag color={config.color} icon={config.icon}>
+          <Tag color={config.color} className='flex items-center gap-2 w-fit mx-auto' icon={config.icon}>
             {config.label}
           </Tag>
         );
@@ -237,7 +237,7 @@ export const StrategyListPage = () => {
       title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      width: 120,
+      width: 100,
       render: (date) => new Date(date).toLocaleDateString('vi-VN'),
     },
     {
@@ -306,7 +306,7 @@ export const StrategyListPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -318,7 +318,7 @@ export const StrategyListPage = () => {
         </div>
         <Button
           type="primary"
-          size="large"
+          size="middle"
           icon={<Plus size={20} />}
           onClick={() => navigate('/strategy/create')}
           className="bg-primary"
@@ -327,41 +327,7 @@ export const StrategyListPage = () => {
         </Button>
       </div>
 
-      {/* Statistics */}
-      <div className="grid grid-cols-5 gap-4">
-        <Card className="shadow-md border-l-4 border-l-blue-500">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-blue-600">{stats.total}</div>
-            <div className="text-sm text-gray-600">Tổng số</div>
-          </div>
-        </Card>
-        <Card className="shadow-md border-l-4 border-l-gray-500">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-gray-600">{stats.draft}</div>
-            <div className="text-sm text-gray-600">Nháp</div>
-          </div>
-        </Card>
-        <Card className="shadow-md border-l-4 border-l-orange-500">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-orange-600">{stats.pending}</div>
-            <div className="text-sm text-gray-600">Chờ duyệt</div>
-          </div>
-        </Card>
-        <Card className="shadow-md border-l-4 border-l-green-500">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
-            <div className="text-sm text-gray-600">Đã duyệt</div>
-          </div>
-        </Card>
-        <Card className="shadow-md border-l-4 border-l-red-500">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
-            <div className="text-sm text-gray-600">Từ chối</div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Filters */}
+        {/* Filters */}
       <Card className="shadow-md">
         <div className="flex gap-4">
           <Input
@@ -370,13 +336,13 @@ export const StrategyListPage = () => {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             style={{ width: 300 }}
-            size="large"
+            size="middle"
           />
           <Select
             value={statusFilter}
             onChange={setStatusFilter}
             style={{ width: 200 }}
-            size="large"
+            size="middle"
           >
             <Option value="all">Tất cả trạng thái</Option>
             <Option value="draft">Nháp</Option>
@@ -402,6 +368,7 @@ export const StrategyListPage = () => {
             showSizeChanger: true,
             showTotal: (total) => `Tổng ${total} chiến lược`,
           }}
+          bordered
         />
       </Card>
     </div>

@@ -65,7 +65,7 @@ export const OrganizationPage = () => {
   const totalBudget = organizationStructure.reduce((sum, d) => sum + d.budget, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold text-gray-800">Tổng quan Tổ chức</h1>
         <p className="text-gray-600 mt-1">Cấu trúc và hiệu suất tổ chức</p>
@@ -79,6 +79,7 @@ export const OrganizationPage = () => {
             value={totalEmployees}
             prefix={<Users size={20} className="text-blue-600" />}
             valueStyle={{ color: '#1890ff' }}
+            
           />
         </Card>
         <Card>
@@ -110,9 +111,9 @@ export const OrganizationPage = () => {
 
       {/* Organization Structure */}
       <Card title="Cấu trúc tổ chức">
-        <div className="space-y-4">
+        <div className="space-y-2">
           {organizationStructure.map((dept) => (
-            <div key={dept.dept} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div key={dept.dept} className="border border-primary/40 bg-primary-dark/5 rounded-2xl p-4 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -126,7 +127,7 @@ export const OrganizationPage = () => {
                     </div>
                   </div>
                 </div>
-                <Tag color="blue" className="text-xs md:text-sm">
+                <Tag color="blue" className="text-xs rounded-lg md:text-sm">
                   {dept.employees} nhân viên
                 </Tag>
               </div>

@@ -17,9 +17,6 @@ import type { ColumnsType } from 'antd/es/table';
 import { 
   Building2,
   Users,
-  FileText, 
-  Clock, 
-  CheckCircle, 
   TrendingUp,
   TrendingDown,
   AlertTriangle,
@@ -176,6 +173,7 @@ export const CEODashboardPage = () => {
     {
       title: 'Bộ phận',
       key: 'department',
+      width: 180,
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <Avatar size={40} className="bg-gradient-to-br from-blue-500 to-purple-500">
@@ -193,7 +191,7 @@ export const CEODashboardPage = () => {
       dataIndex: 'employees',
       key: 'employees',
       align: 'center',
-      width: 100,
+      width: 80,
       render: (count) => (
         <div className="flex items-center justify-center gap-1">
           <Users size={14} className="text-gray-500" />
@@ -206,15 +204,15 @@ export const CEODashboardPage = () => {
       dataIndex: 'kpiCount',
       key: 'kpiCount',
       align: 'center',
-      width: 100,
+      width: 80,
       render: (count) => <Tag color="blue">{count}</Tag>,
     },
     {
-      title: 'Chờ duyệt',
+      title: 'Chờ',
       dataIndex: 'pendingCount',
       key: 'pendingCount',
       align: 'center',
-      width: 100,
+      width: 60,
       render: (count) => (
         count > 0 ? (
           <Tag color="orange" className="font-semibold">{count}</Tag>
@@ -254,7 +252,7 @@ export const CEODashboardPage = () => {
       title: 'Đánh giá',
       dataIndex: 'status',
       key: 'status',
-      width: 120,
+      width: 90,
       align: 'center',
       render: (status: string) => {
         const config: Record<string, { color: string; label: string }> = {
@@ -291,13 +289,13 @@ export const CEODashboardPage = () => {
       title: 'Ưu tiên',
       dataIndex: 'priority',
       key: 'priority',
-      width: 100,
+      width: 60,
       align: 'center',
       render: (priority: string) => {
         const config = {
-          high: { color: 'red', icon: '🔴', label: 'Cao' },
-          medium: { color: 'orange', icon: '🟡', label: 'TB' },
-          low: { color: 'blue', icon: '🟢', label: 'Thấp' },
+          high: { icon: <AlertTriangle size={18} className="text-red-500" />, label: 'Cao' },
+          medium: { icon: <Activity size={18} className="text-orange-500" />, label: 'TB' },
+          low: { icon: <TrendingUp size={18} className="text-blue-500" />, label: 'Thấp' },
         };
         const { icon, label } = config[priority as keyof typeof config];
         return (
@@ -312,26 +310,27 @@ export const CEODashboardPage = () => {
       dataIndex: 'title',
       key: 'title',
       render: (text) => <span className="font-semibold">{text}</span>,
+      width: 200,
     },
     {
       title: 'Bộ phận',
       dataIndex: 'department',
       key: 'department',
-      width: 120,
+      width: 80,
       render: (text) => <Tag color="purple">{text}</Tag>,
     },
     {
       title: 'Người gửi',
       dataIndex: 'submittedBy',
       key: 'submittedBy',
-      width: 150,
+      width: 70,
     },
     {
       title: 'Số mục tiêu',
       dataIndex: 'targetCount',
       key: 'targetCount',
       align: 'center',
-      width: 100,
+      width: 70,
       render: (count) => (
         <Badge count={count} showZero color="#4C9C2E">
           <Target size={20} className="text-gray-400" />
@@ -341,7 +340,7 @@ export const CEODashboardPage = () => {
     {
       title: 'Hành động',
       key: 'action',
-      width: 120,
+      width: 60,
       align: 'center',
       render: (_, record) => (
         <Button
@@ -358,11 +357,11 @@ export const CEODashboardPage = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <Crown size={32} className="text-yellow-500" />
+        <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
+          <Crown size={30} className="text-yellow-500" />
           CEO Dashboard
         </h1>
         <p className="text-gray-500">Chào mừng {userName}, tổng quan chiến lược toàn công ty</p>
@@ -371,20 +370,20 @@ export const CEODashboardPage = () => {
       {/* Strategic Alert */}
       {totalPendingStrategic > 0 && (
         <Card className="shadow-md border-l-4 border-l-red-500 bg-red-50">
-          <div className="flex items-start gap-3">
-            <AlertTriangle size={28} className="text-red-500 mt-1" />
+          <div className="flex items-start gap-1">
+            <AlertTriangle size={25} className="text-red-500 mt-1" />
             <div className="flex-1">
-              <h3 className="font-semibold text-red-600 text-lg mb-2">
+              <h3 className="font-semibold text-red-600 text-lg mb-1">
                 Cảnh báo: {totalPendingStrategic} KPI chiến lược cần phê duyệt!
               </h3>
-              <p className="text-gray-700 mb-3">
+              <p className="text-gray-700 mb-2">
                 Có {totalPendingStrategic} KPI chiến lược từ các Group Leader đang chờ phê duyệt của bạn.
               </p>
               <Button 
                 danger
                 icon={<Eye size={16} />}
                 onClick={() => navigate('/strategic')}
-                size="large"
+                size="middle"
               >
                 Xem ngay
               </Button>
@@ -474,12 +473,12 @@ export const CEODashboardPage = () => {
                     <span className="font-semibold">KPI Chiến lược chờ phê duyệt</span>
                     <Badge count={totalPendingStrategic} showZero color="#ff4d4f" />
                   </div>
-                  <Button
-                    type="link"
+                  <div
+                  className='text-sm cursor-pointer text-blue-600 hover:text-blue-400 underline'
                     onClick={() => navigate('/strategic')}
                   >
                     Xem tất cả
-                  </Button>
+                  </div>
                 </div>
               }
               className="shadow-md mb-4"
@@ -491,6 +490,8 @@ export const CEODashboardPage = () => {
                 pagination={false}
                 size="small"
                 loading={loading}
+                bordered
+                scroll={{x:800}}
               />
             </Card>
           )}
@@ -512,6 +513,8 @@ export const CEODashboardPage = () => {
               pagination={false}
               size="small"
               loading={loading}
+              bordered
+              scroll={{x:900}}
             />
           </Card>
         </Col>
@@ -534,7 +537,7 @@ export const CEODashboardPage = () => {
                 icon={<Target size={16} />}
                 onClick={() => navigate('/strategic')}
                 block
-                size="large"
+                size="middle"
                 className="bg-red-500 hover:bg-red-600"
                 danger
               >
@@ -545,7 +548,7 @@ export const CEODashboardPage = () => {
                 icon={<Activity size={16} />}
                 onClick={() => navigate('/executive')}
                 block
-                size="large"
+                size="middle"
                 className="bg-primary"
               >
                 Executive Dashboard
@@ -554,7 +557,7 @@ export const CEODashboardPage = () => {
                 icon={<Building2 size={16} />}
                 onClick={() => navigate('/organization')}
                 block
-                size="large"
+                size="middle"
               >
                 Tổng quan Tổ chức
               </Button>

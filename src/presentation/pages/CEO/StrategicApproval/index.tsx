@@ -24,10 +24,11 @@ import {
   Users,
   DollarSign,
   Calendar,
-  Building2
+  Building2,
+  TagIcon
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import type { IStrategicPlan } from '../../../core/models';
+import type { IStrategicPlan } from '../../../../core/models';
 
 const { TextArea } = Input;
 
@@ -198,11 +199,11 @@ export const StrategicApprovalPage = () => {
   };
 
   const getPriorityIcon = (submittedAt?: string) => {
-    if (!submittedAt) return '🟢';
+    if (!submittedAt) return <CheckCircle size={20} className="text-green-500" />;
     const days = Math.floor((Date.now() - new Date(submittedAt).getTime()) / (1000 * 60 * 60 * 24));
-    if (days >= 3) return '🔴';
-    if (days >= 1) return '🟡';
-    return '🟢';
+    if (days >= 3) return <XCircle size={20} className="text-red-500" />;
+    if (days >= 1) return <Clock size={20} className="text-yellow-500" />;
+    return <CheckCircle size={20} className="text-green-500" />;
   };
 
   const columns: ColumnsType<IStrategicPlan> = [
@@ -225,7 +226,7 @@ export const StrategicApprovalPage = () => {
       title: 'Mã',
       dataIndex: 'id',
       key: 'id',
-      width: 140,
+      width: 120,
       render: (text) => <span className="font-mono text-xs font-semibold text-primary">{text}</span>,
     },
     {
@@ -238,24 +239,25 @@ export const StrategicApprovalPage = () => {
           <div className="text-xs text-gray-500">{record.description}</div>
         </div>
       ),
+      width: 300,
     },
     {
       title: 'Bộ phận',
       dataIndex: 'departmentName',
       key: 'departmentName',
-      width: 150,
+      width: 140,
       render: (text) => <Tag color="purple">{text}</Tag>,
     },
     {
       title: 'Group Leader',
       dataIndex: 'groupLeaderName',
       key: 'groupLeaderName',
-      width: 150,
+      width: 130,
     },
     {
       title: 'Kỳ',
       key: 'period',
-      width: 120,
+      width: 90,
       render: (_, record) => {
         const periodLabels: Record<string, string> = {
           yearly: 'Cả năm',
@@ -275,7 +277,7 @@ export const StrategicApprovalPage = () => {
     {
       title: 'Số Team',
       key: 'teams',
-      width: 100,
+      width: 90,
       align: 'center',
       render: (_, record) => (
         <Badge count={record.teamPlans.length} showZero color="#1890ff" />
@@ -285,7 +287,7 @@ export const StrategicApprovalPage = () => {
       title: 'Ngày gửi',
       dataIndex: 'submittedAt',
       key: 'submittedAt',
-      width: 120,
+      width: 100,
       render: (date) => date ? new Date(date).toLocaleDateString('vi-VN') : '-',
     },
     {
@@ -314,8 +316,8 @@ export const StrategicApprovalPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <Target size={32} className="text-primary" />
+        <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
+          <Target size={30} className="text-primary" />
           Phê duyệt Chiến lược
         </h1>
         <p className="text-gray-500">Phê duyệt các kế hoạch chiến lược từ Group Leader</p>
@@ -376,6 +378,7 @@ export const StrategicApprovalPage = () => {
                   loading={loading}
                   pagination={{ pageSize: 10 }}
                   scroll={{ x: 1200 }}
+                  bordered
                 />
               ),
             },
@@ -390,6 +393,7 @@ export const StrategicApprovalPage = () => {
                   loading={loading}
                   pagination={{ pageSize: 10 }}
                   scroll={{ x: 1200 }}
+                  bordered
                 />
               ),
             },
@@ -404,6 +408,7 @@ export const StrategicApprovalPage = () => {
                   loading={loading}
                   pagination={{ pageSize: 10 }}
                   scroll={{ x: 1200 }}
+                  bordered
                 />
               ),
             },
@@ -425,20 +430,20 @@ export const StrategicApprovalPage = () => {
         width={900}
       >
         {selectedStrategy && (
-          <div className="space-y-6">
+          <div className="space-y-3">
             {/* Header Info */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg space-y-3">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 py-3 px-4 border border-blue-200 rounded-2xl space-y-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">{selectedStrategy.title}</h3>
+                  <h3 className="text-xl font-bold">{selectedStrategy.title}</h3>
                   <p className="text-gray-700">{selectedStrategy.description}</p>
                 </div>
-                <Tag color={selectedStrategy.status === 'pending_ceo' ? 'orange' : selectedStrategy.status === 'approved' ? 'green' : 'red'}>
+                <Tag className='rounded-lg' color={selectedStrategy.status === 'pending_ceo' ? 'orange' : selectedStrategy.status === 'approved' ? 'green' : 'red'}>
                   {selectedStrategy.status === 'pending_ceo' ? 'Chờ duyệt' : selectedStrategy.status === 'approved' ? 'Đã duyệt' : 'Từ chối'}
                 </Tag>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Building2 size={16} className="text-gray-500" />
                   <span className="text-gray-600">Bộ phận:</span>
@@ -466,7 +471,7 @@ export const StrategicApprovalPage = () => {
               </div>
 
               {selectedStrategy.expectedImpact && (
-                <div className="bg-white p-3 rounded border-l-4 border-l-blue-500">
+                <div className="bg-white p-3 border-l-4 rounded-xl border-l-blue-500">
                   <div className="flex items-start gap-2">
                     <TrendingUp size={16} className="text-blue-500 mt-1" />
                     <div>
@@ -482,14 +487,14 @@ export const StrategicApprovalPage = () => {
 
             {/* Team Plans */}
             {selectedStrategy.teamPlans.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {selectedStrategy.teamPlans.map((team, teamIndex) => (
                   <Card 
                     key={team.id} 
                     size="small"
-                    className="border-l-4 border-l-blue-500"
+                    className="border-l-4 border-l-blue-500 rounded-2xl"
                   >
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -502,14 +507,18 @@ export const StrategicApprovalPage = () => {
                         </div>
                         <div className="flex gap-2">
                           {team.budget && (
-                            <Tag color="green">{(team.budget / 1000000).toFixed(0)}M VNĐ</Tag>
+                            <Tag color="green" className="rounded-lg">
+                              {(team.budget / 1000000).toFixed(0)}M VNĐ
+                            </Tag>
                           )}
-                          <Tag color="blue">{team.objectives.length} mục tiêu</Tag>
+                          <Tag color="blue" className="rounded-lg">
+                            {team.objectives.length} mục tiêu
+                          </Tag>
                         </div>
                       </div>
 
                       {team.timeline && (
-                        <div className="text-sm text-gray-600 flex items-center gap-2">
+                        <div className="text-sm text-gray-700 font-semibold flex items-center gap-2">
                           <Calendar size={14} />
                           <span>{team.timeline.startDate} → {team.timeline.endDate}</span>
                         </div>
@@ -519,12 +528,12 @@ export const StrategicApprovalPage = () => {
                       <div className="space-y-2">
                         <div className="font-medium text-sm text-gray-700">Mục tiêu của team:</div>
                         {team.objectives.map((obj, objIndex) => (
-                          <div key={obj.id} className="bg-gray-50 p-3 rounded-lg">
+                          <div key={obj.id} className="bg-primary/10 border border-primary/30 p-3 rounded-2xl">
                             <div className="flex items-start gap-3">
-                              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                              <div className="w-8 h-8 bg-primary/20   rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-primary font-semibold text-sm">{objIndex + 1}</span>
                               </div>
-                              <div className="flex-1 space-y-2">
+                              <div className="flex-1 space-y-1">
                                 <div className="flex items-start justify-between">
                                   <div>
                                     <h5 className="font-semibold">{obj.title}</h5>
@@ -533,25 +542,25 @@ export const StrategicApprovalPage = () => {
                                   <Tag color="blue">Trọng số: {obj.weight}%</Tag>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-3 text-sm">
-                                  <div className="bg-white p-2 rounded">
+                                <div className="grid grid-cols-2 gap-1 text-sm">
+                                  <div className="bg-white p-2 rounded-lg">
                                     <span className="text-gray-600">Mục tiêu: </span>
                                     <span className="font-semibold">{obj.target} {obj.unit}</span>
                                   </div>
                                   {obj.category && (
-                                    <div className="bg-white p-2 rounded">
+                                    <div className="bg-white p-2 rounded-lg">
                                       <span className="text-gray-600">Danh mục: </span>
-                                      <Tag size="small">{obj.category}</Tag>
+                                      <TagIcon size="small">{obj.category}</TagIcon>
                                     </div>
                                   )}
                                   {obj.measurementMethod && (
-                                    <div className="bg-white p-2 rounded col-span-2">
+                                    <div className="bg-white p-2 rounded-lg col-span-2">
                                       <span className="text-gray-600">Đo lường: </span>
                                       <span className="text-gray-800">{obj.measurementMethod}</span>
                                     </div>
                                   )}
                                   {obj.expectedOutcome && (
-                                    <div className="bg-white p-2 rounded col-span-2">
+                                    <div className="bg-white p-2 rounded-lg col-span-2">
                                       <span className="text-gray-600">Kết quả mong đợi: </span>
                                       <span className="text-gray-800">{obj.expectedOutcome}</span>
                                     </div>
@@ -588,12 +597,12 @@ export const StrategicApprovalPage = () => {
                   </div>
 
                   <div className="flex justify-end gap-3">
-                    <Button size="large" onClick={() => setIsModalOpen(false)}>
+                    <Button size="middle" onClick={() => setIsModalOpen(false)}>
                       Đóng
                     </Button>
                     <Button 
                       danger
-                      size="large"
+                      size="middle"
                       icon={<XCircle size={16} />}
                       onClick={() => {
                         if (!reason.trim()) {
@@ -607,7 +616,7 @@ export const StrategicApprovalPage = () => {
                     </Button>
                     <Button 
                       type="primary"
-                      size="large"
+                      size="middle"
                       icon={<CheckCircle size={16} />}
                       onClick={() => handleAction('approve')}
                       className="bg-primary"
@@ -621,7 +630,7 @@ export const StrategicApprovalPage = () => {
 
             {selectedStrategy.status !== 'pending_ceo' && (
               <div className="flex justify-end">
-                <Button size="large" onClick={() => setIsModalOpen(false)}>
+                <Button size="middle" onClick={() => setIsModalOpen(false)}>
                   Đóng
                 </Button>
               </div>

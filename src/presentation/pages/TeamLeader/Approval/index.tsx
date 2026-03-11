@@ -161,9 +161,9 @@ export const ApprovalPage = () => {
 
   // Get priority indicator
   const getPriorityIndicator = (days: number) => {
-    if (days >= 2) return { color: 'red', icon: '🔴', text: 'Khẩn cấp' };
-    if (days >= 1) return { color: 'orange', icon: '🟡', text: 'Ưu tiên' };
-    return { color: 'green', icon: '🟢', text: 'Mới' };
+    if (days >= 2) return { color: 'red', icon: <AlertCircle size={20} className="text-red-500" />, text: 'Khẩn cấp' };
+    if (days >= 1) return { color: 'orange', icon: <Clock size={20} className="text-orange-500" />, text: 'Ưu tiên' };
+    return { color: 'green', icon: <CheckCircle size={20} className="text-green-500" />, text: 'Mới' };
   };
 
   // Columns for pending table
@@ -171,7 +171,7 @@ export const ApprovalPage = () => {
     {
       title: 'Ưu tiên',
       key: 'priority',
-      width: 95,
+      width: 90,
       align: 'center',
       render: (_, record) => {
         const days = getDaysSinceSubmit(record.submittedAt);
@@ -213,12 +213,12 @@ export const ApprovalPage = () => {
           </div>
         </div>
       ),
-      width: 250
+      width: 200
     },
     {
       title: 'Năm/Kỳ',
       key: 'period',
-      width: 80,
+      width: 75,
       render: (_, record) => (
         <div>
           <div className="font-semibold">{record.year}</div>
@@ -231,7 +231,7 @@ export const ApprovalPage = () => {
     {
       title: 'Số mục tiêu',
       key: 'targets',
-      width: 120,
+      width: 100,
       align: 'center',
       render: (_, record) => (
         <Badge count={record.targets.length} showZero color="#4C9C2E">
@@ -242,7 +242,7 @@ export const ApprovalPage = () => {
     {
       title: 'Tổng trọng số',
       key: 'weight',
-      width: 120,
+      width: 110,
       align: 'center',
       render: (_, record) => {
         const totalWeight = record.targets.reduce((sum, t) => sum + t.weight, 0);
@@ -257,11 +257,11 @@ export const ApprovalPage = () => {
     {
       title: 'Ngày gửi',
       key: 'submittedAt',
-      width: 120,
+      width: 95,
       render: (_, record) => {
         const days = getDaysSinceSubmit(record.submittedAt);
         return (
-          <div className="text-gray-600">
+          <div className="text-gray-600 text-sm">
             {days === 0 ? 'Hôm nay' : `${days} ngày trước`}
           </div>
         );
@@ -280,6 +280,7 @@ export const ApprovalPage = () => {
               size="small"
               icon={<Eye size={14} />}
               onClick={() => showDetail(record)}
+              className='rounded-lg'
             />
           </Tooltip>
           <Button
@@ -287,7 +288,7 @@ export const ApprovalPage = () => {
             size="small"
             icon={<CheckCircle size={14} />}
             onClick={() => showApproveModal(record)}
-            className="bg-primary hover:bg-primary-dark"
+            className="bg-primary hover:bg-primary-dark rounded-lg"
           >
             Duyệt
           </Button>
@@ -296,6 +297,7 @@ export const ApprovalPage = () => {
             size="small"
             icon={<XCircle size={14} />}
             onClick={() => showRejectModal(record)}
+            className='rounded-lg'
           >
             Từ chối
           </Button>
@@ -403,13 +405,13 @@ export const ApprovalPage = () => {
                   dataSource={pendingKPIs}
                   loading={loading}
                   rowKey="id"
-                  scroll={{ x: 1200 }}
+                  scroll={{ x: 1150 }}
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
                     showTotal: (total) => `Tổng ${total} hồ sơ`,
                   }}
-                  className='border'
+                  bordered
                 />
               ),
             },
@@ -433,6 +435,7 @@ export const ApprovalPage = () => {
                     showSizeChanger: true,
                     showTotal: (total) => `Tổng ${total} hồ sơ`,
                   }}
+                  bordered
                 />
               ),
             },
@@ -456,6 +459,7 @@ export const ApprovalPage = () => {
                     showSizeChanger: true,
                     showTotal: (total) => `Tổng ${total} hồ sơ`,
                   }}
+                  bordered
                 />
               ),
             },
@@ -477,7 +481,7 @@ export const ApprovalPage = () => {
         onCancel={() => setDetailModalVisible(false)}
         footer={
           <Space>
-            <Button onClick={() => setDetailModalVisible(false)}>Đóng</Button>
+           
             {selectedKPI?.status === 'pending_approval' && (
               <>
                 <Button
@@ -487,7 +491,7 @@ export const ApprovalPage = () => {
                     setDetailModalVisible(false);
                     showApproveModal(selectedKPI);
                   }}
-                  className="bg-primary hover:bg-primary-dark"
+                  className="bg-primary hover:bg-primary-dark rounded-lg"
                 >
                   Phê duyệt
                 </Button>
@@ -498,6 +502,7 @@ export const ApprovalPage = () => {
                     setDetailModalVisible(false);
                     showRejectModal(selectedKPI);
                   }}
+                  className='rounded-lg'
                 >
                   Từ chối
                 </Button>
@@ -505,11 +510,11 @@ export const ApprovalPage = () => {
             )}
           </Space>
         }
-        width={1000}
+        width={900}
         className="kpi-detail-modal"
       >
         {selectedKPI && (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* Basic Info */}
             <Card size="small" className="bg-gray-50">
               <Descriptions column={2} size="small">
@@ -533,7 +538,7 @@ export const ApprovalPage = () => {
                   <KPIStatusTag status={selectedKPI.status} />
                 </Descriptions.Item>
                 <Descriptions.Item label="Tổng trọng số">
-                  <Tag color={selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0) === 100 ? 'success' : 'error'} className="text-lg font-bold">
+                  <Tag color={selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0) === 100 ? 'success' : 'error'} className="text-base rounded-lg font-bold">
                     {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%
                   </Tag>
                 </Descriptions.Item>
@@ -541,12 +546,12 @@ export const ApprovalPage = () => {
             </Card>
 
             {/* Targets List */}
-            <div className="border-t pt-4">
-              <div className="flex items-center justify-between mb-3">
+            <div className="border-t pt-2">
+              <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold text-lg">
                   Danh sách mục tiêu ({selectedKPI.targets.length})
                 </h4>
-                <Tag color="blue" icon={<FileText size={14} />}>
+                <Tag color="blue" className='flex items-center gap-1 rounded-lg' icon={<FileText size={14} /> }>
                   {selectedKPI.targets.length} mục tiêu
                 </Tag>
               </div>
@@ -561,7 +566,7 @@ export const ApprovalPage = () => {
                     />
                   )}
                   defaultActiveKey={selectedKPI.groups.map(g => g.id)}
-                  className="mb-4"
+                  className="mb-3"
                 >
                   {selectedKPI.groups.map((group, groupIndex) => {
                     const groupWeight = group.targets.reduce((sum, t) => sum + t.weight, 0);
@@ -742,36 +747,36 @@ interface TargetDetailCardProps {
 const TargetDetailCard = ({ target, index, onPreview }: TargetDetailCardProps) => {
   return (
     <Card type="inner" className="mb-3 shadow-sm hover:shadow-md transition-shadow">
-      <div className="space-y-3">
+      <div className="space-y-2">
         {/* Header */}
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="border-primary border text-primary rounded-full w-5 h-5 flex items-center justify-center text-sm font-semibold">
                 {index + 1}
               </span>
               <h5 className="font-semibold text-base">{target.title}</h5>
               {target.category && (
-                <Tag color="blue">{target.category}</Tag>
+                <Tag color="blue" className="rounded-lg">{target.category}</Tag>
               )}
             </div>
           </div>
-          <Tag color="green" className="text-lg font-bold px-3 py-1">
+          <Tag color="green" className="text-base font-semibold rounded-lg">
             {target.weight}%
           </Tag>
         </div>
 
         {/* Description */}
-        <div className="bg-gray-50 p-3 rounded-lg">
+        <div className="bg-gray-100 py-1 px-3 rounded-lg">
           <p className="text-sm text-gray-700 whitespace-pre-wrap">{target.description}</p>
         </div>
 
         {/* Target & Unit */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-xs text-gray-600 mb-1">Chỉ tiêu</p>
-            <p className="text-lg font-bold text-blue-600">
-              {target.target} <span className="text-sm">{target.unit}</span>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-blue-50 px-3 py-2 text-sm gap-2 flex items-center rounded-lg">
+            <p className=" text-gray-600">Chỉ tiêu: </p>
+            <p className=" font-bold text-blue-600">
+              {target.target} {target.unit}
             </p>
           </div>
           

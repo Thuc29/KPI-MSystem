@@ -1,6 +1,6 @@
 import { Card, Select, DatePicker, Button, Table, Progress, Row, Col, Statistic, Tag, Tooltip } from 'antd';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Download, TrendingUp, Users, Target, Award, FileText, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Download, TrendingUp, Users, Target, Award, FileText, CheckCircle, Clock, AlertTriangle, BarChart3 } from 'lucide-react';
 import type { ColumnsType } from 'antd/es/table';
 
 const { RangePicker } = DatePicker;
@@ -38,7 +38,7 @@ export const TeamReportsPage = () => {
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
-      width: 200,
+      width: 170,
       render: (text) => <span className="font-semibold text-gray-900">{text}</span>,
     },
     {
@@ -57,7 +57,7 @@ export const TeamReportsPage = () => {
       width: 120,
       render: (value, record) => (
         <Tooltip title={`${value} trong tổng số ${record.kpis} KPI`}>
-          <Tag color="green" icon={<CheckCircle size={14} />}>
+          <Tag color="green" className='flex items-center w-fit gap-2 mx-auto' icon={<CheckCircle size={14} />}>
             {value}/{record.kpis}
           </Tag>
         </Tooltip>
@@ -111,11 +111,11 @@ export const TeamReportsPage = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <BarChart size={32} className="text-primary" />
+            <BarChart3 size={32} className="text-primary" />
             Báo cáo Team
           </h1>
           <p className="text-gray-500">Phân tích hiệu suất và tiến độ của team</p>
@@ -123,7 +123,7 @@ export const TeamReportsPage = () => {
         <Button 
           type="primary" 
           icon={<Download size={18} />}
-          size="large"
+          size="middle"
           className="bg-primary"
         >
           Xuất báo cáo
@@ -133,14 +133,14 @@ export const TeamReportsPage = () => {
       {/* Filters */}
       <Card className="shadow-md">
         <div className="flex gap-4 flex-wrap">
-          <Select defaultValue="all" style={{ width: 200 }} size="large">
+          <Select defaultValue="all" style={{ width: 200 }} size="middle">
             <Select.Option value="all">Tất cả nhân viên</Select.Option>
             <Select.Option value="1">Nguyễn Văn A</Select.Option>
             <Select.Option value="2">Trần Thị B</Select.Option>
             <Select.Option value="3">Lê Văn C</Select.Option>
           </Select>
-          <RangePicker size="large" />
-          <Select defaultValue="monthly" style={{ width: 150 }} size="large">
+          <RangePicker size="middle" />
+          <Select defaultValue="monthly" style={{ width: 150 }} size="middle">
             <Select.Option value="weekly">Theo tuần</Select.Option>
             <Select.Option value="monthly">Theo tháng</Select.Option>
             <Select.Option value="quarterly">Theo quý</Select.Option>
@@ -151,47 +151,47 @@ export const TeamReportsPage = () => {
       {/* Statistics */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-blue-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Tổng nhân viên</span>}
               value={12}
-              prefix={<Users size={28} className="text-blue-500" />}
-              valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Users size={20} className="text-blue-500" />}
+              valueStyle={{ color: '#1890ff', fontSize: '25px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-purple-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Tổng KPI</span>}
               value={48}
-              prefix={<Target size={28} className="text-purple-500" />}
-              valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Target size={20} className="text-purple-500" />}
+              valueStyle={{ color: '#722ed1', fontSize: '25px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-green-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Tiến độ TB</span>}
               value={85}
               suffix="%"
-              prefix={<TrendingUp size={28} className="text-green-500" />}
-              valueStyle={{ color: '#52c41a', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<TrendingUp size={20} className="text-green-500" />}
+              valueStyle={{ color: '#52c41a', fontSize: '25px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-orange-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Điểm TB</span>}
               value={4.5}
               precision={1}
-              prefix={<Award size={28} className="text-orange-500" />}
-              valueStyle={{ color: '#fa8c16', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Award size={20} className="text-orange-500" />}
+              valueStyle={{ color: '#fa8c16', fontSize: '25px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
@@ -203,7 +203,7 @@ export const TeamReportsPage = () => {
         <Card 
           title={
             <div className="flex items-center gap-2">
-              <BarChart size={20} className="text-primary" />
+              <BarChart3 size={20} className="text-primary" />
               <span className="font-semibold">Hiệu suất theo tháng</span>
             </div>
           }

@@ -115,16 +115,16 @@ export const TeamLeaderDashboardPage = () => {
     {
       title: 'Ưu tiên',
       key: 'priority',
-      width: 80,
+      width: 70,
       align: 'center',
       render: (_, record) => {
         const days = record.submittedAt 
           ? Math.floor((Date.now() - new Date(record.submittedAt).getTime()) / (1000 * 60 * 60 * 24))
           : 0;
         
-        if (days >= 2) return <span className="text-2xl">🔴</span>;
-        if (days >= 1) return <span className="text-2xl">🟡</span>;
-        return <span className="text-2xl">🟢</span>;
+        if (days >= 2) return <AlertTriangle size={20} className="text-red-500" />;
+        if (days >= 1) return <Clock size={20} className="text-yellow-500" />;
+        return <CheckCircle size={20} className="text-green-500" />;
       },
     },
     {
@@ -219,14 +219,14 @@ export const TeamLeaderDashboardPage = () => {
       dataIndex: 'kpiCount',
       key: 'kpiCount',
       align: 'center',
-      width: 100,
+      width: 80,
       render: (count) => <Tag color="blue">{count} KPI</Tag>,
     },
     {
       title: 'Hiệu suất',
       dataIndex: 'avgCompletion',
       key: 'avgCompletion',
-      width: 200,
+      width: 220,
       render: (value) => (
         <div className="space-y-1">
           <div className="flex justify-between text-xs mb-1">
@@ -248,7 +248,7 @@ export const TeamLeaderDashboardPage = () => {
       title: 'Đánh giá',
       dataIndex: 'status',
       key: 'status',
-      width: 120,
+      width: 110,
       align: 'center',
       render: (status: string) => {
         const config: Record<string, { color: string; label: string }> = {
@@ -272,8 +272,9 @@ export const TeamLeaderDashboardPage = () => {
           size="small"
           icon={<Eye size={14} />}
           onClick={() => navigate(`/team/${record.id}`)}
+          className='border'
         >
-          Xem
+        
         </Button>
       ),
     },
@@ -283,29 +284,29 @@ export const TeamLeaderDashboardPage = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-gray-900 mb-1">
           Dashboard - Team Leader
         </h1>
-        <p className="text-gray-500">Chào mừng {userName}, quản lý và theo dõi hiệu suất team của bạn</p>
+        <p className="text-gray-500">Chào mừng <span className="font-semibold text-primary">{userName}</span>, quản lý và theo dõi hiệu suất team của bạn</p>
       </div>
 
       {/* Urgent Alert */}
       {urgentKPIs.length > 0 && (
         <Card className="shadow-md border-l-4 border-l-red-500 bg-red-50">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-2">
             <AlertTriangle size={28} className="text-red-500 mt-1" />
             <div className="flex-1">
               <h3 className="font-semibold text-red-600 text-lg mb-2">
                 Cảnh báo: {urgentKPIs.length} KPI cần duyệt gấp!
               </h3>
-              <p className="text-gray-700 mb-3">
+              <p className="text-gray-700 mb-2">
                 Có {urgentKPIs.length} KPI đã chờ duyệt hơn 2 ngày. Vui lòng xem xét ngay.
               </p>
               <Button 
                 danger
                 icon={<Eye size={16} />}
                 onClick={() => navigate('/approval')}
-                size="large"
+                size="middle"
               >
                 Xem ngay
               </Button>
@@ -317,23 +318,23 @@ export const TeamLeaderDashboardPage = () => {
       {/* Statistics Cards */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 !max-h-20 border-l-blue-500 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Tổng nhân viên</span>}
               value={totalTeamMembers}
-              prefix={<Users size={28} className="text-blue-500" />}
-              valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Users size={20} className="text-blue-500" />}
+              valueStyle={{ color: '#1890ff', fontSize: '26px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-orange-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Chờ duyệt</span>}
               value={pendingApprovalKPIs.length}
-              prefix={<Clock size={28} className="text-orange-500" />}
-              valueStyle={{ color: '#fa8c16', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Clock size={20} className="text-orange-500" />}
+              valueStyle={{ color: '#fa8c16', fontSize: '26px', fontWeight: 'bold' }}
               suffix={urgentKPIs.length > 0 && (
                 <Tooltip title={`${urgentKPIs.length} khẩn cấp`}>
                   <Badge count={urgentKPIs.length} className="ml-2" />
@@ -344,24 +345,24 @@ export const TeamLeaderDashboardPage = () => {
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-green-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Đã duyệt</span>}
               value={approvedKPIs.length}
-              prefix={<CheckCircle size={28} className="text-green-500" />}
-              valueStyle={{ color: '#52c41a', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<CheckCircle size={20} className="text-green-500" />}
+              valueStyle={{ color: '#52c41a', fontSize: '26px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md border-l-4 border-l-purple-500 !max-h-20   hover:shadow-lg transition-shadow">
             <Statistic
               title={<span className="text-gray-600 font-medium">Hiệu suất TB</span>}
               value={avgTeamCompletion}
               suffix="%"
-              prefix={<Target size={28} className="text-purple-500" />}
-              valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 'bold' }}
+              prefix={<Target size={20} className="text-purple-500" />}
+              valueStyle={{ color: '#722ed1', fontSize: '26px', fontWeight: 'bold' }}
             />
           </Card>
         </Col>
@@ -370,7 +371,7 @@ export const TeamLeaderDashboardPage = () => {
       {/* Main Content */}
       <Row gutter={[16, 16]}>
         {/* Left Column */}
-        <Col xs={24} lg={14}>
+        <Col xs={24} lg={16}>
           {/* My KPIs Section */}
           {(myKPIs.length > 0 || myRejectedKPIs.length > 0) && (
             <Card 
@@ -385,13 +386,13 @@ export const TeamLeaderDashboardPage = () => {
                     type="primary"
                     icon={<FilePlus size={16} />}
                     onClick={() => navigate('/kpi/create')}
-                    className="bg-blue-500"
+                    className="bg-blue-500 rounded-lg hover:scale-95"
                   >
                     Tạo KPI mới
                   </Button>
                 </div>
               }
-              className="shadow-md mb-4"
+              className="shadow-md mb-3"
             >
               <div className="space-y-3">
                 {/* Draft KPIs Alert */}
@@ -435,19 +436,19 @@ export const TeamLeaderDashboardPage = () => {
 
                 {/* My KPIs Summary */}
                 <div className="grid grid-cols-4 gap-3">
-                  <div className="bg-gray-50 p-3 rounded-lg text-center">
+                  <div className="bg-gray-50 p-3 border border-gray-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-gray-700">{myKPIs.length}</div>
                     <div className="text-xs text-gray-600">Tổng KPI</div>
                   </div>
-                  <div className="bg-orange-50 p-3 rounded-lg text-center">
+                  <div className="bg-orange-50 p-3 border border-orange-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-orange-600">{myPendingKPIs.length}</div>
                     <div className="text-xs text-gray-600">Chờ duyệt</div>
                   </div>
-                  <div className="bg-green-50 p-3 rounded-lg text-center">
+                  <div className="bg-green-50 p-3 border border-green-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-green-600">{myApprovedKPIs.length}</div>
                     <div className="text-xs text-gray-600">Đã duyệt</div>
                   </div>
-                  <div className="bg-red-50 p-3 rounded-lg text-center">
+                  <div className="bg-red-50 p-3 border border-red-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-red-600">{myRejectedKPIs.length}</div>
                     <div className="text-xs text-gray-600">Từ chối</div>
                   </div>
@@ -465,15 +466,16 @@ export const TeamLeaderDashboardPage = () => {
                   <span className="font-semibold">KPI chờ duyệt</span>
                   <Badge count={pendingApprovalKPIs.length} showZero color="#fa8c16" />
                 </div>
-                <Button
-                  type="link"
+                <div
+                  
                   onClick={() => navigate('/approval')}
+                  className='underline text-sm text-blue-600 cursor-pointer hover:text-blue-400'
                 >
                   Xem tất cả
-                </Button>
+                </div>
               </div>
             }
-            className="shadow-md mb-4"
+            className="shadow-md mb-3"
           >
             {recentPendingKPIs.length > 0 ? (
               <Table
@@ -482,6 +484,7 @@ export const TeamLeaderDashboardPage = () => {
                 rowKey="id"
                 pagination={false}
                 size="small"
+                bordered
                 scroll={{ x: 800 }}
                 loading={loading}
               />
@@ -510,12 +513,14 @@ export const TeamLeaderDashboardPage = () => {
               pagination={false}
               size="small"
               loading={loading}
+              bordered 
+              scroll={{x:500}}
             />
           </Card>
         </Col>
 
         {/* Right Column */}
-        <Col xs={24} lg={10}>
+        <Col xs={24} lg={8}>
           {/* Quick Actions */}
           <Card 
             title={
@@ -532,8 +537,8 @@ export const TeamLeaderDashboardPage = () => {
                 icon={<FilePlus size={16} />}
                 onClick={() => navigate('/kpi/create')}
                 block
-                size="large"
-                className="bg-blue-500"
+                size="middle"
+                className="bg-blue-500 rounded-lg"
               >
                 Tạo KPI cá nhân
               </Button>
@@ -542,8 +547,8 @@ export const TeamLeaderDashboardPage = () => {
                 icon={<CheckCircle size={16} />}
                 onClick={() => navigate('/approval')}
                 block
-                size="large"
-                className="bg-primary"
+                size="middle"
+                className="bg-primary rounded-lg"
               >
                 Duyệt KPI Team ({pendingApprovalKPIs.length})
               </Button>
@@ -551,7 +556,8 @@ export const TeamLeaderDashboardPage = () => {
                 icon={<Users size={16} />}
                 onClick={() => navigate('/team-management')}
                 block
-                size="large"
+                size="middle"
+                className="rounded-lg"
               >
                 Quản lý team
               </Button>
@@ -559,7 +565,8 @@ export const TeamLeaderDashboardPage = () => {
                 icon={<BarChart3 size={16} />}
                 onClick={() => navigate('/team-reports')}
                 block
-                size="large"
+                size="middle"
+                className="rounded-lg"
               >
                 Báo cáo team
               </Button>
@@ -567,7 +574,8 @@ export const TeamLeaderDashboardPage = () => {
                 icon={<FileText size={16} />}
                 onClick={() => navigate('/kpi')}
                 block
-                size="large"
+                size="middle"
+                className="rounded-lg"
               >
                 Xem KPI của tôi
               </Button>
@@ -582,9 +590,9 @@ export const TeamLeaderDashboardPage = () => {
                 <span>Tổng quan team</span>
               </div>
             }
-            className="shadow-md mb-4"
+            className="shadow-md mb-3"
           >
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="text-center py-4">
                 <Progress
                   type="circle"
@@ -605,19 +613,19 @@ export const TeamLeaderDashboardPage = () => {
               </div>
               
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-blue-50 p-3 rounded-lg text-center">
+                <div className="bg-blue-50 p-3 border border-blue-200 rounded-lg text-center">
                   <div className="text-2xl font-bold text-blue-600">{totalTeamMembers}</div>
                   <div className="text-xs text-gray-600">Nhân viên</div>
                 </div>
-                <div className="bg-green-50 p-3 rounded-lg text-center">
+                <div className="bg-green-50 p-3 border border-green-200  rounded-lg text-center">
                   <div className="text-2xl font-bold text-green-600">{totalTeamKPIs}</div>
                   <div className="text-xs text-gray-600">Tổng KPI</div>
                 </div>
-                <div className="bg-orange-50 p-3 rounded-lg text-center">
+                <div className="bg-orange-50 p-3 border border-orange-200 rounded-lg text-center">
                   <div className="text-2xl font-bold text-orange-600">{pendingApprovalKPIs.length}</div>
                   <div className="text-xs text-gray-600">Chờ duyệt</div>
                 </div>
-                <div className="bg-red-50 p-3 rounded-lg text-center">
+                <div className="bg-red-50 p-3 border border-red-200 rounded-lg text-center">
                   <div className="text-2xl font-bold text-red-600">{rejectedKPIs.length}</div>
                   <div className="text-xs text-gray-600">Từ chối</div>
                 </div>

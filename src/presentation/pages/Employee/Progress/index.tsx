@@ -1,21 +1,5 @@
 import { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Table, 
-  Button, 
-  Progress, 
-  Tag, 
-  Timeline,
-  Modal,
-  Form,
-  InputNumber,
-  Input,
-  Select,
-  Empty,
-  Upload,
-  Image,
-  message
-} from 'antd';
+import {Card, Table, Button, Progress, Tag, Timeline,Modal,Form,InputNumber,Input,Select,Empty,Upload,Image,message } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { 
   TrendingUp, 
@@ -256,17 +240,17 @@ export const ProgressPage = () => {
           onClick={() => handleCheckin(record.id)}
           className="bg-primary"
         >
-          Check-in
+          Checklist
         </Button>
       ),
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
           <TrendingUp size={32} className="text-primary" />
           Tiến độ & Check-in
         </h1>
@@ -276,7 +260,7 @@ export const ProgressPage = () => {
       {/* KPI Selector */}
       {kpiList.length > 0 ? (
         <>
-          <Card className="shadow-sm">
+          <Card className="shadow-md border border-primary">
             <div className="flex items-center gap-4">
               <span className="font-semibold">Chọn KPI:</span>
               <Select
@@ -294,7 +278,7 @@ export const ProgressPage = () => {
                 ))}
               </Select>
               {selectedKPI && (
-                <Tag color="green">
+                <Tag color="green" className='rounded-lg'>
                   {selectedKPI.targets.length} mục tiêu
                 </Tag>
               )}
@@ -317,6 +301,9 @@ export const ProgressPage = () => {
                 dataSource={selectedKPI.targets}
                 rowKey="id"
                 pagination={false}
+                bordered
+                scroll={{x: 1000}}
+                
               />
             </Card>
           )}
@@ -330,7 +317,7 @@ export const ProgressPage = () => {
                   <span>Lịch sử Check-in</span>
                 </div>
               }
-              className="shadow-sm"
+              className="shadow-sm bg-primary/10 border-primary"
             >
               <Timeline
                 items={checkins.map(checkin => {
@@ -342,10 +329,10 @@ export const ProgressPage = () => {
                     children: (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-500 text-sm">
+                          <span className="text-gray-600 text-sm">
                             {new Date(checkin.checkinDate).toLocaleDateString('vi-VN')}
                           </span>
-                          <Tag color={status.color}>{checkin.completionRate}%</Tag>
+                          <Tag color={status.color} className='h-5 rounded-md'>{checkin.completionRate}%</Tag>
                         </div>
                         <div className="font-semibold">{target?.title}</div>
                         <div className="text-sm">

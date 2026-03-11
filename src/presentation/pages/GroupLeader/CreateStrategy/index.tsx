@@ -29,11 +29,12 @@ import {
   Users,
   Calendar,
   DollarSign,
-  Upload as UploadIcon
+  Upload as UploadIcon,
+  Edit
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import type { ITeamPlan, ITeamObjective } from '../../../core/models';
+import type { ITeamPlan, ITeamObjective } from '../../../../core/models';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -174,7 +175,7 @@ export const CreateStrategyPage = () => {
       okButtonProps: { danger: true },
       onOk: () => {
         const updated = [...teamPlans];
-        updated[teamIndex].objectives = updated[teamIndex].objectives.filter((_, i) => i !== objIndex);
+        updated[teamIndex].objectives = updated[teamIndex].objectives.filter((_:any, i:any) => i !== objIndex);
         setTeamPlans(updated);
         toast.success('Đã xóa mục tiêu');
       },
@@ -266,30 +267,31 @@ export const CreateStrategyPage = () => {
       align: 'center',
       render: (_, __, index) => (
         <Space>
-          <Button
+            <Button
             type="link"
             size="small"
             icon={<Plus size={14} />}
             onClick={() => handleAddObjective(index)}
-          >
-            Thêm mục tiêu
-          </Button>
-          <Button
+            className='border border-blue-500'
+            title="Thêm mục tiêu"
+            />
+            <Button
             type="link"
             size="small"
+            icon={<Edit size={14} color='#eab308' />}
             onClick={() => handleEditTeamPlan(index)}
-          >
-            Sửa
-          </Button>
-          <Button
+            className='border border-yellow-500'
+            title="Chỉnh sửa"
+            />
+            <Button
             type="link"
             size="small"
             danger
             icon={<Trash2 size={14} />}
             onClick={() => handleDeleteTeamPlan(index)}
-          >
-            Xóa
-          </Button>
+            className='border border-red-500'
+            title="Xóa"
+            />
         </Space>
       ),
     },
@@ -311,12 +313,12 @@ export const CreateStrategyPage = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <Target size={32} className="text-primary" />
+          <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+            <Target size={30} className="text-primary" />
             Tạo Chiến lược mới
           </h1>
           <p className="text-gray-500">Tạo kế hoạch chiến lược cho bộ phận và gửi CEO phê duyệt</p>
@@ -324,6 +326,7 @@ export const CreateStrategyPage = () => {
         <Button
           icon={<ArrowLeft size={16} />}
           onClick={() => navigate('/strategy')}
+          className='items-center'
         >
           Quay lại
         </Button>
@@ -331,7 +334,7 @@ export const CreateStrategyPage = () => {
 
       {/* Steps */}
       <Card className="shadow-md">
-        <Steps current={currentStep} items={steps} />
+        <Steps current={currentStep}  items={steps} />
       </Card>
 
       {/* Alert */}
@@ -340,6 +343,8 @@ export const CreateStrategyPage = () => {
         description="Chiến lược bao gồm các kế hoạch của các team khác nhau trong bộ phận. Mỗi team sẽ có các mục tiêu cụ thể. CEO sẽ xem được chi tiết mục tiêu của team, không xem được KPI cá nhân của nhân viên."
         type="info"
         showIcon
+        className='p-3'
+        closeIcon
       />
 
       <Form
@@ -362,7 +367,7 @@ export const CreateStrategyPage = () => {
                 >
                   <Input 
                     placeholder="VD: Chiến lược tăng trưởng Q4/2024"
-                    size="large"
+                    size="middle"
                     prefix={<Target size={16} />}
                   />
                 </Form.Item>
@@ -387,7 +392,7 @@ export const CreateStrategyPage = () => {
                   name="period"
                   rules={[{ required: true }]}
                 >
-                  <Select size="large">
+                  <Select size="middle">
                     <Option value="yearly">Cả năm</Option>
                     <Option value="half-yearly">6 tháng</Option>
                     <Option value="quarterly">Quý</Option>
@@ -402,7 +407,7 @@ export const CreateStrategyPage = () => {
                   rules={[{ required: true }]}
                 >
                   <InputNumber 
-                    size="large"
+                    size="middle"
                     style={{ width: '100%' }}
                     min={2024}
                     max={2030}
@@ -415,7 +420,7 @@ export const CreateStrategyPage = () => {
                   label="Quý (nếu có)"
                   name="quarter"
                 >
-                  <Select size="large" allowClear placeholder="Chọn quý">
+                  <Select size="middle" allowClear placeholder="Chọn quý">
                     <Option value={1}>Quý 1</Option>
                     <Option value={2}>Quý 2</Option>
                     <Option value={3}>Quý 3</Option>
@@ -430,7 +435,7 @@ export const CreateStrategyPage = () => {
                   name="totalBudget"
                 >
                   <InputNumber
-                    size="large"
+                    size="middle"
                     style={{ width: '100%' }}
                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={value => value!.replace(/\$\s?|(,*)/g, '')}
@@ -445,7 +450,7 @@ export const CreateStrategyPage = () => {
                   name="expectedImpact"
                 >
                   <Input 
-                    size="large"
+                    size="middle"
                     placeholder="VD: Tăng 20% doanh thu"
                   />
                 </Form.Item>
@@ -458,7 +463,7 @@ export const CreateStrategyPage = () => {
                 >
                   <Select
                     mode="tags"
-                    size="large"
+                    size="middle"
                     placeholder="Nhập và nhấn Enter để thêm mục tiêu"
                     style={{ width: '100%' }}
                   />
@@ -467,12 +472,12 @@ export const CreateStrategyPage = () => {
             </Row>
 
             <div className="flex justify-end gap-3 mt-6">
-              <Button size="large" onClick={handleSaveDraft} icon={<Save size={16} />}>
+              <Button size="middle" onClick={handleSaveDraft} icon={<Save size={16} />}>
                 Lưu nháp
               </Button>
               <Button 
                 type="primary" 
-                size="large"
+                size="middle"
                 onClick={() => setCurrentStep(1)}
               >
                 Tiếp theo
@@ -501,13 +506,15 @@ export const CreateStrategyPage = () => {
               dataSource={teamPlans}
               rowKey="id"
               pagination={false}
+              
+              bordered
               expandable={{
                 expandedRowRender: (record) => (
-                  <div className="p-4 bg-gray-50">
-                    <h4 className="font-semibold mb-3">Mục tiêu của {record.teamName}</h4>
+                  <div className="p-1">
+                    <h4 className="font-semibold mb-2">Mục tiêu của {record.teamName}</h4>
                     {record.objectives.length > 0 ? (
-                      <div className="space-y-3">
-                        {record.objectives.map((obj, index) => (
+                      <div className="space-y-2">
+                        {record.objectives.map((obj:any, index:any) => (
                           <Card key={obj.id} size="small" className="border-l-4 border-l-blue-500">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
@@ -549,6 +556,7 @@ export const CreateStrategyPage = () => {
                         description="Vui lòng thêm ít nhất một mục tiêu cho team này"
                         type="warning"
                         showIcon
+                        className='p-3'
                       />
                     )}
                   </div>
@@ -557,16 +565,16 @@ export const CreateStrategyPage = () => {
             />
 
             <div className="flex justify-between mt-6">
-              <Button size="large" onClick={() => setCurrentStep(0)}>
+              <Button size="middle" onClick={() => setCurrentStep(0)}>
                 Quay lại
               </Button>
               <div className="flex gap-3">
-                <Button size="large" onClick={handleSaveDraft} icon={<Save size={16} />}>
+                <Button size="middle" onClick={handleSaveDraft} icon={<Save size={16} />}>
                   Lưu nháp
                 </Button>
                 <Button 
                   type="primary" 
-                  size="large"
+                  size="middle"
                   onClick={() => setCurrentStep(2)}
                   disabled={teamPlans.length === 0}
                 >
@@ -580,21 +588,22 @@ export const CreateStrategyPage = () => {
         {/* Step 3: Review & Submit */}
         {currentStep === 2 && (
           <Card title="Xem xét & Gửi" className="shadow-md">
-            <div className="space-y-4">
+            <div className="space-y-3">
               <Alert
                 message="Kiểm tra kỹ thông tin trước khi gửi"
                 description="Sau khi gửi, chiến lược sẽ được chuyển đến CEO để phê duyệt. Bạn không thể chỉnh sửa trong quá trình chờ duyệt."
                 type="info"
                 showIcon
+                className='p-2'
               />
 
               <Divider>Tổng quan</Divider>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl">
                   <div className="text-2xl font-bold text-blue-600">{teamPlans.length}</div>
                   <div className="text-sm text-gray-600">Team tham gia</div>
                 </div>
-                <div className="bg-green-50 p-4 rounded-lg">
+                <div className="bg-green-50 border border-green-200 p-4 rounded-xl">
                   <div className="text-2xl font-bold text-green-600">
                     {teamPlans.reduce((sum, tp) => sum + tp.objectives.length, 0)}
                   </div>
@@ -605,8 +614,8 @@ export const CreateStrategyPage = () => {
               <Divider>Chi tiết các Team</Divider>
               {teamPlans.map((team, index) => (
                 <Card key={team.id} size="small" className="mb-3">
-                  <h4 className="font-semibold mb-2">{team.teamName}</h4>
-                  <div className="text-sm text-gray-600 mb-2">
+                  <h4 className="font-bold text-lg mb-1">{team.teamName}</h4>
+                  <div className="text-sm font-semibold text-gray-600 mb-2">
                     Team Leader: {team.teamLeaderName}
                   </div>
                   <div className="flex gap-2">
@@ -618,16 +627,16 @@ export const CreateStrategyPage = () => {
             </div>
 
             <div className="flex justify-between mt-6">
-              <Button size="large" onClick={() => setCurrentStep(1)}>
+              <Button size="middle" onClick={() => setCurrentStep(1)}>
                 Quay lại
               </Button>
               <div className="flex gap-3">
-                <Button size="large" onClick={handleSaveDraft} icon={<Save size={16} />}>
+                <Button size="middle" onClick={handleSaveDraft} icon={<Save size={16} />}>
                   Lưu nháp
                 </Button>
                 <Button 
                   type="primary" 
-                  size="large"
+                  size="middle"
                   icon={<Send size={16} />}
                   onClick={handleSubmit}
                 >
@@ -655,7 +664,7 @@ export const CreateStrategyPage = () => {
             name="teamLeaderId"
             rules={[{ required: true, message: 'Vui lòng chọn Team Leader' }]}
           >
-            <Select size="large" placeholder="Chọn Team Leader">
+            <Select size="middle" placeholder="Chọn Team Leader">
               {teamLeaders.map(tl => (
                 <Option key={tl.id} value={tl.id}>
                   {tl.name} - {tl.team}
@@ -666,7 +675,7 @@ export const CreateStrategyPage = () => {
 
           <Form.Item label="Ngân sách (VNĐ)" name="budget">
             <InputNumber
-              size="large"
+              size="middle"
               style={{ width: '100%' }}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               parser={value => value!.replace(/\$\s?|(,*)/g, '')}
@@ -683,12 +692,12 @@ export const CreateStrategyPage = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Ngày bắt đầu" name="startDate">
-                <Input type="date" size="large" />
+                <Input type="date" size="middle" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Ngày kết thúc" name="endDate">
-                <Input type="date" size="large" />
+                <Input type="date" size="middle" />
               </Form.Item>
             </Col>
           </Row>
@@ -711,7 +720,7 @@ export const CreateStrategyPage = () => {
             name="title"
             rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
           >
-            <Input size="large" placeholder="VD: Tăng doanh số bán hàng" />
+            <Input size="middle" placeholder="VD: Tăng doanh số bán hàng" />
           </Form.Item>
 
           <Form.Item
@@ -729,7 +738,7 @@ export const CreateStrategyPage = () => {
                 name="weight"
                 rules={[{ required: true, message: 'Vui lòng nhập trọng số' }]}
               >
-                <InputNumber size="large" min={0} max={100} style={{ width: '100%' }} />
+                <InputNumber size="middle" min={0} max={100} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -738,7 +747,7 @@ export const CreateStrategyPage = () => {
                 name="target"
                 rules={[{ required: true, message: 'Vui lòng nhập mục tiêu' }]}
               >
-                <Input size="large" placeholder="VD: 100" />
+                <Input size="middle" placeholder="VD: 100" />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -747,13 +756,13 @@ export const CreateStrategyPage = () => {
                 name="unit"
                 rules={[{ required: true, message: 'Vui lòng nhập đơn vị' }]}
               >
-                <Input size="large" placeholder="VD: triệu VNĐ" />
+                <Input size="middle" placeholder="VD: triệu VNĐ" />
               </Form.Item>
             </Col>
           </Row>
 
           <Form.Item label="Danh mục" name="category">
-            <Select size="large" placeholder="Chọn danh mục">
+            <Select size="middle" placeholder="Chọn danh mục">
               <Option value="revenue">Doanh thu</Option>
               <Option value="customer">Khách hàng</Option>
               <Option value="quality">Chất lượng</Option>
@@ -771,18 +780,18 @@ export const CreateStrategyPage = () => {
           </Form.Item>
 
           <Form.Item label="Kết quả mong đợi" name="expectedOutcome">
-            <Input size="large" placeholder="VD: Tăng 20% so với quý trước" />
+            <Input size="middle" placeholder="VD: Tăng 20% so với quý trước" />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Ngày bắt đầu" name="startDate">
-                <Input type="date" size="large" />
+                <Input type="date" size="middle" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Ngày kết thúc" name="endDate">
-                <Input type="date" size="large" />
+                <Input type="date" size="middle" />
               </Form.Item>
             </Col>
           </Row>

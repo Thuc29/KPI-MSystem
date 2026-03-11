@@ -26,11 +26,12 @@ import {
   Edit,
   Send,
   FileText,
-  AlertTriangle
+  AlertTriangle,
+  Tags
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import type { IStrategicPlan } from '../../../core/models';
+import type { IStrategicPlan } from '../../../../core/models';
 
 const { TextArea } = Input;
 
@@ -222,23 +223,23 @@ export const StrategyDetailPage = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            icon={<ArrowLeft size={16} />}
+        <div className="flex-1 items-center gap-2">
+          <div
+            className=' flex items-center gap-1 underline text-blue-600 font-semibold pb-2 cursor-pointer'
             onClick={() => navigate('/strategy')}
-          >
+          ><ArrowLeft size={14} />
             Quay lại
-          </Button>
+          </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <Target size={32} className="text-primary" />
+              <Target size={30} className="text-primary" />
               {strategy.title}
             </h1>
             <p className="text-gray-500 mt-1">{strategy.description}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Tag color={statusConfig.color} icon={statusConfig.icon} className="text-base px-4 py-2">
+          <Tag color={statusConfig.color} icon={statusConfig.icon} className="text-base flex items-center rounded-lg gap-2 px-2 py-1">
             {statusConfig.label}
           </Tag>
           {strategy.status === 'draft' && (
@@ -246,7 +247,7 @@ export const StrategyDetailPage = () => {
               <Button
                 icon={<Edit size={16} />}
                 onClick={handleEdit}
-                size="large"
+                size="middle"
               >
                 Chỉnh sửa
               </Button>
@@ -254,7 +255,7 @@ export const StrategyDetailPage = () => {
                 type="primary"
                 icon={<Send size={16} />}
                 onClick={handleSubmit}
-                size="large"
+                size="middle"
                 className="bg-primary"
               >
                 Gửi CEO duyệt
@@ -362,97 +363,102 @@ export const StrategyDetailPage = () => {
               items={strategy.teamPlans.map((team, index) => ({
                 key: team.id,
                 label: (
-                  <div className="flex items-center gap-2">
+                  <div className="flex font-semibold items-center gap-2">
                     <span>{team.teamName}</span>
                     <Badge count={team.objectives.length} showZero color="#1890ff" />
                   </div>
                 ),
                 children: (
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     {/* Team Info */}
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
+                    <div className="bg-primary/10 border border-primary/30 p-4 rounded-2xl">
+                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <div>
                           <span className="text-gray-600">Team Leader: </span>
                           <span className="font-semibold">{team.teamLeaderName}</span>
-                        </div>
-                        {team.budget && (
+                          </div>
+                          {team.budget && (
                           <div>
                             <span className="text-gray-600">Ngân sách: </span>
                             <span className="font-semibold">{(team.budget / 1000000).toFixed(0)}M VNĐ</span>
                           </div>
-                        )}
-                        {team.timeline && (
-                          <div className="col-span-2">
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          {team.timeline && (
+                          <div>
                             <span className="text-gray-600">Thời gian: </span>
                             <span className="font-semibold">
-                              {team.timeline.startDate} → {team.timeline.endDate}
+                            {team.timeline.startDate} → {team.timeline.endDate}
                             </span>
                           </div>
-                        )}
+                          )}
                         {team.resources && team.resources.length > 0 && (
                           <div className="col-span-2">
-                            <span className="text-gray-600">Tài nguyên: </span>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                              {team.resources.map((resource, idx) => (
-                                <Tag key={idx} color="blue">{resource}</Tag>
-                              ))}
-                            </div>
+                          <span className="text-gray-600">Tài nguyên: </span>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {team.resources.map((resource, idx) => (
+                            <Tag key={idx} color="blue" className='rounded-lg'>{resource}</Tag>
+                            ))}
                           </div>
-                        )}
-                      </div>
+                          </div>
+                        )} </div>
+                        </div>
                     </div>
 
                     {/* Objectives */}
                     <div className="space-y-3">
-                      <h4 className="font-semibold">Mục tiêu ({team.objectives.length})</h4>
+                      <h4 className="font-semibold text-lg">Mục tiêu ({team.objectives.length})</h4>
                       {team.objectives.map((obj, objIndex) => (
                         <Card key={obj.id} size="small" className="border-l-4 border-l-primary">
-                          <div className="space-y-3">
+                          <div className="space-y-2">
                             <div className="flex items-start justify-between">
                               <div className="flex items-start gap-3 flex-1">
-                                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div className="w-8 h-8 bg-primary/10 border border-primary/30 rounded-full flex items-center justify-center flex-shrink-0">
                                   <span className="text-primary font-semibold">{objIndex + 1}</span>
                                 </div>
                                 <div className="flex-1">
-                                  <h5 className="font-semibold text-base mb-1">{obj.title}</h5>
+                                  <h5 className="font-semibold text-base">{obj.title}</h5>
                                   <p className="text-sm text-gray-600">{obj.description}</p>
                                 </div>
                               </div>
-                              <Tag color="blue">Trọng số: {obj.weight}%</Tag>
+                              <Tag color="blue" className='rounded-lg'>
+                                Trọng số: {obj.weight}%
+                              </Tag>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                              <div className="bg-gray-50 p-2 rounded">
+                            <div className="grid grid-cols-2 gap-1 text-sm">
+                              <div className="bg-gray-50 p-2 rounded-lg">
                                 <span className="text-gray-600">Mục tiêu: </span>
                                 <span className="font-semibold">{obj.target} {obj.unit}</span>
                               </div>
                               {obj.category && (
-                                <div className="bg-gray-50 p-2 rounded">
+                                <div className="bg-gray-50 p-2 rounded-lg">
                                   <span className="text-gray-600">Danh mục: </span>
-                                  <Tag size="small">{obj.category}</Tag>
+                                  <Tags size="small">{obj.category}</Tags>
                                 </div>
                               )}
                               {obj.startDate && obj.endDate && (
-                                <div className="bg-gray-50 p-2 rounded col-span-2">
+                                <div className="bg-gray-50 p-2 rounded-lg col-span-2">
                                   <span className="text-gray-600">Thời gian: </span>
                                   <span className="font-medium">{obj.startDate} → {obj.endDate}</span>
                                 </div>
                               )}
                               {obj.measurementMethod && (
-                                <div className="bg-gray-50 p-2 rounded col-span-2">
+                                <div className="bg-gray-50 p-2 rounded-lg col-span-2">
                                   <span className="text-gray-600">Đo lường: </span>
                                   <span className="text-gray-800">{obj.measurementMethod}</span>
                                 </div>
                               )}
                               {obj.evaluationCriteria && (
-                                <div className="bg-gray-50 p-2 rounded col-span-2">
+                                <div className="bg-gray-50 p-2 rounded-lg col-span-2">
                                   <span className="text-gray-600">Tiêu chí: </span>
                                   <span className="text-gray-800">{obj.evaluationCriteria}</span>
                                 </div>
                               )}
                               {obj.expectedOutcome && (
-                                <div className="bg-blue-50 p-2 rounded col-span-2 border-l-2 border-l-blue-500">
+                                <div className="bg-blue-50 p-2 rounded-lg col-span-2 border-l-2 border-l-blue-500">
                                   <span className="text-gray-600">Kết quả mong đợi: </span>
                                   <span className="font-medium text-blue-700">{obj.expectedOutcome}</span>
                                 </div>
@@ -470,7 +476,7 @@ export const StrategyDetailPage = () => {
         </div>
 
         {/* Right Column - 1/3 */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Strategy Info */}
           <Card 
             title={
@@ -482,12 +488,13 @@ export const StrategyDetailPage = () => {
             className="shadow-md"
           >
             <div className="space-y-3 text-sm">
-              <div>
-                <div className="text-gray-600 mb-1">Mã chiến lược</div>
+              <div className='flex items-center gap-2'>
+                <div className="text-gray-600">Mã chiến lược: </div>
                 <div className="font-mono font-semibold text-primary">{strategy.id}</div>
               </div>
               <Divider className="my-3" />
-              <div>
+              <div className='flex items-center justify-between'>
+                <div>
                 <div className="text-gray-600 mb-1">Bộ phận</div>
                 <Tag color="purple">{strategy.departmentName}</Tag>
               </div>
@@ -495,8 +502,10 @@ export const StrategyDetailPage = () => {
                 <div className="text-gray-600 mb-1">Group Leader</div>
                 <div className="font-medium">{strategy.groupLeaderName}</div>
               </div>
+              </div>
               <Divider className="my-3" />
-              <div>
+             <div className='flex items-center justify-around'>
+               <div>
                 <div className="text-gray-600 mb-1">Ngày tạo</div>
                 <div className="font-medium">{new Date(strategy.createdAt).toLocaleDateString('vi-VN')}</div>
               </div>
@@ -513,6 +522,7 @@ export const StrategyDetailPage = () => {
                 </div>
               )}
             </div>
+             </div>
           </Card>
 
           {/* Overall Objectives */}
@@ -573,34 +583,34 @@ export const StrategyDetailPage = () => {
                     </div>
                   ),
                 },
-                strategy.submittedAt && {
-                  color: 'blue',
+                ...(strategy.submittedAt ? [{
+                  color: 'blue' as const,
                   children: (
                     <div>
                       <div className="text-xs text-gray-500">{new Date(strategy.submittedAt).toLocaleDateString('vi-VN')}</div>
                       <div className="font-medium">Gửi CEO duyệt</div>
                     </div>
                   ),
-                },
-                strategy.approvedAt && {
-                  color: 'green',
+                }] : []),
+                ...(strategy.approvedAt ? [{
+                  color: 'green' as const,
                   children: (
                     <div>
                       <div className="text-xs text-gray-500">{new Date(strategy.approvedAt).toLocaleDateString('vi-VN')}</div>
                       <div className="font-medium">CEO phê duyệt</div>
                     </div>
                   ),
-                },
-                strategy.status === 'rejected' && {
-                  color: 'red',
+                }] : []),
+                ...(strategy.status === 'rejected' ? [{
+                  color: 'red' as const,
                   children: (
                     <div>
                       <div className="text-xs text-gray-500">{new Date(strategy.updatedAt).toLocaleDateString('vi-VN')}</div>
                       <div className="font-medium">Bị từ chối</div>
                     </div>
                   ),
-                },
-              ].filter(Boolean)}
+                }] : []),
+              ]}
             />
           </Card>
         </div>

@@ -233,7 +233,7 @@ export const DepartmentManagementPage = () => {
       title: 'Team Leader',
       key: 'leader',
       fixed: 'left',
-      width: 250,
+      width: 200,
       render: (_, record) => (
         <div className="flex items-center gap-3">
           <Avatar size={48} className="bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0">
@@ -251,14 +251,14 @@ export const DepartmentManagementPage = () => {
       title: 'Bộ phận',
       dataIndex: 'department',
       key: 'department',
-      width: 120,
+      width: 80,
       render: (text) => <Tag color="purple">{text}</Tag>,
     },
     {
       title: 'Số KPI',
       key: 'kpiCount',
       align: 'center',
-      width: 120,
+      width: 70,
       render: (_, record) => {
         const stats = getLeaderStats(record.id);
         
@@ -307,7 +307,7 @@ export const DepartmentManagementPage = () => {
       title: 'Đánh giá',
       dataIndex: 'status',
       key: 'status',
-      width: 140,
+      width: 100,
       align: 'center',
       render: (status) => {
         const config = {
@@ -318,7 +318,7 @@ export const DepartmentManagementPage = () => {
         };
         const { color, icon, label } = config[status as keyof typeof config];
         return (
-          <Tag color={color} icon={icon} className="px-3 py-1">
+          <Tag color={color} icon={icon} className="px-3 flex items-center w-fit mx-auto gap-2 rounded-lg py-1">
             {label}
           </Tag>
         );
@@ -335,7 +335,7 @@ export const DepartmentManagementPage = () => {
       title: 'Hành động',
       key: 'action',
       align: 'center',
-      width: 150,
+      width: 80,
       fixed: 'right',
       render: (_, record) => (
         <Space>
@@ -343,7 +343,7 @@ export const DepartmentManagementPage = () => {
             type="primary"
             icon={<Eye size={14} />}
             onClick={() => showLeaderDetail(record)}
-            className="bg-primary"
+            className="bg-primary rounded-lg"
           >
             Chi tiết
           </Button>
@@ -369,8 +369,8 @@ export const DepartmentManagementPage = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-            <Building2 size={32} className="text-primary" />
+          <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
+            <Building2 size={30} className="text-primary" />
             Quản lý Bộ phận
           </h1>
           <p className="text-gray-500">Theo dõi và quản lý Team Leader trong bộ phận</p>
@@ -380,7 +380,7 @@ export const DepartmentManagementPage = () => {
           <Button
             icon={<FilePlus size={18} />}
             onClick={() => navigate('/kpi/create')}
-            size="large"
+            size="middle"
           >
             Tạo KPI
           </Button>
@@ -389,64 +389,12 @@ export const DepartmentManagementPage = () => {
             icon={<BarChart3 size={18} />}
             onClick={() => navigate('/reports/department')}
             className="bg-primary"
-            size="large"
+            size="middle"
           >
             Báo cáo Bộ phận
           </Button>
         </Space>
       </div>
-
-      {/* Statistics */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
-            <Statistic
-              title={<span className="text-gray-600 font-medium">Team Leader</span>}
-              value={teamLeaders.length}
-              prefix={<Users size={28} className="text-purple-500" />}
-              valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 'bold' }}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
-            <Statistic
-              title={<span className="text-gray-600 font-medium">Xuất sắc</span>}
-              value={excellentCount}
-              prefix={<Award size={28} className="text-green-500" />}
-              valueStyle={{ color: '#52c41a', fontSize: '32px', fontWeight: 'bold' }}
-              suffix={<span className="text-sm text-gray-500">/ {teamLeaders.length}</span>}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
-            <Statistic
-              title={<span className="text-gray-600 font-medium">Hiệu suất TB</span>}
-              value={totalAvgCompletion}
-              prefix={<Target size={28} className="text-blue-500" />}
-              suffix="%"
-              valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 'bold' }}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-md border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow">
-            <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng KPI</span>}
-              value={totalDeptKPIs}
-              prefix={<FileText size={28} className="text-orange-500" />}
-              valueStyle={{ color: '#fa8c16', fontSize: '32px', fontWeight: 'bold' }}
-              suffix={pendingApprovalKPIs.length > 0 && (
-                <Badge count={pendingApprovalKPIs.length} className="ml-2" />
-              )}
-            />
-          </Card>
-        </Col>
-      </Row>
 
       {/* Team Leaders Table */}
       <Card 
@@ -517,7 +465,7 @@ export const DepartmentManagementPage = () => {
         onCancel={() => setDetailModalVisible(false)}
         footer={
           <Space>
-            <Button onClick={() => setDetailModalVisible(false)}>Đóng</Button>
+            <Button onClick={() => setDetailModalVisible(false)} className='round-lg'>Đóng</Button>
             <Button
               type="primary"
               icon={<Eye size={16} />}
@@ -526,7 +474,7 @@ export const DepartmentManagementPage = () => {
                   navigate(`/team/${selectedLeader.id}`);
                 }
               }}
-              className="bg-primary"
+              className="bg-primary rounded-lg"
             >
               Xem chi tiết đầy đủ
             </Button>
@@ -535,7 +483,7 @@ export const DepartmentManagementPage = () => {
         width={900}
       >
         {selectedLeader && (
-          <div className="space-y-4 mt-4">
+          <div className="space-y-3 my-4">
             {/* Basic Info */}
             <Card size="small" className="bg-gray-50">
               <Descriptions column={2} size="small">
@@ -559,7 +507,7 @@ export const DepartmentManagementPage = () => {
                   />
                 </Descriptions.Item>
                 <Descriptions.Item label="Đánh giá" span={2}>
-                  <Tag color={getStatusColor(selectedLeader.status)} className="px-3 py-1">
+                  <Tag color={getStatusColor(selectedLeader.status)} className="px-3">
                     {getStatusLabel(selectedLeader.status)}
                   </Tag>
                 </Descriptions.Item>
@@ -736,7 +684,7 @@ export const DepartmentManagementPage = () => {
         title={
           <div className="flex items-center gap-2">
             <FileText size={20} className="text-primary" />
-            <span>Chi tiết KPI - {selectedKPI?.id}</span>
+            <span className='flex gap-1'>Chi tiết KPI: <p className='text-primary-dark font-bold'>{selectedKPI?.id} </p></span>
           </div>
         }
         open={kpiDetailModalVisible}
@@ -756,7 +704,7 @@ export const DepartmentManagementPage = () => {
                     setKpiDetailModalVisible(false);
                     setApproveModalVisible(true);
                   }}
-                  className="bg-primary"
+                  className="bg-primary rounded-lg"
                 >
                   Phê duyệt
                 </Button>
@@ -767,6 +715,7 @@ export const DepartmentManagementPage = () => {
                     setKpiDetailModalVisible(false);
                     setRejectModalVisible(true);
                   }}
+                  className='rounded-lg'
                 >
                   Từ chối
                 </Button>
@@ -777,9 +726,9 @@ export const DepartmentManagementPage = () => {
         width={1000}
       >
         {selectedKPI && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Basic Info */}
-            <Card size="small" className="bg-gray-50">
+            <Card size="small" className="bg-gray-100 border-gray-300">
               <Descriptions column={2} size="small">
                 <Descriptions.Item label="Team Leader">
                   <span className="font-semibold">{selectedKPI.employeeName}</span>
@@ -803,7 +752,7 @@ export const DepartmentManagementPage = () => {
                 <Descriptions.Item label="Tổng trọng số">
                   <Tag 
                     color={selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0) === 100 ? 'success' : 'error'} 
-                    className="text-lg font-bold"
+                    className="text-base font-bold"
                   >
                     {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%
                   </Tag>
@@ -812,12 +761,12 @@ export const DepartmentManagementPage = () => {
             </Card>
 
             {/* Targets List */}
-            <div className="border-t pt-4">
+            <div className="border-t pt-2">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold text-lg">
                   Danh sách mục tiêu ({selectedKPI.targets.length})
                 </h4>
-                <Tag color="blue" icon={<FileText size={14} />}>
+                <Tag color="blue" className="flex items-center gap-1" icon={<FileText size={14} />}>
                   {selectedKPI.targets.length} mục tiêu
                 </Tag>
               </div>
@@ -996,30 +945,32 @@ const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+              <span className="border-primary text-primary border rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
                 {index + 1}
               </span>
               <h5 className="font-semibold text-base">{target.title}</h5>
               {target.category && (
-                <Tag color="blue">{target.category}</Tag>
+                <Tag color="blue" className="rounded-lg">
+                  {target.category}
+                </Tag>
               )}
             </div>
           </div>
-          <Tag color="green" className="text-lg font-bold px-3 py-1">
+          <Tag color="orange" className="text-base font-semibold px-2">
             {target.weight}%
           </Tag>
         </div>
 
         {/* Description */}
-        <div className="bg-gray-50 p-3 rounded-lg">
+        <div className="bg-gray-100 px-3 py-1 rounded-lg">
           <p className="text-sm text-gray-700 whitespace-pre-wrap">{target.description}</p>
         </div>
 
         {/* Target & Unit */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-xs text-gray-600 mb-1">Chỉ tiêu</p>
-            <p className="text-lg font-bold text-blue-600">
+          <div className="bg-blue-50 p-2 flex items-center text-sm gap-2 rounded-lg">
+            <p className=" text-gray-600 ">Chỉ tiêu: </p>
+            <p className=" font-bold text-blue-600">
               {target.target} <span className="text-sm">{target.unit}</span>
             </p>
           </div>

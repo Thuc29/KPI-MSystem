@@ -258,7 +258,7 @@ export const CreateKPIForm = () => {
         year: values.year,
         quarter: values.quarter,
         period: values.period,
-        status: 'pending_manager',
+        status: 'pending_approval',
         targets: allTargets,
         groups: groups,
       });
@@ -346,13 +346,13 @@ export const CreateKPIForm = () => {
         </Card>
 
         {/* KPI Groups */}
-        <Card 
+        <Card
           title={
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-lg font-semibold">Nhóm KPI</span>
-                <Tag color="blue">{groups.length} nhóm</Tag>
-                <Tag color="success">{allTargets.length} mục tiêu</Tag>
+                <Tag color="blue" className="rounded-lg">{groups.length} nhóm</Tag>
+                <Tag color="success" className="rounded-lg">{allTargets.length} mục tiêu</Tag>
               </div>
               <Tag 
                 color={isWeightValid ? 'success' : 'error'}
@@ -380,7 +380,7 @@ export const CreateKPIForm = () => {
               }
               type={!hasMaxTargets ? 'error' : 'warning'}
               showIcon
-              className="mb-4 rounded-xl"
+              className="mb-3 rounded-xl h-7"
             />
           )}
 
@@ -403,7 +403,7 @@ export const CreateKPIForm = () => {
                         <span className="font-semibold text-base">
                           #{groupIndex + 1} {group.name || '(Chưa đặt tên)'}
                         </span>
-                        <Tag color="blue">{group.targets.length} mục tiêu</Tag>
+                        <Tag color="blue" className='rounded-lg'>{group.targets.length} mục tiêu</Tag>
                         {groupWeight > 0 && (
                           <Tag color="green">{groupWeight}%</Tag>
                         )}
@@ -416,6 +416,7 @@ export const CreateKPIForm = () => {
                           e.stopPropagation();
                           removeGroup(group.id);
                         }}
+                        className='rounded-lg'
                       >
                         Xóa nhóm
                       </Button>
@@ -425,8 +426,8 @@ export const CreateKPIForm = () => {
                 >
                   <div className="space-y-4">
                     {/* Group Info */}
-                    <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                      <div className="space-y-3">
+                    <div className="bg-purple-50 p-4 rounded-xl border border-purple-200">
+                      <div className="space-y-2">
                         <div>
                           <label className="block text-sm font-semibold text-purple-900 mb-1">
                             TÊN NHÓM KPI *
@@ -435,7 +436,7 @@ export const CreateKPIForm = () => {
                             placeholder="Ví dụ: Mục tiêu doanh số, Phát triển kỹ năng..."
                             value={group.name}
                             onChange={(e) => updateGroup(group.id, 'name', e.target.value)}
-                            size="large"
+                            size="middle"
                             className="font-medium"
                             maxLength={200}
                           />
@@ -456,12 +457,12 @@ export const CreateKPIForm = () => {
                     </div>
 
                     {/* Targets in Group */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {group.targets.map((target, targetIndex) => (
                         <Card
                           key={target.id}
                           type="inner"
-                          className="border-l-4 border-l-blue-500"
+                          className="border-l-4 border-l-blue-500 "
                           title={
                             <div className="flex items-center gap-2">
                               <span className="text-base font-semibold">
@@ -491,7 +492,7 @@ export const CreateKPIForm = () => {
                             </Space>
                           }
                         >
-                          <div className="space-y-3">
+                          <div className="space-y-2 ">
                             {/* Row 1: Title - Full Width */}
                             <div>
                               <Input
@@ -499,13 +500,13 @@ export const CreateKPIForm = () => {
                                 value={target.title}
                                 onChange={(e) => updateTarget(group.id, target.id, 'title', e.target.value)}
                                 maxLength={200}
-                                size="large"
+                                size="middle"
                                 className="font-medium"
                               />
                             </div>
 
                             {/* Row 2: Key Metrics with Category */}
-                            <div className="grid grid-cols-4 gap-3 bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <div className="grid grid-cols-4 gap-3 bg-blue-50 p-3 rounded-xl border border-blue-200">
                               <div>
                                 <label className="block text-xs font-semibold text-blue-900 mb-1">
                                   DANH MỤC *
@@ -514,8 +515,9 @@ export const CreateKPIForm = () => {
                                   placeholder="Chọn"
                                   value={target.category || undefined}
                                   onChange={(value) => updateTarget(group.id, target.id, 'category', value)}
-                                  size="large"
-                                >
+                                  size="middle"
+                                  className='w-full'
+                                  showSearch>
                                   <Option value="Doanh số">Doanh số</Option>
                                   <Option value="Chất lượng">Chất lượng</Option>
                                   <Option value="Hiệu suất">Hiệu suất</Option>
@@ -532,7 +534,7 @@ export const CreateKPIForm = () => {
                                   value={target.weight || undefined}
                                   onChange={(value) => updateTarget(group.id, target.id, 'weight', value)}
                                   className="w-full"
-                                  size="large"
+                                  size="middle"
                                   placeholder="Chọn"
                                 >
                                   <Option value={5}>5%</Option>
@@ -554,7 +556,7 @@ export const CreateKPIForm = () => {
                                 <Input
                                   value={target.target}
                                   onChange={(e) => updateTarget(group.id, target.id, 'target', e.target.value)}
-                                  size="large"
+                                  size="middle"
                                   className="font-medium"
                                   placeholder="Nhập số"
                                 />
@@ -566,8 +568,9 @@ export const CreateKPIForm = () => {
                                 <Select
                                   value={target.unit || undefined}
                                   onChange={(value) => updateTarget(group.id, target.id, 'unit', value)}
-                                  size="large"
+                                  size="middle"
                                   placeholder="Chọn"
+                                  className='w-full'
                                   showSearch
                                 >
                                   <Option value="VNĐ">VNĐ</Option>
@@ -646,8 +649,10 @@ export const CreateKPIForm = () => {
                       icon={<Plus size={16} />}
                       onClick={() => addTargetToGroup(group.id)}
                       block
-                      size="large"
+                      size="middle"
+                      
                       disabled={!hasMaxTargets}
+                      className=" border-primary text-primary-light "
                     >
                       Thêm mục tiêu vào nhóm này
                     </Button>
@@ -665,7 +670,7 @@ export const CreateKPIForm = () => {
             size="large"
             className="bg-purple-600 hover:bg-purple-700"
           >
-            Thêm nhóm KPI mới
+            Thêm KPI mới
           </Button>
         </Card>
 
@@ -675,6 +680,7 @@ export const CreateKPIForm = () => {
             <Button
               size="middle"
               onClick={() => navigate('/kpi')}
+              className='rounded-lg'
             >
               Hủy
             </Button>
@@ -686,6 +692,7 @@ export const CreateKPIForm = () => {
                 onClick={() => form.validateFields().then(saveDraft)}
                 loading={loading}
                 disabled={groups.length === 0}
+                className="rounded-lg"
               >
                 Lưu nháp
               </Button>
@@ -695,6 +702,7 @@ export const CreateKPIForm = () => {
                 icon={<Eye size={16} />}
                 onClick={() => setPreviewVisible(true)}
                 disabled={groups.length === 0}
+                className="rounded-lg"
               >
                 Xem trước
               </Button>
@@ -705,8 +713,9 @@ export const CreateKPIForm = () => {
                 icon={<Send size={16} />}
                 onClick={() => form.validateFields().then(submitForApproval)}
                 loading={loading}
-                className="bg-primary hover:bg-primary-dark"
+                className="bg-primary hover:bg-primary-dark rounded-lg"
                 disabled={!isWeightValid || !hasMinTargets}
+
               >
                 Gửi duyệt
               </Button>

@@ -205,22 +205,22 @@ export const ExecutiveDashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Performers */}
         <Card title="Top Performers" className="lg:col-span-2">
-          <div className="space-y-4">
+          <div className="space-y-2">
             {topPerformers.map((performer, index) => (
-              <div key={performer.name} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
-                  index === 0 ? 'bg-yellow-100 text-yellow-600' :
-                  index === 1 ? 'bg-gray-200 text-gray-600' :
-                  'bg-orange-100 text-orange-600'
+              <div key={performer.name} className="flex items-center gap-3 py-1 px-3 bg-gray-100 rounded-xl border border-gray-200">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-lg ${
+                  index === 0 ? 'bg-yellow-100 text-yellow-600 border border-yellow-300' :
+                  index === 1 ? 'bg-gray-200 text-gray-600 border border-gray-300' :
+                  'bg-orange-100 text-orange-600 border border-orange-300'
                 }`}>
                   {index + 1}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-lg">{performer.name}</span>
-                    <Tag color="blue">{performer.dept}</Tag>
+                    <span className="font-semibold text-base">{performer.name}</span>
+                    <Tag color="blue" className='px-1'>{performer.dept}</Tag>
                   </div>
-                  <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
+                  <div className="flex items-center gap-3 mt-1 text-sm text-gray-600">
                     <span>KPI: {performer.completed}/{performer.kpis}</span>
                     <Progress 
                       percent={(performer.completed / performer.kpis) * 100} 
