@@ -34,6 +34,7 @@ import {
   markAllAsRead 
 } from '../../../../infrastructure/api/mockNotifications';
 import type { INotification, NotificationType } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const getNotificationIcon = (type: NotificationType) => {
   const icons = {
@@ -60,36 +61,37 @@ const getPriorityColor = (priority: string) => {
   return colors[priority as keyof typeof colors] || 'default';
 };
 
-const getPriorityLabel = (priority: string) => {
-  const labels = {
-    urgent: 'Khẩn cấp',
-    high: 'Cao',
-    medium: 'Trung bình',
-    low: 'Thấp',
-  };
-  return labels[priority as keyof typeof labels] || priority;
-};
-
-const getTimeAgo = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Vừa xong';
-  if (diffMins < 60) return `${diffMins} phút trước`;
-  if (diffHours < 24) return `${diffHours} giờ trước`;
-  if (diffDays < 7) return `${diffDays} ngày trước`;
-  return date.toLocaleDateString('vi-VN');
-};
-
 export const NotificationsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const userId = storage.getUserId() || '1';
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [activeTab, setActiveTab] = useState('all');
+
+  const getPriorityLabel = (priority: string) => {
+    const labels: Record<string, string> = {
+      urgent: t.notifications.priority.urgent,
+      high: t.notifications.priority.high,
+      medium: t.notifications.priority.medium,
+      low: t.notifications.priority.low,
+    };
+    return labels[priority] || priority;
+  };
+
+  const getTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return t.notifications.justNow;
+    if (diffMins < 60) return t.notifications.minutesAgo.replace('{count}', String(diffMins));
+    if (diffHours < 24) return t.notifications.hoursAgo.replace('{count}', String(diffHours));
+    if (diffDays < 7) return t.notifications.daysAgo.replace('{count}', String(diffDays));
+    return date.toLocaleDateString('vi-VN');
+  };
 
   useEffect(() => {
     loadNotifications();
@@ -140,12 +142,12 @@ export const NotificationsPage = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
             <Bell size={32} className="text-primary" />
-            Thông báo
+            {t.notifications.title}
             {unreadCount > 0 && (
               <Badge count={unreadCount} className="ml-2" />
             )}
           </h1>
-          <p className="text-gray-500">Quản lý và theo dõi thông báo của bạn</p>
+          <p className="text-gray-500">{t.notifications.subtitle}</p>
         </div>
         {unreadCount > 0 && (
           <Button
@@ -154,7 +156,7 @@ export const NotificationsPage = () => {
             onClick={handleMarkAllAsRead}
             className="bg-primary hover:bg-primary-dark"
           >
-            Đánh dấu tất cả đã đọc
+            {t.notifications.markAllRead}
           </Button>
         )}
       </div>
@@ -168,7 +170,7 @@ export const NotificationsPage = () => {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">{notifications.length}</div>
-              <div className="text-sm text-gray-500">Tổng thông báo</div>
+              <div className="text-sm text-gray-500">{t.notifications.totalNotifications}</div>
             </div>
           </div>
         </Card>
@@ -180,7 +182,7 @@ export const NotificationsPage = () => {
             </div>
             <div>
               <div className="text-2xl font-bold text-orange-600">{unreadCount}</div>
-              <div className="text-sm text-gray-500">Chưa đọc</div>
+              <div className="text-sm text-gray-500">{t.notifications.unread}</div>
             </div>
           </div>
         </Card>
@@ -194,7 +196,7 @@ export const NotificationsPage = () => {
               <div className="text-2xl font-bold text-green-600">
                 {notifications.length - unreadCount}
               </div>
-              <div className="text-sm text-gray-500">Đã đọc</div>
+              <div className="text-sm text-gray-500">{t.notifications.read}</div>
             </div>
           </div>
         </Card>
@@ -211,7 +213,7 @@ export const NotificationsPage = () => {
               label: (
                 <span className="flex items-center gap-2">
                   <Bell size={16} />
-                  Tất cả
+                  {t.notifications.all}
                   <Badge count={notifications.length} showZero />
                 </span>
               ),
@@ -221,7 +223,7 @@ export const NotificationsPage = () => {
               label: (
                 <span className="flex items-center gap-2">
                   <AlertCircle size={16} />
-                  Chưa đọc
+                  {t.notifications.unread}
                   <Badge count={unreadCount} showZero />
                 </span>
               ),
@@ -231,7 +233,7 @@ export const NotificationsPage = () => {
               label: (
                 <span className="flex items-center gap-2">
                   <CheckCircle size={16} />
-                  Đã đọc
+                  {t.notifications.read}
                   <Badge count={notifications.length - unreadCount} showZero color="green" />
                 </span>
               ),
@@ -241,7 +243,7 @@ export const NotificationsPage = () => {
 
         {filteredNotifications.length === 0 ? (
           <Empty
-            description="Không có thông báo"
+            description={t.notifications.noNotifications}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         ) : (
@@ -260,7 +262,7 @@ export const NotificationsPage = () => {
                       items: [
                         {
                           key: 'read',
-                          label: notification.isRead ? 'Đánh dấu chưa đọc' : 'Đánh dấu đã đọc',
+                          label: notification.isRead ? t.notifications.markAsUnread : t.notifications.markAsRead,
                           icon: <Check size={14} />,
                           onClick: (e) => {
                             e.domEvent.stopPropagation();
@@ -269,7 +271,7 @@ export const NotificationsPage = () => {
                         },
                         {
                           key: 'delete',
-                          label: 'Xóa',
+                          label: t.notifications.delete,
                           icon: <Trash2 size={14} />,
                           danger: true,
                           onClick: (e) => {
@@ -317,7 +319,7 @@ export const NotificationsPage = () => {
                           {getTimeAgo(notification.createdAt)}
                         </span>
                         {notification.senderName && (
-                          <span>Từ: {notification.senderName}</span>
+                          <span>{t.notifications.from} {notification.senderName}</span>
                         )}
                       </div>
                     </div>
@@ -328,7 +330,7 @@ export const NotificationsPage = () => {
             pagination={{
               pageSize: 10,
               showSizeChanger: true,
-              showTotal: (total) => `Tổng ${total} thông báo`,
+              showTotal: (total) => `${t.notifications.total} ${total} ${t.notifications.notificationsCount}`,
             }}
           />
         )}

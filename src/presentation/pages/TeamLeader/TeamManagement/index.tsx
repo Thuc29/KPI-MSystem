@@ -52,6 +52,7 @@ import { storage } from '../../../../infrastructure/utils';
 import { KPIStatusTag } from '../../../components';
 import type { IKPIRecord, IKPITarget } from '../../../../core/models';
 import type { ColumnsType } from 'antd/es/table';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { Option } = Select;
 const { Search: AntSearch } = Input;
@@ -70,6 +71,7 @@ interface TeamMember {
 
 export const TeamManagementPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
@@ -96,7 +98,7 @@ export const TeamManagementPage = () => {
         setKpiList(response.data.data);
       }
     } catch (error: any) {
-      toast.error('Không thể tải danh sách KPI');
+      toast.error(t.teamLeader.teamManagement.cannotLoadKPIs);
     } finally {
       setLoading(false);
     }
@@ -167,13 +169,13 @@ export const TeamManagementPage = () => {
 
     try {
       await kpiApi.approve(selectedKPI.id);
-      toast.success('Đã phê duyệt KPI');
+      toast.success(t.teamLeader.teamManagement.approved_success);
       setApproveModalVisible(false);
       setKpiDetailModalVisible(false);
       setSelectedKPI(null);
       fetchKPIList();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể phê duyệt KPI');
+      toast.error(error?.response?.data?.message || t.teamLeader.teamManagement.cannotApprove);
     }
   };
 
@@ -183,14 +185,14 @@ export const TeamManagementPage = () => {
 
     try {
       await kpiApi.reject(selectedKPI.id, values.reason);
-      toast.success('Đã từ chối KPI');
+      toast.success(t.teamLeader.teamManagement.rejected_success);
       setRejectModalVisible(false);
       setKpiDetailModalVisible(false);
       setSelectedKPI(null);
       form.resetFields();
       fetchKPIList();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể từ chối KPI');
+      toast.error(error?.response?.data?.message || t.teamLeader.teamManagement.cannotReject);
     }
   };
 
@@ -215,17 +217,17 @@ export const TeamManagementPage = () => {
 
   const getStatusLabel = (status: string) => {
     const labels = {
-      excellent: 'Xuất sắc',
-      good: 'Tốt',
-      average: 'Trung bình',
-      poor: 'Cần cải thiện',
+      excellent: t.teamLeader.teamManagement.excellent,
+      good: t.teamLeader.teamManagement.good,
+      average: t.teamLeader.teamManagement.average,
+      poor: t.teamLeader.teamManagement.needsImprovement,
     };
     return labels[status as keyof typeof labels] || status;
   };
 
   const columns: ColumnsType<TeamMember> = [
     {
-      title: 'Nhân viên',
+      title: t.teamLeader.teamManagement.employee,
       key: 'member',
       fixed: 'left',
       width: 220,
@@ -243,7 +245,7 @@ export const TeamManagementPage = () => {
       ),
     },
     {
-      title: 'Số KPI',
+      title: t.teamLeader.teamManagement.kpiCount,
       key: 'kpiCount',
       align: 'center',
       width: 80,
@@ -257,7 +259,7 @@ export const TeamManagementPage = () => {
             </Badge>
             <div className="text-xs text-gray-500">
               {stats.pendingCount > 0 && (
-                <span className="text-orange-500">{stats.pendingCount} chờ</span>
+                <span className="text-orange-500">{stats.pendingCount} {t.teamLeader.teamManagement.pending}</span>
               )}
             </div>
           </div>
@@ -266,13 +268,13 @@ export const TeamManagementPage = () => {
       sorter: (a, b) => getMemberStats(a.id).total - getMemberStats(b.id).total,
     },
     {
-      title: 'Hiệu suất',
+      title: t.teamLeader.teamManagement.performance,
       key: 'performance',
       width: 240,
       render: (_, record) => (
         <div className="space-y-1">
           <div className="flex justify-between text-xs ">
-            <span className="text-gray-600">Hoàn thành</span>
+            <span className="text-gray-600">{t.teamLeader.teamManagement.completion}</span>
             <span className="font-semibold">{record.avgCompletion}%</span>
           </div>
           <Progress 
@@ -292,17 +294,17 @@ export const TeamManagementPage = () => {
       sorter: (a, b) => a.avgCompletion - b.avgCompletion,
     },
     {
-      title: 'Đánh giá',
+      title: t.teamLeader.teamManagement.rating,
       dataIndex: 'status',
       key: 'status',
       width: 140,
       align: 'center',
       render: (status) => {
         const config = {
-          excellent: { color: 'success', icon: <Award size={14} />, label: 'Xuất sắc' },
-          good: { color: 'processing', icon: <TrendingUp size={14} />, label: 'Tốt' },
-          average: { color: 'warning', icon: <Clock size={14} />, label: 'Trung bình' },
-          poor: { color: 'error', icon: <AlertTriangle size={14} />, label: 'Cần cải thiện' },
+          excellent: { color: 'success', icon: <Award size={14} />, label: t.teamLeader.teamManagement.excellent },
+          good: { color: 'processing', icon: <TrendingUp size={14} />, label: t.teamLeader.teamManagement.good },
+          average: { color: 'warning', icon: <Clock size={14} />, label: t.teamLeader.teamManagement.average },
+          poor: { color: 'error', icon: <AlertTriangle size={14} />, label: t.teamLeader.teamManagement.needsImprovement },
         };
         const { color, icon, label } = config[status as keyof typeof config];
         return (
@@ -312,15 +314,15 @@ export const TeamManagementPage = () => {
         );
       },
       filters: [
-        { text: 'Xuất sắc', value: 'excellent' },
-        { text: 'Tốt', value: 'good' },
-        { text: 'Trung bình', value: 'average' },
-        { text: 'Cần cải thiện', value: 'poor' },
+        { text: t.teamLeader.teamManagement.excellent, value: 'excellent' },
+        { text: t.teamLeader.teamManagement.good, value: 'good' },
+        { text: t.teamLeader.teamManagement.average, value: 'average' },
+        { text: t.teamLeader.teamManagement.needsImprovement, value: 'poor' },
       ],
       onFilter: (value, record) => record.status === value,
     },
     {
-      title: 'Hành động',
+      title: t.teamLeader.teamManagement.action,
       key: 'action',
       align: 'center',
       width: 150,
@@ -333,7 +335,7 @@ export const TeamManagementPage = () => {
             onClick={() => showMemberDetail(record)}
             className="bg-primary"
           >
-            Chi tiết
+            {t.teamLeader.teamManagement.detail}
           </Button>
         </Space>
       ),
@@ -359,9 +361,9 @@ export const TeamManagementPage = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
             <Users size={32} className="text-primary" />
-            Quản lý Team
+            {t.teamLeader.teamManagement.title}
           </h1>
-          <p className="text-gray-500">Theo dõi và quản lý hiệu suất của team</p>
+          <p className="text-gray-500">{t.teamLeader.teamManagement.subtitle}</p>
         </div>
         
         <Space>
@@ -370,7 +372,7 @@ export const TeamManagementPage = () => {
             onClick={() => navigate('/kpi/create')}
             size="middle"
           >
-            Tạo KPI
+            {t.teamLeader.teamManagement.createKPI}
           </Button>
           <Button
             type="primary"
@@ -379,7 +381,7 @@ export const TeamManagementPage = () => {
             className="bg-primary"
             size="middle"
           >
-            Báo cáo Team
+            {t.teamLeader.teamManagement.teamReports}
           </Button>
         </Space>
       </div>
@@ -389,7 +391,7 @@ export const TeamManagementPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-blue-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng nhân viên</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamManagement.totalMembers}</span>}
               value={teamMembers.length}
               prefix={<Users size={20} className="text-blue-500" />}
               valueStyle={{ color: '#1890ff', fontSize: '25px', fontWeight: 'bold' }}
@@ -400,7 +402,7 @@ export const TeamManagementPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-green-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Xuất sắc</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamManagement.excellent}</span>}
               value={excellentCount}
               prefix={<Award size={20} className="text-green-500" />}
               valueStyle={{ color: '#52c41a', fontSize: '25px', fontWeight: 'bold' }}
@@ -412,7 +414,7 @@ export const TeamManagementPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-purple-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Hiệu suất TB</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamManagement.avgPerformance}</span>}
               value={totalAvgCompletion}
               prefix={<Target size={20} className="text-purple-500" />}
               suffix="%"
@@ -424,7 +426,7 @@ export const TeamManagementPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-orange-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng KPI</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamManagement.totalKPIs}</span>}
               value={totalTeamKPIs}
               prefix={<FileText size={20} className="text-orange-500" />}
               valueStyle={{ color: '#fa8c16', fontSize: '25px', fontWeight: 'bold' }}
@@ -442,7 +444,7 @@ export const TeamManagementPage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Users size={20} className="text-primary" />
-              <span className="font-semibold">Danh sách nhân viên</span>
+              <span className="font-semibold">{t.teamLeader.teamManagement.memberList}</span>
               <Badge count={filteredMembers.length} showZero color="#4C9C2E" />
             </div>
           </div>
@@ -450,7 +452,7 @@ export const TeamManagementPage = () => {
         extra={
           <Space size="middle">
             <AntSearch
-              placeholder="Tìm kiếm nhân viên..."
+              placeholder={t.teamLeader.teamManagement.searchPlaceholder}
               allowClear
               style={{ width: 250 }}
               prefix={<Search size={16} />}
@@ -462,11 +464,11 @@ export const TeamManagementPage = () => {
               style={{ width: 160 }}
               suffixIcon={<Filter size={16} />}
             >
-              <Option value="all">Tất cả trạng thái</Option>
-              <Option value="excellent">Xuất sắc</Option>
-              <Option value="good">Tốt</Option>
-              <Option value="average">Trung bình</Option>
-              <Option value="poor">Cần cải thiện</Option>
+              <Option value="all">{t.teamLeader.teamManagement.allStatus}</Option>
+              <Option value="excellent">{t.teamLeader.teamManagement.excellent}</Option>
+              <Option value="good">{t.teamLeader.teamManagement.good}</Option>
+              <Option value="average">{t.teamLeader.teamManagement.average}</Option>
+              <Option value="poor">{t.teamLeader.teamManagement.needsImprovement}</Option>
             </Select>
           </Space>
         }
@@ -480,7 +482,7 @@ export const TeamManagementPage = () => {
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            showTotal: (total) => `Tổng ${total} nhân viên`,
+            showTotal: (total) => t.teamLeader.teamManagement.totalEmployees.replace('{count}', String(total)),
           }}
           scroll={{ x: 1000 }}
           bordered
@@ -505,7 +507,7 @@ export const TeamManagementPage = () => {
         onCancel={() => setDetailModalVisible(false)}
         footer={
           <Space>
-            <Button onClick={() => setDetailModalVisible(false)}>Đóng</Button>
+            <Button onClick={() => setDetailModalVisible(false)}>{t.teamLeader.teamManagement.close}</Button>
             <Button
               type="primary"
               icon={<Eye size={16} />}
@@ -516,7 +518,7 @@ export const TeamManagementPage = () => {
               }}
               className="bg-primary"
             >
-              Xem chi tiết đầy đủ
+              {t.teamLeader.teamManagement.viewFullDetail}
             </Button>
           </Space>
         }
@@ -527,16 +529,16 @@ export const TeamManagementPage = () => {
             {/* Basic Info */}
             <Card size="small" className="bg-gray-50">
               <Descriptions column={2} size="small">
-                <Descriptions.Item label="Email">
+                <Descriptions.Item label={t.teamLeader.teamManagement.email}>
                   <span className="font-medium">{selectedMember.email}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Vị trí">
+                <Descriptions.Item label={t.teamLeader.teamManagement.position}>
                   <span className="font-medium">{selectedMember.position}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Số KPI">
+                <Descriptions.Item label={t.teamLeader.teamManagement.kpiCount}>
                   <Badge count={getMemberStats(selectedMember.id).total} showZero color="#4C9C2E" />
                 </Descriptions.Item>
-                <Descriptions.Item label="Hiệu suất">
+                <Descriptions.Item label={t.teamLeader.teamManagement.performance}>
                   <Progress 
                     percent={selectedMember.avgCompletion} 
                     size="small"
@@ -546,7 +548,7 @@ export const TeamManagementPage = () => {
                     }}
                   />
                 </Descriptions.Item>
-                <Descriptions.Item label="Đánh giá" span={2}>
+                <Descriptions.Item label={t.teamLeader.teamManagement.rating} span={2}>
                   <Tag color={getStatusColor(selectedMember.status)} className="px-3 py-1">
                     {getStatusLabel(selectedMember.status)}
                   </Tag>
@@ -555,31 +557,31 @@ export const TeamManagementPage = () => {
             </Card>
 
             {/* KPI Statistics */}
-            <Card size="small" title="Thống kê KPI">
+            <Card size="small" title={t.teamLeader.teamManagement.kpiStats}>
               <div className="grid grid-cols-4 gap-3">
                 <div className="bg-gray-50 p-3 rounded-lg text-center">
                   <div className="text-xl font-bold text-gray-700">
                     {getMemberStats(selectedMember.id).total}
                   </div>
-                  <div className="text-xs text-gray-600">Tổng KPI</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.teamManagement.totalKPIsLabel}</div>
                 </div>
                 <div className="bg-orange-50 p-3 rounded-lg text-center">
                   <div className="text-xl font-bold text-orange-600">
                     {getMemberStats(selectedMember.id).pendingCount}
                   </div>
-                  <div className="text-xs text-gray-600">Chờ duyệt</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.teamManagement.pendingApproval}</div>
                 </div>
                 <div className="bg-green-50 p-3 rounded-lg text-center">
                   <div className="text-xl font-bold text-green-600">
                     {getMemberStats(selectedMember.id).approvedCount}
                   </div>
-                  <div className="text-xs text-gray-600">Đã duyệt</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.teamManagement.approved}</div>
                 </div>
                 <div className="bg-red-50 p-3 rounded-lg text-center">
                   <div className="text-xl font-bold text-red-600">
                     {getMemberStats(selectedMember.id).rejectedCount}
                   </div>
-                  <div className="text-xs text-gray-600">Từ chối</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.teamManagement.rejected}</div>
                 </div>
               </div>
             </Card>
@@ -593,7 +595,7 @@ export const TeamManagementPage = () => {
                   label: (
                     <span className="flex items-center gap-2">
                       <FileText size={16} />
-                      Danh sách KPI
+                      {t.teamLeader.teamManagement.kpiList}
                       <Badge count={getMemberKPIs(selectedMember.id).length} showZero />
                     </span>
                   ),
@@ -614,12 +616,12 @@ export const TeamManagementPage = () => {
                                 </div>
                                 <div className="text-sm text-gray-600 mb-2">
                                   <Calendar size={14} className="inline mr-1" />
-                                  Năm {kpi.year} {kpi.quarter && `- Quý ${kpi.quarter}`}
+                                  {t.teamLeader.teamManagement.year} {kpi.year} {kpi.quarter && `- ${t.teamLeader.teamManagement.quarter} ${kpi.quarter}`}
                                 </div>
                                 <div className="flex gap-2">
-                                  <Tag color="blue">{kpi.targets.length} mục tiêu</Tag>
+                                  <Tag color="blue">{kpi.targets.length} {t.teamLeader.teamManagement.targets}</Tag>
                                   <Tag color="green">
-                                    {kpi.targets.reduce((sum, t) => sum + t.weight, 0)}% trọng số
+                                    {kpi.targets.reduce((sum, t) => sum + t.weight, 0)}% {t.teamLeader.teamManagement.weight}
                                   </Tag>
                                 </div>
                               </div>
@@ -629,7 +631,7 @@ export const TeamManagementPage = () => {
                                   icon={<Eye size={16} />}
                                   onClick={() => showKPIDetail(kpi)}
                                 >
-                                  Xem chi tiết
+                                  {t.teamLeader.teamManagement.viewDetail}
                                 </Button>
                                 {kpi.status === 'pending_approval' && userRole === 'gl' && (
                                   <>
@@ -643,7 +645,7 @@ export const TeamManagementPage = () => {
                                       }}
                                       className="bg-primary"
                                     >
-                                      Duyệt
+                                      {t.teamLeader.teamManagement.approve}
                                     </Button>
                                     <Button
                                       danger
@@ -654,7 +656,7 @@ export const TeamManagementPage = () => {
                                         setRejectModalVisible(true);
                                       }}
                                     >
-                                      Từ chối
+                                      {t.teamLeader.teamManagement.reject}
                                     </Button>
                                   </>
                                 )}
@@ -663,7 +665,7 @@ export const TeamManagementPage = () => {
                           </Card>
                         ))
                       ) : (
-                        <Empty description="Chưa có KPI nào" />
+                        <Empty description={t.teamLeader.teamManagement.noKPIs} />
                       )}
                     </div>
                   ),
@@ -673,7 +675,7 @@ export const TeamManagementPage = () => {
                   label: (
                     <span className="flex items-center gap-2">
                       <Clock size={16} />
-                      Lịch sử hoạt động
+                      {t.teamLeader.teamManagement.activityHistory}
                     </span>
                   ),
                   children: (
@@ -684,8 +686,8 @@ export const TeamManagementPage = () => {
                           dot: <CheckCircle size={16} />,
                           children: (
                             <div>
-                              <div className="font-medium">KPI Q4/2024 được phê duyệt</div>
-                              <div className="text-xs text-gray-500">2 ngày trước</div>
+                              <div className="font-medium">{t.teamLeader.teamManagement.kpiApproved}</div>
+                              <div className="text-xs text-gray-500">{t.teamLeader.teamManagement.daysAgo.replace('{count}', '2')}</div>
                             </div>
                           ),
                         },
@@ -694,8 +696,8 @@ export const TeamManagementPage = () => {
                           dot: <FileText size={16} />,
                           children: (
                             <div>
-                              <div className="font-medium">Gửi KPI Q4/2024</div>
-                              <div className="text-xs text-gray-500">5 ngày trước</div>
+                              <div className="font-medium">{t.teamLeader.teamManagement.kpiSubmitted}</div>
+                              <div className="text-xs text-gray-500">{t.teamLeader.teamManagement.daysAgo.replace('{count}', '5')}</div>
                             </div>
                           ),
                         },
@@ -704,8 +706,8 @@ export const TeamManagementPage = () => {
                           dot: <XCircle size={16} />,
                           children: (
                             <div>
-                              <div className="font-medium">KPI Q3/2024 bị từ chối</div>
-                              <div className="text-xs text-gray-500">1 tuần trước</div>
+                              <div className="font-medium">{t.teamLeader.teamManagement.kpiRejected}</div>
+                              <div className="text-xs text-gray-500">{t.teamLeader.teamManagement.weekAgo.replace('{count}', '1')}</div>
                             </div>
                           ),
                         },
@@ -724,7 +726,7 @@ export const TeamManagementPage = () => {
         title={
           <div className="flex items-center gap-2">
             <FileText size={20} className="text-primary" />
-            <span>Chi tiết KPI - {selectedKPI?.id}</span>
+            <span>{t.teamLeader.teamManagement.kpiDetail} - {selectedKPI?.id}</span>
           </div>
         }
         open={kpiDetailModalVisible}
@@ -734,7 +736,7 @@ export const TeamManagementPage = () => {
         }}
         footer={
           <Space>
-            <Button onClick={() => setKpiDetailModalVisible(false)}>Đóng</Button>
+            <Button onClick={() => setKpiDetailModalVisible(false)}>{t.teamLeader.teamManagement.close}</Button>
             {selectedKPI?.status === 'pending_approval' && userRole === 'gl' && (
               <>
                 <Button
@@ -746,7 +748,7 @@ export const TeamManagementPage = () => {
                   }}
                   className="bg-primary"
                 >
-                  Phê duyệt
+                  {t.teamLeader.teamManagement.approve}
                 </Button>
                 <Button
                   danger
@@ -756,7 +758,7 @@ export const TeamManagementPage = () => {
                     setRejectModalVisible(true);
                   }}
                 >
-                  Từ chối
+                  {t.teamLeader.teamManagement.reject}
                 </Button>
               </>
             )}
@@ -769,26 +771,26 @@ export const TeamManagementPage = () => {
             {/* Basic Info */}
             <Card size="small" className="bg-gray-50">
               <Descriptions column={2} size="small">
-                <Descriptions.Item label="Team Leader">
+                <Descriptions.Item label={t.teamLeader.teamManagement.teamLeader}>
                   <span className="font-semibold">{selectedKPI.employeeName}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Phòng ban">
+                <Descriptions.Item label={t.teamLeader.teamManagement.department}>
                   <span className="font-semibold">{selectedKPI.department}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Năm">
+                <Descriptions.Item label={t.teamLeader.teamManagement.year}>
                   <span className="font-semibold">{selectedKPI.year}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Quý">
+                <Descriptions.Item label={t.teamLeader.teamManagement.quarter}>
                   {selectedKPI.quarter ? (
                     <Tag color="blue">Q{selectedKPI.quarter}</Tag>
                   ) : (
-                    <span className="text-gray-400">Cả năm</span>
+                    <span className="text-gray-400">{t.teamLeader.teamManagement.fullYear}</span>
                   )}
                 </Descriptions.Item>
-                <Descriptions.Item label="Trạng thái">
+                <Descriptions.Item label={t.teamLeader.teamManagement.status}>
                   <KPIStatusTag status={selectedKPI.status} />
                 </Descriptions.Item>
-                <Descriptions.Item label="Tổng trọng số">
+                <Descriptions.Item label={t.teamLeader.teamManagement.totalWeight}>
                   <Tag 
                     color={selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0) === 100 ? 'success' : 'error'} 
                     className="text-lg font-bold"
@@ -803,10 +805,10 @@ export const TeamManagementPage = () => {
             <div className="border-t pt-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold text-lg">
-                  Danh sách mục tiêu ({selectedKPI.targets.length})
+                  {t.teamLeader.teamManagement.targetList} ({selectedKPI.targets.length})
                 </h4>
                 <Tag color="blue" icon={<FileText size={14} />}>
-                  {selectedKPI.targets.length} mục tiêu
+                  {selectedKPI.targets.length} {t.teamLeader.teamManagement.targets}
                 </Tag>
               </div>
 
@@ -872,19 +874,19 @@ export const TeamManagementPage = () => {
             <div className="border-t pt-3 bg-green-50 p-3 rounded-lg">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Tổng trọng số</p>
+                  <p className="text-sm text-gray-600 mb-1">{t.teamLeader.teamManagement.totalWeight}</p>
                   <p className="text-3xl font-bold text-green-600">
                     {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600 mb-1">Tổng số mục tiêu</p>
+                  <p className="text-sm text-gray-600 mb-1">{t.teamLeader.teamManagement.totalTargets}</p>
                   <p className="text-3xl font-bold text-blue-600">
                     {selectedKPI.targets.length}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600 mb-1">File đính kèm</p>
+                  <p className="text-sm text-gray-600 mb-1">{t.teamLeader.teamManagement.attachments}</p>
                   <p className="text-3xl font-bold text-purple-600">
                     {selectedKPI.targets.reduce((sum, t) => sum + (t.attachments?.length || 0), 0)}
                   </p>
@@ -900,24 +902,24 @@ export const TeamManagementPage = () => {
         title={
           <div className="flex items-center gap-2">
             <CheckCircle size={20} className="text-green-500" />
-            <span>Xác nhận phê duyệt</span>
+            <span>{t.teamLeader.teamManagement.confirmApprove}</span>
           </div>
         }
         open={approveModalVisible}
         onOk={handleApproveKPI}
         onCancel={() => setApproveModalVisible(false)}
-        okText="Phê duyệt"
-        cancelText="Hủy"
+        okText={t.teamLeader.teamManagement.approve}
+        cancelText={t.teamLeader.teamManagement.cancel}
         okButtonProps={{ className: 'bg-primary' }}
       >
         {selectedKPI && (
           <div className="space-y-3">
-            <p className="text-gray-700">Bạn có chắc chắn muốn phê duyệt KPI này?</p>
+            <p className="text-gray-700">{t.teamLeader.teamManagement.confirmApproveMessage}</p>
             <div className="bg-blue-50 p-3 rounded-lg">
-              <p><strong>Team Leader:</strong> {selectedKPI.employeeName}</p>
-              <p><strong>Năm:</strong> {selectedKPI.year}</p>
-              <p><strong>Số mục tiêu:</strong> {selectedKPI.targets.length}</p>
-              <p><strong>Tổng trọng số:</strong> {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%</p>
+              <p><strong>{t.teamLeader.teamManagement.teamLeader}:</strong> {selectedKPI.employeeName}</p>
+              <p><strong>{t.teamLeader.teamManagement.year}:</strong> {selectedKPI.year}</p>
+              <p><strong>{t.teamLeader.teamManagement.targetCount}:</strong> {selectedKPI.targets.length}</p>
+              <p><strong>{t.teamLeader.teamManagement.totalWeight}:</strong> {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%</p>
             </div>
           </div>
         )}
@@ -928,7 +930,7 @@ export const TeamManagementPage = () => {
         title={
           <div className="flex items-center gap-2">
             <XCircle size={20} className="text-red-500" />
-            <span>Từ chối KPI</span>
+            <span>{t.teamLeader.teamManagement.rejectKPI}</span>
           </div>
         }
         open={rejectModalVisible}
@@ -937,28 +939,28 @@ export const TeamManagementPage = () => {
           setRejectModalVisible(false);
           form.resetFields();
         }}
-        okText="Từ chối"
-        cancelText="Hủy"
+        okText={t.teamLeader.teamManagement.reject}
+        cancelText={t.teamLeader.teamManagement.cancel}
         okButtonProps={{ danger: true }}
       >
         {selectedKPI && (
           <Form form={form} layout="vertical" onFinish={handleRejectKPI}>
             <div className="mb-4 bg-gray-50 p-3 rounded-lg">
-              <p><strong>Team Leader:</strong> {selectedKPI.employeeName}</p>
-              <p><strong>Năm:</strong> {selectedKPI.year}</p>
+              <p><strong>{t.teamLeader.teamManagement.teamLeader}:</strong> {selectedKPI.employeeName}</p>
+              <p><strong>{t.teamLeader.teamManagement.year}:</strong> {selectedKPI.year}</p>
             </div>
 
             <Form.Item
               name="reason"
-              label="Lý do từ chối"
+              label={t.teamLeader.teamManagement.rejectReason}
               rules={[
-                { required: true, message: 'Vui lòng nhập lý do từ chối' },
-                { min: 10, message: 'Lý do phải có ít nhất 10 ký tự' },
+                { required: true, message: t.teamLeader.teamManagement.rejectReasonRequired },
+                { min: 10, message: t.teamLeader.teamManagement.rejectReasonMinLength },
               ]}
             >
               <TextArea
                 rows={4}
-                placeholder="Nhập lý do từ chối chi tiết để Team Leader có thể chỉnh sửa..."
+                placeholder={t.teamLeader.teamManagement.rejectReasonPlaceholder}
                 maxLength={500}
                 showCount
               />
@@ -977,6 +979,8 @@ interface TargetDetailCardProps {
 }
 
 const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
+  const { t } = useTranslation();
+  
   return (
     <Card type="inner" className="mb-3 shadow-sm hover:shadow-md transition-shadow">
       <div className="space-y-3">
@@ -1006,7 +1010,7 @@ const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
         {/* Target & Unit */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-xs text-gray-600 mb-1">Chỉ tiêu</p>
+            <p className="text-xs text-gray-600 mb-1">{t.teamLeader.teamManagement.targetNumber}</p>
             <p className="text-lg font-bold text-blue-600">
               {target.target} <span className="text-sm">{target.unit}</span>
             </p>
@@ -1014,7 +1018,7 @@ const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
           
           {target.measurementMethod && (
             <div className="bg-purple-50 p-3 rounded-lg">
-              <p className="text-xs text-gray-600 mb-1">Phương pháp đo lường</p>
+              <p className="text-xs text-gray-600 mb-1">{t.teamLeader.teamManagement.measurementMethod}</p>
               <p className="text-sm font-medium text-purple-700">{target.measurementMethod}</p>
             </div>
           )}
@@ -1023,7 +1027,7 @@ const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
         {/* Evaluation Criteria */}
         {target.evaluationCriteria && (
           <div className="bg-green-50 p-3 rounded-lg">
-            <p className="text-xs text-gray-600 mb-1">Tiêu chí đánh giá</p>
+            <p className="text-xs text-gray-600 mb-1">{t.teamLeader.teamManagement.evaluationCriteria}</p>
             <p className="text-sm font-medium text-green-700">{target.evaluationCriteria}</p>
           </div>
         )}
@@ -1034,7 +1038,7 @@ const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
             <div className="flex items-center gap-2 mb-2">
               <Paperclip size={16} className="text-gray-500" />
               <span className="text-sm font-semibold text-gray-700">
-                File đính kèm ({target.attachments.length})
+                {t.teamLeader.teamManagement.attachments} ({target.attachments.length})
               </span>
             </div>
             <div className="flex flex-wrap gap-2">

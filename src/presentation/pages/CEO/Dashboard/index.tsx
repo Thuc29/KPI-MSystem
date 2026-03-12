@@ -34,6 +34,7 @@ import { kpiApi } from '../../../../infrastructure/api';
 import { storage } from '../../../../infrastructure/utils';
 import { BRAND_COLORS } from '../../../../core/constants';
 import type { IKPIRecord } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 interface DepartmentSummary {
   id: string;
@@ -59,6 +60,7 @@ interface StrategicKPI {
 }
 
 export const CEODashboardPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -76,7 +78,7 @@ export const CEODashboardPage = () => {
         setKpiList(response.data.data);
       }
     } catch (error: any) {
-      toast.error('Không thể tải danh sách KPI');
+      toast.error(t.ceo.dashboard.toast.loadError);
     } finally {
       setLoading(false);
     }
@@ -168,10 +170,29 @@ export const CEODashboardPage = () => {
   );
   const totalPendingStrategic = strategicKPIs.filter(k => k.status === 'pending_ceo').length;
 
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      excellent: t.ceo.dashboard.departments.status.excellent,
+      good: t.ceo.dashboard.departments.status.good,
+      average: t.ceo.dashboard.departments.status.average,
+      poor: t.ceo.dashboard.departments.status.poor,
+    };
+    return labels[status] || status;
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    const labels: Record<string, string> = {
+      high: t.ceo.dashboard.strategicKPIs.priorityLevel.high,
+      medium: t.ceo.dashboard.strategicKPIs.priorityLevel.medium,
+      low: t.ceo.dashboard.strategicKPIs.priorityLevel.low,
+    };
+    return labels[priority] || priority;
+  };
+
   // Department columns
   const departmentColumns: ColumnsType<DepartmentSummary> = [
     {
-      title: 'Bộ phận',
+      title: t.ceo.dashboard.departments.department,
       key: 'department',
       width: 180,
       render: (_, record) => (
@@ -187,7 +208,7 @@ export const CEODashboardPage = () => {
       ),
     },
     {
-      title: 'Nhân viên',
+      title: t.ceo.dashboard.departments.employees,
       dataIndex: 'employees',
       key: 'employees',
       align: 'center',
@@ -200,7 +221,7 @@ export const CEODashboardPage = () => {
       ),
     },
     {
-      title: 'Tổng KPI',
+      title: t.ceo.dashboard.departments.totalKPI,
       dataIndex: 'kpiCount',
       key: 'kpiCount',
       align: 'center',
@@ -208,7 +229,7 @@ export const CEODashboardPage = () => {
       render: (count) => <Tag color="blue">{count}</Tag>,
     },
     {
-      title: 'Chờ',
+      title: t.ceo.dashboard.departments.pending,
       dataIndex: 'pendingCount',
       key: 'pendingCount',
       align: 'center',
@@ -222,13 +243,13 @@ export const CEODashboardPage = () => {
       ),
     },
     {
-      title: 'Hiệu suất',
+      title: t.ceo.dashboard.departments.performance,
       key: 'performance',
       width: 200,
       render: (_, record) => (
         <div className="space-y-1">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-600">Trung bình</span>
+            <span className="text-gray-600">{t.ceo.dashboard.departments.average}</span>
             <div className="flex items-center gap-1">
               <span className="font-semibold">{record.avgPerformance}%</span>
               {record.trend === 'up' && <TrendingUp size={12} style={{ color: BRAND_COLORS.apple }} />}
@@ -249,24 +270,24 @@ export const CEODashboardPage = () => {
       ),
     },
     {
-      title: 'Đánh giá',
+      title: t.ceo.dashboard.departments.rating,
       dataIndex: 'status',
       key: 'status',
       width: 90,
       align: 'center',
       render: (status: string) => {
         const config: Record<string, { color: string; label: string }> = {
-          excellent: { color: 'success', label: 'Xuất sắc' },
-          good: { color: 'processing', label: 'Tốt' },
-          average: { color: 'warning', label: 'TB' },
-          poor: { color: 'error', label: 'Yếu' },
+          excellent: { color: 'success', label: getStatusLabel('excellent') },
+          good: { color: 'processing', label: getStatusLabel('good') },
+          average: { color: 'warning', label: getStatusLabel('average') },
+          poor: { color: 'error', label: getStatusLabel('poor') },
         };
         const { color, label } = config[status] || { color: 'default', label: status };
         return <Tag color={color}>{label}</Tag>;
       },
     },
     {
-      title: 'Hành động',
+      title: t.ceo.dashboard.departments.action,
       key: 'action',
       width: 100,
       align: 'center',
@@ -277,7 +298,7 @@ export const CEODashboardPage = () => {
           icon={<Eye size={14} />}
           onClick={() => navigate('/organization')}
         >
-          Xem
+          {t.ceo.dashboard.departments.view}
         </Button>
       ),
     },
@@ -286,16 +307,16 @@ export const CEODashboardPage = () => {
   // Strategic KPI columns
   const strategicColumns: ColumnsType<StrategicKPI> = [
     {
-      title: 'Ưu tiên',
+      title: t.ceo.dashboard.strategicKPIs.priority,
       dataIndex: 'priority',
       key: 'priority',
       width: 60,
       align: 'center',
       render: (priority: string) => {
         const config = {
-          high: { icon: <AlertTriangle size={18} className="text-red-500" />, label: 'Cao' },
-          medium: { icon: <Activity size={18} className="text-orange-500" />, label: 'TB' },
-          low: { icon: <TrendingUp size={18} className="text-blue-500" />, label: 'Thấp' },
+          high: { icon: <AlertTriangle size={18} className="text-red-500" />, label: getPriorityLabel('high') },
+          medium: { icon: <Activity size={18} className="text-orange-500" />, label: getPriorityLabel('medium') },
+          low: { icon: <TrendingUp size={18} className="text-blue-500" />, label: getPriorityLabel('low') },
         };
         const { icon, label } = config[priority as keyof typeof config];
         return (
@@ -306,27 +327,27 @@ export const CEODashboardPage = () => {
       },
     },
     {
-      title: 'Tiêu đề',
+      title: t.ceo.dashboard.strategicKPIs.title_col,
       dataIndex: 'title',
       key: 'title',
       render: (text) => <span className="font-semibold">{text}</span>,
       width: 200,
     },
     {
-      title: 'Bộ phận',
+      title: t.ceo.dashboard.strategicKPIs.department,
       dataIndex: 'department',
       key: 'department',
       width: 80,
       render: (text) => <Tag color="purple">{text}</Tag>,
     },
     {
-      title: 'Người gửi',
+      title: t.ceo.dashboard.strategicKPIs.submittedBy,
       dataIndex: 'submittedBy',
       key: 'submittedBy',
       width: 70,
     },
     {
-      title: 'Số mục tiêu',
+      title: t.ceo.dashboard.strategicKPIs.targetCount,
       dataIndex: 'targetCount',
       key: 'targetCount',
       align: 'center',
@@ -338,7 +359,7 @@ export const CEODashboardPage = () => {
       ),
     },
     {
-      title: 'Hành động',
+      title: t.ceo.dashboard.strategicKPIs.action,
       key: 'action',
       width: 60,
       align: 'center',
@@ -350,7 +371,7 @@ export const CEODashboardPage = () => {
           onClick={() => navigate('/strategic')}
           className="bg-primary"
         >
-          Duyệt
+          {t.ceo.dashboard.strategicKPIs.approve}
         </Button>
       ),
     },
@@ -362,9 +383,9 @@ export const CEODashboardPage = () => {
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
           <Crown size={30} className="text-yellow-500" />
-          CEO Dashboard
+          {t.ceo.dashboard.title}
         </h1>
-        <p className="text-gray-500">Chào mừng {userName}, tổng quan chiến lược toàn công ty</p>
+        <p className="text-gray-500">{t.ceo.dashboard.welcome.replace('{name}', userName)}</p>
       </div>
 
       {/* Strategic Alert */}
@@ -374,10 +395,10 @@ export const CEODashboardPage = () => {
             <AlertTriangle size={25} className="text-red-500 mt-1" />
             <div className="flex-1">
               <h3 className="font-semibold text-red-600 text-lg mb-1">
-                Cảnh báo: {totalPendingStrategic} KPI chiến lược cần phê duyệt!
+                {t.ceo.dashboard.alert.title.replace('{count}', totalPendingStrategic.toString())}
               </h3>
               <p className="text-gray-700 mb-2">
-                Có {totalPendingStrategic} KPI chiến lược từ các Group Leader đang chờ phê duyệt của bạn.
+                {t.ceo.dashboard.alert.description.replace('{count}', totalPendingStrategic.toString())}
               </p>
               <Button 
                 danger
@@ -385,7 +406,7 @@ export const CEODashboardPage = () => {
                 onClick={() => navigate('/strategic')}
                 size="middle"
               >
-                Xem ngay
+                {t.ceo.dashboard.alert.viewNow}
               </Button>
             </div>
           </div>
@@ -397,7 +418,7 @@ export const CEODashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Doanh thu</span>}
+              title={<span className="text-gray-600 font-medium">{t.ceo.dashboard.metrics.revenue}</span>}
               value="3.8B"
               prefix={<DollarSign size={28} style={{ color: BRAND_COLORS.apple }} />}
               valueStyle={{ color: BRAND_COLORS.apple, fontSize: '32px', fontWeight: 'bold' }}
@@ -414,7 +435,7 @@ export const CEODashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Hiệu suất TB</span>}
+              title={<span className="text-gray-600 font-medium">{t.ceo.dashboard.metrics.avgPerformance}</span>}
               value={avgCompanyPerformance}
               prefix={<Activity size={28} className="text-blue-500" />}
               valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 'bold' }}
@@ -432,7 +453,7 @@ export const CEODashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng nhân viên</span>}
+              title={<span className="text-gray-600 font-medium">{t.ceo.dashboard.metrics.totalEmployees}</span>}
               value={totalEmployees}
               prefix={<Users size={28} className="text-purple-500" />}
               valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 'bold' }}
@@ -449,7 +470,7 @@ export const CEODashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">KPI hoàn thành</span>}
+              title={<span className="text-gray-600 font-medium">{t.ceo.dashboard.metrics.kpiCompleted}</span>}
               value={completionRate}
               suffix="%"
               prefix={<Target size={28} className="text-orange-500" />}
@@ -470,14 +491,14 @@ export const CEODashboardPage = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Target size={20} className="text-red-500" />
-                    <span className="font-semibold">KPI Chiến lược chờ phê duyệt</span>
+                    <span className="font-semibold">{t.ceo.dashboard.strategicKPIs.title}</span>
                     <Badge count={totalPendingStrategic} showZero color="#ff4d4f" />
                   </div>
                   <div
                   className='text-sm cursor-pointer text-blue-600 hover:text-blue-400 underline'
                     onClick={() => navigate('/strategic')}
                   >
-                    Xem tất cả
+                    {t.ceo.dashboard.strategicKPIs.viewAll}
                   </div>
                 </div>
               }
@@ -501,7 +522,7 @@ export const CEODashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Building2 size={20} className="text-primary" />
-                <span className="font-semibold">Hiệu suất các bộ phận</span>
+                <span className="font-semibold">{t.ceo.dashboard.departments.title}</span>
               </div>
             }
             className="shadow-md"
@@ -526,7 +547,7 @@ export const CEODashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Activity size={18} className="text-primary" />
-                <span>Hành động nhanh</span>
+                <span>{t.ceo.dashboard.quickActions.title}</span>
               </div>
             }
             className="shadow-md mb-4"
@@ -541,7 +562,7 @@ export const CEODashboardPage = () => {
                 className="bg-red-500 hover:bg-red-600"
                 danger
               >
-                Phê duyệt Chiến lược ({totalPendingStrategic})
+                {t.ceo.dashboard.quickActions.approveStrategy} ({totalPendingStrategic})
               </Button>
               <Button
                 type="primary"
@@ -551,7 +572,7 @@ export const CEODashboardPage = () => {
                 size="middle"
                 className="bg-primary"
               >
-                Executive Dashboard
+                {t.ceo.dashboard.quickActions.executiveDashboard}
               </Button>
               <Button
                 icon={<Building2 size={16} />}
@@ -559,7 +580,7 @@ export const CEODashboardPage = () => {
                 block
                 size="middle"
               >
-                Tổng quan Tổ chức
+                {t.ceo.dashboard.quickActions.organizationOverview}
               </Button>
             </div>
           </Card>
@@ -569,7 +590,7 @@ export const CEODashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Target size={18} className="text-primary" />
-                <span>Tổng quan công ty</span>
+                <span>{t.ceo.dashboard.companyOverview.title}</span>
               </div>
             }
             className="shadow-md mb-4"
@@ -588,7 +609,7 @@ export const CEODashboardPage = () => {
                   format={(percent) => (
                     <div className="text-center">
                       <div className="text-4xl font-bold text-primary">{percent}%</div>
-                      <div className="text-xs text-gray-500 mt-1">Hiệu suất TB</div>
+                      <div className="text-xs text-gray-500 mt-1">{t.ceo.dashboard.companyOverview.avgPerformance}</div>
                     </div>
                   )}
                 />
@@ -597,19 +618,19 @@ export const CEODashboardPage = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-purple-50 p-3 rounded-lg text-center">
                   <div className="text-2xl font-bold text-purple-600">{departments.length}</div>
-                  <div className="text-xs text-gray-600">Bộ phận</div>
+                  <div className="text-xs text-gray-600">{t.ceo.dashboard.companyOverview.departments}</div>
                 </div>
                 <div className="bg-blue-50 p-3 rounded-lg text-center">
                   <div className="text-2xl font-bold text-blue-600">{totalEmployees}</div>
-                  <div className="text-xs text-gray-600">Nhân viên</div>
+                  <div className="text-xs text-gray-600">{t.ceo.dashboard.companyOverview.employees}</div>
                 </div>
                 <div className="p-3 rounded-lg text-center" style={{ backgroundColor: '#f4f7e6' }}>
                   <div className="text-2xl font-bold" style={{ color: BRAND_COLORS.apple }}>{totalKPIs}</div>
-                  <div className="text-xs text-gray-600">Tổng KPI</div>
+                  <div className="text-xs text-gray-600">{t.ceo.dashboard.companyOverview.totalKPI}</div>
                 </div>
                 <div className="bg-orange-50 p-3 rounded-lg text-center">
                   <div className="text-2xl font-bold text-orange-600">{completionRate}%</div>
-                  <div className="text-xs text-gray-600">Hoàn thành</div>
+                  <div className="text-xs text-gray-600">{t.ceo.dashboard.companyOverview.completed}</div>
                 </div>
               </div>
             </div>
@@ -620,7 +641,7 @@ export const CEODashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Award size={18} className="text-yellow-500" />
-                <span>Top Bộ phận</span>
+                <span>{t.ceo.dashboard.topDepartments.title}</span>
               </div>
             }
             className="shadow-md"
@@ -644,7 +665,7 @@ export const CEODashboardPage = () => {
                     </div>
                     <div className="flex-shrink-0 text-right">
                       <div className="text-lg font-bold text-primary">{dept.avgPerformance}%</div>
-                      <div className="text-xs text-gray-500">{dept.employees} NV</div>
+                      <div className="text-xs text-gray-500">{dept.employees} {t.ceo.dashboard.topDepartments.employees_short}</div>
                     </div>
                   </div>
                 ))}

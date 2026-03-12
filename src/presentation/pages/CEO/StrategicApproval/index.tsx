@@ -29,10 +29,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import type { IStrategicPlan } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { TextArea } = Input;
 
 export const StrategicApprovalPage = () => {
+  const { t } = useTranslation();
   const [strategies, setStrategies] = useState<IStrategicPlan[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -161,7 +163,7 @@ export const StrategicApprovalPage = () => {
       ];
       setStrategies(mockData);
     } catch (error) {
-      toast.error('Không thể tải danh sách chiến lược');
+      toast.error(t.ceo.strategicApproval.toast.loadError);
     } finally {
       setLoading(false);
     }
@@ -190,11 +192,11 @@ export const StrategicApprovalPage = () => {
           : s
       ));
 
-      toast.success(type === 'approve' ? 'Đã phê duyệt chiến lược' : 'Đã từ chối chiến lược');
+      toast.success(type === 'approve' ? t.ceo.strategicApproval.toast.approved : t.ceo.strategicApproval.toast.rejected);
       setIsModalOpen(false);
       setReason('');
     } catch (error) {
-      toast.error('Có lỗi xảy ra');
+      toast.error(t.ceo.strategicApproval.toast.error);
     }
   };
 
@@ -206,31 +208,49 @@ export const StrategicApprovalPage = () => {
     return <CheckCircle size={20} className="text-green-500" />;
   };
 
+  const getPeriodLabel = (period: string) => {
+    const labels: Record<string, string> = {
+      yearly: t.ceo.strategicApproval.period.yearly,
+      'half-yearly': t.ceo.strategicApproval.period.halfYearly,
+      quarterly: t.ceo.strategicApproval.period.quarterly,
+    };
+    return labels[period] || period;
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      pending_ceo: t.ceo.strategicApproval.status.pendingCEO,
+      approved: t.ceo.strategicApproval.status.approved,
+      rejected: t.ceo.strategicApproval.status.rejected,
+    };
+    return labels[status] || status;
+  };
+
   const columns: ColumnsType<IStrategicPlan> = [
     {
-      title: 'Ưu tiên',
+      title: t.ceo.strategicApproval.table.priority,
       key: 'priority',
       width: 80,
       align: 'center',
       render: (_, record) => (
         <Tooltip title={
           record.submittedAt 
-            ? `Gửi ${Math.floor((Date.now() - new Date(record.submittedAt).getTime()) / (1000 * 60 * 60 * 24))} ngày trước`
-            : 'Mới gửi'
+            ? `${t.ceo.strategicApproval.priority.sent} ${Math.floor((Date.now() - new Date(record.submittedAt).getTime()) / (1000 * 60 * 60 * 24))} ${t.ceo.strategicApproval.priority.daysAgo}`
+            : t.ceo.strategicApproval.priority.new
         }>
           <span className="text-2xl">{getPriorityIcon(record.submittedAt)}</span>
         </Tooltip>
       ),
     },
     {
-      title: 'Mã',
+      title: t.ceo.strategicApproval.table.code,
       dataIndex: 'id',
       key: 'id',
       width: 120,
       render: (text) => <span className="font-mono text-xs font-semibold text-primary">{text}</span>,
     },
     {
-      title: 'Tiêu đề',
+      title: t.ceo.strategicApproval.table.title,
       dataIndex: 'title',
       key: 'title',
       render: (text, record) => (
@@ -242,31 +262,26 @@ export const StrategicApprovalPage = () => {
       width: 300,
     },
     {
-      title: 'Bộ phận',
+      title: t.ceo.strategicApproval.table.department,
       dataIndex: 'departmentName',
       key: 'departmentName',
       width: 140,
       render: (text) => <Tag color="purple">{text}</Tag>,
     },
     {
-      title: 'Group Leader',
+      title: t.ceo.strategicApproval.table.groupLeader,
       dataIndex: 'groupLeaderName',
       key: 'groupLeaderName',
       width: 130,
     },
     {
-      title: 'Kỳ',
+      title: t.ceo.strategicApproval.table.period,
       key: 'period',
       width: 90,
       render: (_, record) => {
-        const periodLabels: Record<string, string> = {
-          yearly: 'Cả năm',
-          'half-yearly': '6 tháng',
-          quarterly: 'Quý',
-        };
         return (
           <div className="text-center">
-            <div className="font-medium">{periodLabels[record.period || 'yearly']}</div>
+            <div className="font-medium">{getPeriodLabel(record.period || 'yearly')}</div>
             <div className="text-xs text-gray-500">
               {record.year}{record.quarter ? ` - Q${record.quarter}` : ''}
             </div>
@@ -275,7 +290,7 @@ export const StrategicApprovalPage = () => {
       },
     },
     {
-      title: 'Số Team',
+      title: t.ceo.strategicApproval.table.teams,
       key: 'teams',
       width: 90,
       align: 'center',
@@ -284,14 +299,14 @@ export const StrategicApprovalPage = () => {
       ),
     },
     {
-      title: 'Ngày gửi',
+      title: t.ceo.strategicApproval.table.submittedDate,
       dataIndex: 'submittedAt',
       key: 'submittedAt',
       width: 100,
       render: (date) => date ? new Date(date).toLocaleDateString('vi-VN') : '-',
     },
     {
-      title: 'Hành động',
+      title: t.ceo.strategicApproval.table.action,
       key: 'action',
       width: 120,
       align: 'center',
@@ -303,7 +318,7 @@ export const StrategicApprovalPage = () => {
           icon={<Eye size={14} />}
           onClick={() => handleView(record)}
         >
-          Xem
+          {t.ceo.strategicApproval.table.view}
         </Button>
       ),
     },
@@ -318,9 +333,9 @@ export const StrategicApprovalPage = () => {
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
           <Target size={30} className="text-primary" />
-          Phê duyệt Chiến lược
+          {t.ceo.strategicApproval.title}
         </h1>
-        <p className="text-gray-500">Phê duyệt các kế hoạch chiến lược từ Group Leader</p>
+        <p className="text-gray-500">{t.ceo.strategicApproval.subtitle}</p>
       </div>
 
       {/* Statistics */}
@@ -328,7 +343,7 @@ export const StrategicApprovalPage = () => {
         <Card className="shadow-md border-l-4 border-l-orange-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Chờ phê duyệt</p>
+              <p className="text-gray-600 text-sm">{t.ceo.strategicApproval.stats.pending}</p>
               <p className="text-3xl font-bold text-orange-600">{pendingStrategies.length}</p>
             </div>
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
@@ -340,7 +355,7 @@ export const StrategicApprovalPage = () => {
         <Card className="shadow-md border-l-4 border-l-green-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Đã phê duyệt</p>
+              <p className="text-gray-600 text-sm">{t.ceo.strategicApproval.stats.approved}</p>
               <p className="text-3xl font-bold text-green-600">{approvedStrategies.length}</p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -352,7 +367,7 @@ export const StrategicApprovalPage = () => {
         <Card className="shadow-md border-l-4 border-l-red-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Đã từ chối</p>
+              <p className="text-gray-600 text-sm">{t.ceo.strategicApproval.stats.rejected}</p>
               <p className="text-3xl font-bold text-red-600">{rejectedStrategies.length}</p>
             </div>
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -369,7 +384,7 @@ export const StrategicApprovalPage = () => {
           items={[
             {
               key: 'pending',
-              label: `Chờ phê duyệt (${pendingStrategies.length})`,
+              label: `${t.ceo.strategicApproval.tabs.pending} (${pendingStrategies.length})`,
               children: (
                 <Table
                   columns={columns}
@@ -384,7 +399,7 @@ export const StrategicApprovalPage = () => {
             },
             {
               key: 'approved',
-              label: `Đã phê duyệt (${approvedStrategies.length})`,
+              label: `${t.ceo.strategicApproval.tabs.approved} (${approvedStrategies.length})`,
               children: (
                 <Table
                   columns={columns}
@@ -399,7 +414,7 @@ export const StrategicApprovalPage = () => {
             },
             {
               key: 'rejected',
-              label: `Đã từ chối (${rejectedStrategies.length})`,
+              label: `${t.ceo.strategicApproval.tabs.rejected} (${rejectedStrategies.length})`,
               children: (
                 <Table
                   columns={columns}
@@ -421,7 +436,7 @@ export const StrategicApprovalPage = () => {
         title={
           <div className="flex items-center gap-2">
             <Target size={24} className="text-primary" />
-            <span>Chi tiết Chiến lược</span>
+            <span>{t.ceo.strategicApproval.modal.title}</span>
           </div>
         }
         open={isModalOpen}
@@ -439,31 +454,31 @@ export const StrategicApprovalPage = () => {
                   <p className="text-gray-700">{selectedStrategy.description}</p>
                 </div>
                 <Tag className='rounded-lg' color={selectedStrategy.status === 'pending_ceo' ? 'orange' : selectedStrategy.status === 'approved' ? 'green' : 'red'}>
-                  {selectedStrategy.status === 'pending_ceo' ? 'Chờ duyệt' : selectedStrategy.status === 'approved' ? 'Đã duyệt' : 'Từ chối'}
+                  {getStatusLabel(selectedStrategy.status)}
                 </Tag>
               </div>
               
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Building2 size={16} className="text-gray-500" />
-                  <span className="text-gray-600">Bộ phận:</span>
+                  <span className="text-gray-600">{t.ceo.strategicApproval.modal.department}:</span>
                   <span className="font-semibold">{selectedStrategy.departmentName}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={16} className="text-gray-500" />
-                  <span className="text-gray-600">Group Leader:</span>
+                  <span className="text-gray-600">{t.ceo.strategicApproval.modal.groupLeader}:</span>
                   <span className="font-semibold">{selectedStrategy.groupLeaderName}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar size={16} className="text-gray-500" />
-                  <span className="text-gray-600">Kỳ:</span>
+                  <span className="text-gray-600">{t.ceo.strategicApproval.modal.period}:</span>
                   <span className="font-semibold">
                     {selectedStrategy.year}{selectedStrategy.quarter ? ` - Q${selectedStrategy.quarter}` : ''}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign size={16} className="text-gray-500" />
-                  <span className="text-gray-600">Ngân sách:</span>
+                  <span className="text-gray-600">{t.ceo.strategicApproval.modal.budget}:</span>
                   <span className="font-semibold">
                     {selectedStrategy.totalBudget ? `${(selectedStrategy.totalBudget / 1000000).toFixed(0)}M VNĐ` : '-'}
                   </span>
@@ -475,7 +490,7 @@ export const StrategicApprovalPage = () => {
                   <div className="flex items-start gap-2">
                     <TrendingUp size={16} className="text-blue-500 mt-1" />
                     <div>
-                      <div className="text-xs text-gray-600 mb-1">Tác động dự kiến:</div>
+                      <div className="text-xs text-gray-600 mb-1">{t.ceo.strategicApproval.modal.expectedImpact}:</div>
                       <div className="font-medium text-gray-800">{selectedStrategy.expectedImpact}</div>
                     </div>
                   </div>
@@ -483,7 +498,7 @@ export const StrategicApprovalPage = () => {
               )}
             </div>
 
-            <Divider>Kế hoạch các Team ({selectedStrategy.teamPlans.length})</Divider>
+            <Divider>{t.ceo.strategicApproval.modal.teamPlans} ({selectedStrategy.teamPlans.length})</Divider>
 
             {/* Team Plans */}
             {selectedStrategy.teamPlans.length > 0 ? (
@@ -502,7 +517,7 @@ export const StrategicApprovalPage = () => {
                           </div>
                           <div>
                             <h4 className="font-semibold text-base">{team.teamName}</h4>
-                            <p className="text-sm text-gray-600">Team Leader: {team.teamLeaderName}</p>
+                            <p className="text-sm text-gray-600">{t.ceo.strategicApproval.modal.teamLeader}: {team.teamLeaderName}</p>
                           </div>
                         </div>
                         <div className="flex gap-2">
@@ -512,7 +527,7 @@ export const StrategicApprovalPage = () => {
                             </Tag>
                           )}
                           <Tag color="blue" className="rounded-lg">
-                            {team.objectives.length} mục tiêu
+                            {team.objectives.length} {t.ceo.strategicApproval.modal.objectives}
                           </Tag>
                         </div>
                       </div>
@@ -526,7 +541,7 @@ export const StrategicApprovalPage = () => {
 
                       {/* Team Objectives */}
                       <div className="space-y-2">
-                        <div className="font-medium text-sm text-gray-700">Mục tiêu của team:</div>
+                        <div className="font-medium text-sm text-gray-700">{t.ceo.strategicApproval.modal.teamObjectives}:</div>
                         {team.objectives.map((obj, objIndex) => (
                           <div key={obj.id} className="bg-primary/10 border border-primary/30 p-3 rounded-2xl">
                             <div className="flex items-start gap-3">
@@ -539,29 +554,29 @@ export const StrategicApprovalPage = () => {
                                     <h5 className="font-semibold">{obj.title}</h5>
                                     <p className="text-sm text-gray-600 mt-1">{obj.description}</p>
                                   </div>
-                                  <Tag color="blue">Trọng số: {obj.weight}%</Tag>
+                                  <Tag color="blue">{t.ceo.strategicApproval.modal.weight}: {obj.weight}%</Tag>
                                 </div>
                                 
                                 <div className="grid grid-cols-2 gap-1 text-sm">
                                   <div className="bg-white p-2 rounded-lg">
-                                    <span className="text-gray-600">Mục tiêu: </span>
+                                    <span className="text-gray-600">{t.ceo.strategicApproval.modal.target}: </span>
                                     <span className="font-semibold">{obj.target} {obj.unit}</span>
                                   </div>
                                   {obj.category && (
                                     <div className="bg-white p-2 rounded-lg">
-                                      <span className="text-gray-600">Danh mục: </span>
+                                      <span className="text-gray-600">{t.ceo.strategicApproval.modal.category}: </span>
                                       <TagIcon size="small">{obj.category}</TagIcon>
                                     </div>
                                   )}
                                   {obj.measurementMethod && (
                                     <div className="bg-white p-2 rounded-lg col-span-2">
-                                      <span className="text-gray-600">Đo lường: </span>
+                                      <span className="text-gray-600">{t.ceo.strategicApproval.modal.measurement}: </span>
                                       <span className="text-gray-800">{obj.measurementMethod}</span>
                                     </div>
                                   )}
                                   {obj.expectedOutcome && (
                                     <div className="bg-white p-2 rounded-lg col-span-2">
-                                      <span className="text-gray-600">Kết quả mong đợi: </span>
+                                      <span className="text-gray-600">{t.ceo.strategicApproval.modal.expectedOutcome}: </span>
                                       <span className="text-gray-800">{obj.expectedOutcome}</span>
                                     </div>
                                   )}
@@ -576,7 +591,7 @@ export const StrategicApprovalPage = () => {
                 ))}
               </div>
             ) : (
-              <Empty description="Chưa có kế hoạch team nào" />
+              <Empty description={t.ceo.strategicApproval.modal.noTeamPlans} />
             )}
 
             {/* Action Section */}
@@ -586,19 +601,19 @@ export const StrategicApprovalPage = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold mb-2">
-                      Nhận xét / Lý do:
+                      {t.ceo.strategicApproval.modal.comment}:
                     </label>
                     <TextArea
                       rows={4}
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
-                      placeholder="Nhập nhận xét hoặc lý do từ chối (nếu có)..."
+                      placeholder={t.ceo.strategicApproval.modal.commentPlaceholder}
                     />
                   </div>
 
                   <div className="flex justify-end gap-3">
                     <Button size="middle" onClick={() => setIsModalOpen(false)}>
-                      Đóng
+                      {t.ceo.strategicApproval.modal.close}
                     </Button>
                     <Button 
                       danger
@@ -606,13 +621,13 @@ export const StrategicApprovalPage = () => {
                       icon={<XCircle size={16} />}
                       onClick={() => {
                         if (!reason.trim()) {
-                          toast.warning('Vui lòng nhập lý do từ chối');
+                          toast.warning(t.ceo.strategicApproval.modal.rejectReasonRequired);
                           return;
                         }
                         handleAction('reject');
                       }}
                     >
-                      Từ chối
+                      {t.ceo.strategicApproval.modal.reject}
                     </Button>
                     <Button 
                       type="primary"
@@ -621,7 +636,7 @@ export const StrategicApprovalPage = () => {
                       onClick={() => handleAction('approve')}
                       className="bg-primary"
                     >
-                      Phê duyệt
+                      {t.ceo.strategicApproval.modal.approve}
                     </Button>
                   </div>
                 </div>
@@ -631,7 +646,7 @@ export const StrategicApprovalPage = () => {
             {selectedStrategy.status !== 'pending_ceo' && (
               <div className="flex justify-end">
                 <Button size="middle" onClick={() => setIsModalOpen(false)}>
-                  Đóng
+                  {t.ceo.strategicApproval.modal.close}
                 </Button>
               </div>
             )}

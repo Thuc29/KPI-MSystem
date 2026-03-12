@@ -39,6 +39,7 @@ import { kpiApi } from '../../../../infrastructure/api';
 import { storage } from '../../../../infrastructure/utils';
 import { KPIStatusTag } from '../../../components';
 import type { IKPIRecord } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 interface TeamMemberSummary {
   id: string;
@@ -50,6 +51,7 @@ interface TeamMemberSummary {
 
 export const TeamLeaderDashboardPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const userId = storage.getUserId();
@@ -67,7 +69,7 @@ export const TeamLeaderDashboardPage = () => {
         setKpiList(response.data.data);
       }
     } catch (error: any) {
-      toast.error('Không thể tải danh sách KPI');
+      toast.error(t.teamLeader.dashboard.cannotLoadKPIs);
     } finally {
       setLoading(false);
     }
@@ -113,7 +115,7 @@ export const TeamLeaderDashboardPage = () => {
   // Columns for pending KPIs table
   const pendingColumns: ColumnsType<IKPIRecord> = [
     {
-      title: 'Ưu tiên',
+      title: t.teamLeader.dashboard.priority,
       key: 'priority',
       width: 70,
       align: 'center',
@@ -128,7 +130,7 @@ export const TeamLeaderDashboardPage = () => {
       },
     },
     {
-      title: 'Nhân viên',
+      title: t.teamLeader.dashboard.employee,
       dataIndex: 'employeeName',
       key: 'employeeName',
       width: 200,
@@ -140,7 +142,7 @@ export const TeamLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Mã KPI',
+      title: t.teamLeader.dashboard.kpiCode,
       dataIndex: 'id',
       key: 'id',
       width: 120,
@@ -149,14 +151,14 @@ export const TeamLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Năm',
+      title: t.kpiList.year,
       dataIndex: 'year',
       key: 'year',
       width: 80,
       align: 'center',
     },
     {
-      title: 'Số mục tiêu',
+      title: t.kpiList.targets,
       key: 'targets',
       width: 100,
       align: 'center',
@@ -167,7 +169,7 @@ export const TeamLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Ngày gửi',
+      title: t.teamLeader.dashboard.submittedDate,
       key: 'submittedAt',
       width: 120,
       render: (_, record) => {
@@ -175,13 +177,13 @@ export const TeamLeaderDashboardPage = () => {
         const days = Math.floor((Date.now() - new Date(record.submittedAt).getTime()) / (1000 * 60 * 60 * 24));
         return (
           <span className="text-gray-600">
-            {days === 0 ? 'Hôm nay' : `${days} ngày trước`}
+            {days === 0 ? t.dashboard.employee.today : t.teamLeader.dashboard.daysAgo.replace('{count}', String(days))}
           </span>
         );
       },
     },
     {
-      title: 'Hành động',
+      title: t.teamLeader.dashboard.action,
       key: 'action',
       width: 120,
       align: 'center',
@@ -193,7 +195,7 @@ export const TeamLeaderDashboardPage = () => {
           onClick={() => navigate(`/kpi/${record.id}`)}
           className="bg-primary"
         >
-          Duyệt
+          {t.teamLeader.dashboard.review}
         </Button>
       ),
     },
@@ -202,7 +204,7 @@ export const TeamLeaderDashboardPage = () => {
   // Team member columns
   const memberColumns: ColumnsType<TeamMemberSummary> = [
     {
-      title: 'Nhân viên',
+      title: t.teamLeader.dashboard.member,
       dataIndex: 'name',
       key: 'name',
       render: (text) => (
@@ -215,7 +217,7 @@ export const TeamLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Số KPI',
+      title: t.teamLeader.dashboard.kpiCount,
       dataIndex: 'kpiCount',
       key: 'kpiCount',
       align: 'center',
@@ -223,14 +225,14 @@ export const TeamLeaderDashboardPage = () => {
       render: (count) => <Tag color="blue">{count} KPI</Tag>,
     },
     {
-      title: 'Hiệu suất',
+      title: t.dashboard.employee.completion,
       dataIndex: 'avgCompletion',
       key: 'avgCompletion',
       width: 220,
       render: (value) => (
         <div className="space-y-1">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-600">Hoàn thành</span>
+            <span className="text-gray-600">{t.dashboard.employee.completion}</span>
             <span className="font-semibold">{value}%</span>
           </div>
           <Progress 
@@ -245,24 +247,24 @@ export const TeamLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Đánh giá',
+      title: t.teamLeader.dashboard.status,
       dataIndex: 'status',
       key: 'status',
       width: 110,
       align: 'center',
       render: (status: string) => {
         const config: Record<string, { color: string; label: string }> = {
-          excellent: { color: 'success', label: 'Xuất sắc' },
-          good: { color: 'processing', label: 'Tốt' },
-          average: { color: 'warning', label: 'TB' },
-          poor: { color: 'error', label: 'Yếu' },
+          excellent: { color: 'success', label: t.teamLeader.dashboard.excellent },
+          good: { color: 'processing', label: t.teamLeader.dashboard.good },
+          average: { color: 'warning', label: t.teamLeader.dashboard.average },
+          poor: { color: 'error', label: t.teamLeader.dashboard.poor },
         };
         const { color, label } = config[status] || { color: 'default', label: status };
         return <Tag color={color}>{label}</Tag>;
       },
     },
     {
-      title: 'Hành động',
+      title: t.teamLeader.dashboard.action,
       key: 'action',
       width: 100,
       align: 'center',
@@ -285,9 +287,9 @@ export const TeamLeaderDashboardPage = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-1">
-          Dashboard - Team Leader
+          {t.teamLeader.dashboard.title}
         </h1>
-        <p className="text-gray-500">Chào mừng <span className="font-semibold text-primary">{userName}</span>, quản lý và theo dõi hiệu suất team của bạn</p>
+        <p className="text-gray-500">{t.dashboard.employee.welcome} <span className="font-semibold text-primary">{userName}</span>, {t.teamLeader.dashboard.subtitle}</p>
       </div>
 
       {/* Urgent Alert */}
@@ -297,10 +299,10 @@ export const TeamLeaderDashboardPage = () => {
             <AlertTriangle size={28} className="text-red-500 mt-1" />
             <div className="flex-1">
               <h3 className="font-semibold text-red-600 text-lg mb-2">
-                Cảnh báo: {urgentKPIs.length} KPI cần duyệt gấp!
+                {t.teamLeader.dashboard.urgentAlert.replace('{count}', String(urgentKPIs.length))}
               </h3>
               <p className="text-gray-700 mb-2">
-                Có {urgentKPIs.length} KPI đã chờ duyệt hơn 2 ngày. Vui lòng xem xét ngay.
+                {t.teamLeader.dashboard.urgentMessage.replace('{count}', String(urgentKPIs.length))}
               </p>
               <Button 
                 danger
@@ -308,7 +310,7 @@ export const TeamLeaderDashboardPage = () => {
                 onClick={() => navigate('/approval')}
                 size="middle"
               >
-                Xem ngay
+                {t.teamLeader.dashboard.viewNow}
               </Button>
             </div>
           </div>
@@ -320,7 +322,7 @@ export const TeamLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 !max-h-20 border-l-blue-500 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng nhân viên</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.dashboard.totalMembers}</span>}
               value={totalTeamMembers}
               prefix={<Users size={20} className="text-blue-500" />}
               valueStyle={{ color: '#1890ff', fontSize: '26px', fontWeight: 'bold' }}
@@ -331,12 +333,12 @@ export const TeamLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-orange-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Chờ duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.dashboard.pendingApproval}</span>}
               value={pendingApprovalKPIs.length}
               prefix={<Clock size={20} className="text-orange-500" />}
               valueStyle={{ color: '#fa8c16', fontSize: '26px', fontWeight: 'bold' }}
               suffix={urgentKPIs.length > 0 && (
-                <Tooltip title={`${urgentKPIs.length} khẩn cấp`}>
+                <Tooltip title={`${urgentKPIs.length} ${t.teamLeader.dashboard.urgent}`}>
                   <Badge count={urgentKPIs.length} className="ml-2" />
                 </Tooltip>
               )}
@@ -347,7 +349,7 @@ export const TeamLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-green-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Đã duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.dashboard.approved}</span>}
               value={approvedKPIs.length}
               prefix={<CheckCircle size={20} className="text-green-500" />}
               valueStyle={{ color: '#52c41a', fontSize: '26px', fontWeight: 'bold' }}
@@ -358,7 +360,7 @@ export const TeamLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-purple-500 !max-h-20   hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Hiệu suất TB</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.dashboard.avgPerformance}</span>}
               value={avgTeamCompletion}
               suffix="%"
               prefix={<Target size={20} className="text-purple-500" />}
@@ -379,7 +381,7 @@ export const TeamLeaderDashboardPage = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText size={20} className="text-blue-500" />
-                    <span className="font-semibold">KPI cá nhân của tôi</span>
+                    <span className="font-semibold">{t.teamLeader.dashboard.myPersonalKPIs}</span>
                     <Badge count={myKPIs.length} showZero color="#1890ff" />
                   </div>
                   <Button
@@ -388,7 +390,7 @@ export const TeamLeaderDashboardPage = () => {
                     onClick={() => navigate('/kpi/create')}
                     className="bg-blue-500 rounded-lg hover:scale-95"
                   >
-                    Tạo KPI mới
+                    {t.teamLeader.dashboard.createNewKPI}
                   </Button>
                 </div>
               }
@@ -401,14 +403,14 @@ export const TeamLeaderDashboardPage = () => {
                     <div className="flex items-center gap-2">
                       <Clock size={18} className="text-orange-500" />
                       <span className="font-medium text-orange-700">
-                        Bạn có {myDraftKPIs.length} KPI nháp chưa gửi
+                        {t.teamLeader.dashboard.draftAlert.replace('{count}', String(myDraftKPIs.length))}
                       </span>
                       <Button 
                         size="small" 
                         type="link"
                         onClick={() => navigate('/kpi')}
                       >
-                        Xem
+                        {t.teamLeader.dashboard.view}
                       </Button>
                     </div>
                   </div>
@@ -420,7 +422,7 @@ export const TeamLeaderDashboardPage = () => {
                     <div className="flex items-center gap-2">
                       <XCircle size={18} className="text-red-500" />
                       <span className="font-medium text-red-700">
-                        Bạn có {myRejectedKPIs.length} KPI bị từ chối
+                        {t.teamLeader.dashboard.rejectedAlert.replace('{count}', String(myRejectedKPIs.length))}
                       </span>
                       <Button 
                         size="small" 
@@ -428,7 +430,7 @@ export const TeamLeaderDashboardPage = () => {
                         danger
                         onClick={() => navigate('/kpi')}
                       >
-                        Xem & Sửa
+                        {t.teamLeader.dashboard.viewAndEdit}
                       </Button>
                     </div>
                   </div>
@@ -438,19 +440,19 @@ export const TeamLeaderDashboardPage = () => {
                 <div className="grid grid-cols-4 gap-3">
                   <div className="bg-gray-50 p-3 border border-gray-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-gray-700">{myKPIs.length}</div>
-                    <div className="text-xs text-gray-600">Tổng KPI</div>
+                    <div className="text-xs text-gray-600">{t.teamLeader.dashboard.totalKPIs}</div>
                   </div>
                   <div className="bg-orange-50 p-3 border border-orange-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-orange-600">{myPendingKPIs.length}</div>
-                    <div className="text-xs text-gray-600">Chờ duyệt</div>
+                    <div className="text-xs text-gray-600">{t.teamLeader.dashboard.pendingApproval}</div>
                   </div>
                   <div className="bg-green-50 p-3 border border-green-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-green-600">{myApprovedKPIs.length}</div>
-                    <div className="text-xs text-gray-600">Đã duyệt</div>
+                    <div className="text-xs text-gray-600">{t.teamLeader.dashboard.approved}</div>
                   </div>
                   <div className="bg-red-50 p-3 border border-red-300 rounded-lg text-center">
                     <div className="text-xl font-bold text-red-600">{myRejectedKPIs.length}</div>
-                    <div className="text-xs text-gray-600">Từ chối</div>
+                    <div className="text-xs text-gray-600">{t.teamLeader.dashboard.rejected}</div>
                   </div>
                 </div>
               </div>
@@ -463,7 +465,7 @@ export const TeamLeaderDashboardPage = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Clock size={20} className="text-orange-500" />
-                  <span className="font-semibold">KPI chờ duyệt</span>
+                  <span className="font-semibold">{t.teamLeader.dashboard.recentPendingKPIs}</span>
                   <Badge count={pendingApprovalKPIs.length} showZero color="#fa8c16" />
                 </div>
                 <div
@@ -471,7 +473,7 @@ export const TeamLeaderDashboardPage = () => {
                   onClick={() => navigate('/approval')}
                   className='underline text-sm text-blue-600 cursor-pointer hover:text-blue-400'
                 >
-                  Xem tất cả
+                  {t.teamLeader.dashboard.viewAll}
                 </div>
               </div>
             }
@@ -490,7 +492,7 @@ export const TeamLeaderDashboardPage = () => {
               />
             ) : (
               <Empty 
-                description="Không có KPI nào chờ duyệt"
+                description={t.dashboard.employee.noApprovedKPIs}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
             )}
@@ -501,7 +503,7 @@ export const TeamLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Users size={20} className="text-primary" />
-                <span className="font-semibold">Hiệu suất team</span>
+                <span className="font-semibold">{t.teamLeader.dashboard.teamPerformance}</span>
               </div>
             }
             className="shadow-md"
@@ -526,7 +528,7 @@ export const TeamLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Activity size={18} className="text-primary" />
-                <span>Hành động nhanh</span>
+                <span>{t.teamLeader.dashboard.quickActions}</span>
               </div>
             }
             className="shadow-md mb-4"
@@ -540,7 +542,7 @@ export const TeamLeaderDashboardPage = () => {
                 size="middle"
                 className="bg-blue-500 rounded-lg"
               >
-                Tạo KPI cá nhân
+                {t.teamLeader.dashboard.createPersonalKPI}
               </Button>
               <Button
                 type="primary"
@@ -550,7 +552,7 @@ export const TeamLeaderDashboardPage = () => {
                 size="middle"
                 className="bg-primary rounded-lg"
               >
-                Duyệt KPI Team ({pendingApprovalKPIs.length})
+                {t.teamLeader.dashboard.approveTeamKPI} ({pendingApprovalKPIs.length})
               </Button>
               <Button
                 icon={<Users size={16} />}
@@ -559,7 +561,7 @@ export const TeamLeaderDashboardPage = () => {
                 size="middle"
                 className="rounded-lg"
               >
-                Quản lý team
+                {t.teamLeader.dashboard.manageTeam}
               </Button>
               <Button
                 icon={<BarChart3 size={16} />}
@@ -568,7 +570,7 @@ export const TeamLeaderDashboardPage = () => {
                 size="middle"
                 className="rounded-lg"
               >
-                Báo cáo team
+                {t.teamLeader.dashboard.teamReports}
               </Button>
               <Button
                 icon={<FileText size={16} />}
@@ -577,7 +579,7 @@ export const TeamLeaderDashboardPage = () => {
                 size="middle"
                 className="rounded-lg"
               >
-                Xem KPI của tôi
+                {t.teamLeader.dashboard.viewMyKPI}
               </Button>
             </div>
           </Card>
@@ -587,7 +589,7 @@ export const TeamLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Target size={18} className="text-primary" />
-                <span>Tổng quan team</span>
+                <span>{t.teamLeader.dashboard.teamOverviewTitle}</span>
               </div>
             }
             className="shadow-md mb-3"
@@ -606,7 +608,7 @@ export const TeamLeaderDashboardPage = () => {
                   format={(percent) => (
                     <div className="text-center">
                       <div className="text-4xl font-bold text-primary">{percent}%</div>
-                      <div className="text-xs text-gray-500 mt-1">Hiệu suất TB</div>
+                      <div className="text-xs text-gray-500 mt-1">{t.teamLeader.dashboard.avgPerformanceLabel}</div>
                     </div>
                   )}
                 />
@@ -615,19 +617,19 @@ export const TeamLeaderDashboardPage = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-blue-50 p-3 border border-blue-200 rounded-lg text-center">
                   <div className="text-2xl font-bold text-blue-600">{totalTeamMembers}</div>
-                  <div className="text-xs text-gray-600">Nhân viên</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.dashboard.employees}</div>
                 </div>
                 <div className="bg-green-50 p-3 border border-green-200  rounded-lg text-center">
                   <div className="text-2xl font-bold text-green-600">{totalTeamKPIs}</div>
-                  <div className="text-xs text-gray-600">Tổng KPI</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.dashboard.totalKPIsLabel}</div>
                 </div>
                 <div className="bg-orange-50 p-3 border border-orange-200 rounded-lg text-center">
                   <div className="text-2xl font-bold text-orange-600">{pendingApprovalKPIs.length}</div>
-                  <div className="text-xs text-gray-600">Chờ duyệt</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.dashboard.pendingApprovalLabel}</div>
                 </div>
                 <div className="bg-red-50 p-3 border border-red-200 rounded-lg text-center">
                   <div className="text-2xl font-bold text-red-600">{rejectedKPIs.length}</div>
-                  <div className="text-xs text-gray-600">Từ chối</div>
+                  <div className="text-xs text-gray-600">{t.teamLeader.dashboard.rejectedLabel}</div>
                 </div>
               </div>
             </div>
@@ -638,7 +640,7 @@ export const TeamLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Bell size={18} className="text-primary" />
-                <span>Hoạt động gần đây</span>
+                <span>{t.teamLeader.dashboard.recentActivitiesTitle}</span>
               </div>
             }
             className="shadow-md"
@@ -650,9 +652,9 @@ export const TeamLeaderDashboardPage = () => {
                   dot: <Clock size={16} />,
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">5 phút trước</div>
-                      <div className="font-medium">📝 Nhận KPI mới từ Trần Văn Bình</div>
-                      <div className="text-xs text-gray-600">Cần duyệt</div>
+                      <div className="text-sm text-gray-500">{t.teamLeader.dashboard.minutesAgo.replace('{count}', '5')}</div>
+                      <div className="font-medium">{t.teamLeader.dashboard.receivedNewKPI.replace('{name}', 'Trần Văn Bình')}</div>
+                      <div className="text-xs text-gray-600">{t.teamLeader.dashboard.needsApproval}</div>
                     </div>
                   ),
                 },
@@ -661,8 +663,8 @@ export const TeamLeaderDashboardPage = () => {
                   dot: <CheckCircle size={16} />,
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">1 giờ trước</div>
-                      <div className="font-medium">✅ Đã duyệt KPI của Lê Thị C</div>
+                      <div className="text-sm text-gray-500">{t.teamLeader.dashboard.hourAgo.replace('{count}', '1')}</div>
+                      <div className="font-medium">{t.teamLeader.dashboard.approvedKPIOf.replace('{name}', 'Lê Thị C')}</div>
                       <div className="text-xs text-gray-600">Q4/2024</div>
                     </div>
                   ),
@@ -672,9 +674,9 @@ export const TeamLeaderDashboardPage = () => {
                   dot: <XCircle size={16} />,
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">2 giờ trước</div>
-                      <div className="font-medium">❌ Từ chối KPI của Phạm Văn D</div>
-                      <div className="text-xs text-gray-600">Cần bổ sung thông tin</div>
+                      <div className="text-sm text-gray-500">{t.teamLeader.dashboard.hourAgo.replace('{count}', '2')}</div>
+                      <div className="font-medium">{t.teamLeader.dashboard.rejectedKPIOf.replace('{name}', 'Phạm Văn D')}</div>
+                      <div className="text-xs text-gray-600">{t.teamLeader.dashboard.needsMoreInfo}</div>
                     </div>
                   ),
                 },

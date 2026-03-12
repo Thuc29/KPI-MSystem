@@ -39,6 +39,7 @@ import { kpiApi } from '../../../../infrastructure/api';
 import { storage } from '../../../../infrastructure/utils';
 import { KPIStatusTag } from '../../../components';
 import type { IKPIRecord } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 interface TeamLeaderSummary {
   id: string;
@@ -54,6 +55,7 @@ interface TeamLeaderSummary {
 
 export const GroupLeaderDashboardPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const userId = storage.getUserId();
@@ -71,7 +73,7 @@ export const GroupLeaderDashboardPage = () => {
         setKpiList(response.data.data);
       }
     } catch (error: any) {
-      toast.error('Không thể tải danh sách KPI');
+      toast.error(t.groupLeader.dashboard.cannotLoadKPIs);
     } finally {
       setLoading(false);
     }
@@ -140,7 +142,7 @@ export const GroupLeaderDashboardPage = () => {
   // Columns for pending KPIs table
   const pendingColumns: ColumnsType<IKPIRecord> = [
     {
-      title: 'Ưu tiên',
+      title: t.groupLeader.dashboard.priority,
       key: 'priority',
       width: 80,
       align: 'center',
@@ -155,7 +157,7 @@ export const GroupLeaderDashboardPage = () => {
       },
     },
     {
-      title: 'Team Leader',
+      title: t.groupLeader.dashboard.teamLeader,
       dataIndex: 'employeeName',
       key: 'employeeName',
       width: 200,
@@ -167,7 +169,7 @@ export const GroupLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Mã KPI',
+      title: t.groupLeader.dashboard.kpiCode,
       dataIndex: 'id',
       key: 'id',
       width: 120,
@@ -176,14 +178,14 @@ export const GroupLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Năm',
+      title: t.groupLeader.dashboard.year,
       dataIndex: 'year',
       key: 'year',
       width: 80,
       align: 'center',
     },
     {
-      title: 'Số mục tiêu',
+      title: t.groupLeader.dashboard.targetCount,
       key: 'targets',
       width: 100,
       align: 'center',
@@ -194,7 +196,7 @@ export const GroupLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Ngày gửi',
+      title: t.groupLeader.dashboard.submittedDate,
       key: 'submittedAt',
       width: 120,
       render: (_, record) => {
@@ -202,13 +204,13 @@ export const GroupLeaderDashboardPage = () => {
         const days = Math.floor((Date.now() - new Date(record.submittedAt).getTime()) / (1000 * 60 * 60 * 24));
         return (
           <span className="text-gray-600">
-            {days === 0 ? 'Hôm nay' : `${days} ngày trước`}
+            {days === 0 ? t.groupLeader.dashboard.today : t.groupLeader.dashboard.daysAgo.replace('{count}', days.toString())}
           </span>
         );
       },
     },
     {
-      title: 'Hành động',
+      title: t.groupLeader.dashboard.action,
       key: 'action',
       width: 120,
       align: 'center',
@@ -220,7 +222,7 @@ export const GroupLeaderDashboardPage = () => {
           onClick={() => navigate(`/kpi/${record.id}`)}
           className="bg-primary"
         >
-          Duyệt
+          {t.groupLeader.dashboard.approve}
         </Button>
       ),
     },
@@ -229,7 +231,7 @@ export const GroupLeaderDashboardPage = () => {
   // Team Leader performance columns
   const teamLeaderColumns: ColumnsType<TeamLeaderSummary> = [
     {
-      title: 'Leader',
+      title: t.groupLeader.dashboard.leader,
       dataIndex: 'name',
       key: 'name',
       width: 170,
@@ -246,7 +248,7 @@ export const GroupLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Tổng KPI',
+      title: t.groupLeader.dashboard.totalKPIs,
       dataIndex: 'kpiCount',
       key: 'kpiCount',
       align: 'center',
@@ -254,7 +256,7 @@ export const GroupLeaderDashboardPage = () => {
       render: (count) => <Tag color="blue">{count} KPI</Tag>,
     },
     {
-      title: 'Chờ',
+      title: t.groupLeader.dashboard.pending,
       dataIndex: 'pendingCount',
       key: 'pendingCount',
       align: 'center',
@@ -268,7 +270,7 @@ export const GroupLeaderDashboardPage = () => {
       ),
     },
     {
-      title: 'Đã duyệt',
+      title: t.groupLeader.dashboard.approvedLabel,
       dataIndex: 'approvedCount',
       key: 'approvedCount',
       align: 'center',
@@ -276,13 +278,13 @@ export const GroupLeaderDashboardPage = () => {
       render: (count) => <Tag color="green">{count}</Tag>,
     },
     {
-      title: 'Hiệu suất',
+      title: t.groupLeader.dashboard.performance,
       key: 'performance',
       width: 230,
       render: (_, record) => (
         <div className="space-y-1">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-600">Hoàn thành</span>
+            <span className="text-gray-600">{t.groupLeader.dashboard.completion}</span>
             <span className="font-semibold">{record.avgCompletion}%</span>
           </div>
           <Progress 
@@ -300,24 +302,24 @@ export const GroupLeaderDashboardPage = () => {
       sorter: (a, b) => a.avgCompletion - b.avgCompletion,
     },
     {
-      title: 'Đánh giá',
+      title: t.groupLeader.dashboard.rating,
       dataIndex: 'status',
       key: 'status',
       width: 70,
       align: 'center',
       render: (status: string) => {
         const config: Record<string, { color: string; label: string }> = {
-          excellent: { color: 'success', label: 'Xuất sắc' },
-          good: { color: 'processing', label: 'Tốt' },
-          average: { color: 'warning', label: 'TB' },
-          poor: { color: 'error', label: 'Yếu' },
+          excellent: { color: 'success', label: t.groupLeader.dashboard.excellent },
+          good: { color: 'processing', label: t.groupLeader.dashboard.good },
+          average: { color: 'warning', label: t.groupLeader.dashboard.average },
+          poor: { color: 'error', label: t.groupLeader.dashboard.poor },
         };
         const { color, label } = config[status] || { color: 'default', label: status };
         return <Tag color={color}>{label}</Tag>;
       },
     },
     {
-      title: 'Chi tiết',
+      title: t.groupLeader.dashboard.detail,
       key: 'action',
       width: 60,
       align: 'center',
@@ -338,9 +340,9 @@ export const GroupLeaderDashboardPage = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Dashboard - Group Leader
+          {t.groupLeader.dashboard.title}
         </h1>
-        <p className="text-gray-500 flex gap-1">Chào mừng <p className='text-primary font-semibold'> {userName}</p>, quản lý và theo dõi hiệu suất bộ phận của bạn</p>
+        <p className="text-gray-500 flex gap-1">{t.groupLeader.dashboard.welcome} <p className='text-primary font-semibold'> {userName}</p>, {t.groupLeader.dashboard.subtitle}</p>
       </div>
 
       {/* Urgent Alert */}
@@ -350,10 +352,10 @@ export const GroupLeaderDashboardPage = () => {
             <AlertTriangle size={28} className="text-red-500 mt-1" />
             <div className="flex-1">
               <h3 className="font-semibold text-red-600 text-lg mb-2">
-                Cảnh báo: {urgentKPIs.length} KPI cần duyệt gấp!
+                {t.groupLeader.dashboard.urgentAlert.replace('{count}', urgentKPIs.length.toString())}
               </h3>
               <p className="text-gray-700 mb-2">
-                Có {urgentKPIs.length} KPI từ Team Leader đã chờ duyệt hơn 2 ngày. Vui lòng xem xét ngay.
+                {t.groupLeader.dashboard.urgentMessage.replace('{count}', urgentKPIs.length.toString())}
               </p>
               <Button 
                 danger
@@ -361,7 +363,7 @@ export const GroupLeaderDashboardPage = () => {
                 onClick={() => navigate('/approval')}
                 size="large"
               >
-                Xem ngay
+                {t.groupLeader.dashboard.viewNow}
               </Button>
             </div>
           </div>
@@ -373,7 +375,7 @@ export const GroupLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-purple-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Team Leader</span>}
+              title={<span className="text-gray-600 font-medium">{t.groupLeader.dashboard.teamLeaders}</span>}
               value={totalTeamLeaders}
               prefix={<Users size={20} className="text-purple-500" />}
               valueStyle={{ color: '#722ed1', fontSize: '25px', fontWeight: 'bold' }}
@@ -384,12 +386,12 @@ export const GroupLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-orange-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Chờ duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.groupLeader.dashboard.pendingApproval}</span>}
               value={pendingApprovalKPIs.length}
               prefix={<Clock size={20} className="text-orange-500" />}
               valueStyle={{ color: '#fa8c16', fontSize: '25px', fontWeight: 'bold' }}
               suffix={urgentKPIs.length > 0 && (
-                <Tooltip title={`${urgentKPIs.length} khẩn cấp`}>
+                <Tooltip title={`${urgentKPIs.length} ${t.groupLeader.dashboard.urgent}`}>
                   <Badge count={urgentKPIs.length} className="ml-2" />
                 </Tooltip>
               )}
@@ -400,7 +402,7 @@ export const GroupLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-green-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Đã duyệt</span>}
+              title={<span className="text-gray-600 font-medium">{t.groupLeader.dashboard.approved}</span>}
               value={approvedKPIs.length}
               prefix={<CheckCircle size={20} className="text-green-500" />}
               valueStyle={{ color: '#52c41a', fontSize: '25px', fontWeight: 'bold' }}
@@ -411,7 +413,7 @@ export const GroupLeaderDashboardPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-blue-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Hiệu suất TB</span>}
+              title={<span className="text-gray-600 font-medium">{t.groupLeader.dashboard.avgPerformance}</span>}
               value={avgDeptCompletion}
               suffix="%"
               prefix={<Target size={20} className="text-blue-500" />}
@@ -431,14 +433,14 @@ export const GroupLeaderDashboardPage = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Clock size={20} className="text-orange-500" />
-                  <span className="font-semibold">KPI chờ duyệt từ Team Leader</span>
+                  <span className="font-semibold">{t.groupLeader.dashboard.pendingKPIsFromTL}</span>
                   <Badge count={pendingApprovalKPIs.length} showZero color="#fa8c16" />
                 </div>
                 <div
                   onClick={() => navigate('/approval')}
                   className='text-sm text-blue-600 hover:text-blue-400 underline cursor-pointer'
                 >
-                  Xem tất cả
+                  {t.groupLeader.dashboard.viewAll}
                 </div>
               </div>
             }
@@ -457,7 +459,7 @@ export const GroupLeaderDashboardPage = () => {
               />
             ) : (
               <Empty 
-                description="Không có KPI nào chờ duyệt"
+                description={t.groupLeader.dashboard.noPendingKPIs}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
             )}
@@ -468,7 +470,7 @@ export const GroupLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Users size={20} className="text-primary" />
-                <span className="font-semibold">Hiệu suất Team Leader</span>
+                <span className="font-semibold">{t.groupLeader.dashboard.teamLeaderPerformance}</span>
               </div>
             }
             className="shadow-md"
@@ -493,7 +495,7 @@ export const GroupLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Activity size={18} className="text-primary" />
-                <span>Hành động nhanh</span>
+                <span>{t.groupLeader.dashboard.quickActions}</span>
               </div>
             }
             className="shadow-md mb-3"
@@ -507,7 +509,7 @@ export const GroupLeaderDashboardPage = () => {
                 size="middle"
                 className="bg-purple-500 hover:bg-purple-600"
               >
-                Tạo Chiến lược mới
+                {t.groupLeader.dashboard.createStrategy}
               </Button>
               <Button
                 icon={<FileText size={16} />}
@@ -515,7 +517,7 @@ export const GroupLeaderDashboardPage = () => {
                 block
                 size="middle"
               >
-                Quản lý Chiến lược
+                {t.groupLeader.dashboard.manageStrategy}
               </Button>
               <Button
                 type="primary"
@@ -525,7 +527,7 @@ export const GroupLeaderDashboardPage = () => {
                 size="middle"
                 className="bg-primary"
               >
-                Duyệt KPI Team Leader ({pendingApprovalKPIs.length})
+                {t.groupLeader.dashboard.approveKPIFromTL} ({pendingApprovalKPIs.length})
               </Button>
               <Button
                 icon={<Building2 size={16} />}
@@ -533,7 +535,7 @@ export const GroupLeaderDashboardPage = () => {
                 block
                 size="middle"
               >
-                Quản lý bộ phận
+                {t.groupLeader.dashboard.manageDepartment}
               </Button>
               <Button
                 icon={<BarChart3 size={16} />}
@@ -541,7 +543,7 @@ export const GroupLeaderDashboardPage = () => {
                 block
                 size="middle"
               >
-                Báo cáo bộ phận
+                {t.groupLeader.dashboard.departmentReports}
               </Button>
             </div>
           </Card>
@@ -551,7 +553,7 @@ export const GroupLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Target size={18} className="text-primary" />
-                <span>Tổng quan bộ phận</span>
+                <span>{t.groupLeader.dashboard.departmentOverview}</span>
               </div>
             }
             className="shadow-md mb-4"
@@ -570,7 +572,7 @@ export const GroupLeaderDashboardPage = () => {
                   format={(percent) => (
                     <div className="text-center">
                       <div className="text-4xl font-bold text-primary">{percent}%</div>
-                      <div className="text-xs text-gray-500 mt-1">Hiệu suất TB</div>
+                      <div className="text-xs text-gray-500 mt-1">{t.groupLeader.dashboard.avgPerformanceLabel}</div>
                     </div>
                   )}
                 />
@@ -579,19 +581,19 @@ export const GroupLeaderDashboardPage = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-purple-50 p-3 rounded-lg text-center">
                   <div className="text-2xl font-bold text-purple-600">{totalTeamLeaders}</div>
-                  <div className="text-xs text-gray-600">Team Leader</div>
+                  <div className="text-xs text-gray-600">{t.groupLeader.dashboard.teamLeadersLabel}</div>
                 </div>
                 <div className="bg-blue-50 p-3 rounded-lg text-center">
                   <div className="text-2xl font-bold text-blue-600">{totalDeptKPIs}</div>
-                  <div className="text-xs text-gray-600">Tổng KPI</div>
+                  <div className="text-xs text-gray-600">{t.groupLeader.dashboard.totalKPIsLabel}</div>
                 </div>
                 <div className="bg-orange-50 p-3 rounded-lg text-center">
                   <div className="text-2xl font-bold text-orange-600">{pendingApprovalKPIs.length}</div>
-                  <div className="text-xs text-gray-600">Chờ duyệt</div>
+                  <div className="text-xs text-gray-600">{t.groupLeader.dashboard.pendingLabel}</div>
                 </div>
                 <div className="bg-green-50 p-3 rounded-lg text-center">
                   <div className="text-2xl font-bold text-green-600">{approvedKPIs.length}</div>
-                  <div className="text-xs text-gray-600">Đã duyệt</div>
+                  <div className="text-xs text-gray-600">{t.groupLeader.dashboard.approvedShort}</div>
                 </div>
               </div>
             </div>
@@ -602,7 +604,7 @@ export const GroupLeaderDashboardPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Bell size={18} className="text-primary" />
-                <span>Hoạt động gần đây</span>
+                <span>{t.groupLeader.dashboard.recentActivities}</span>
               </div>
             }
             className="shadow-md"
@@ -614,9 +616,9 @@ export const GroupLeaderDashboardPage = () => {
                   dot: <Clock size={16} />,
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">5 phút trước</div>
-                      <div className="font-medium">📝 Nhận KPI mới từ Nguyễn Văn A</div>
-                      <div className="text-xs text-gray-600">Cần duyệt</div>
+                      <div className="text-sm text-gray-500">{t.groupLeader.dashboard.minutesAgo.replace('{count}', '5')}</div>
+                      <div className="font-medium">{t.groupLeader.dashboard.receivedNewKPI.replace('{name}', 'Nguyễn Văn A')}</div>
+                      <div className="text-xs text-gray-600">{t.groupLeader.dashboard.needsApproval}</div>
                     </div>
                   ),
                 },
@@ -625,8 +627,8 @@ export const GroupLeaderDashboardPage = () => {
                   dot: <CheckCircle size={16} />,
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">1 giờ trước</div>
-                      <div className="font-medium">✅ Đã duyệt KPI của Trần Thị B</div>
+                      <div className="text-sm text-gray-500">{t.groupLeader.dashboard.hourAgo.replace('{count}', '1')}</div>
+                      <div className="font-medium">{t.groupLeader.dashboard.approvedKPIOf.replace('{name}', 'Trần Thị B')}</div>
                       <div className="text-xs text-gray-600">Q4/2024</div>
                     </div>
                   ),
@@ -636,9 +638,9 @@ export const GroupLeaderDashboardPage = () => {
                   dot: <XCircle size={16} />,
                   children: (
                     <div>
-                      <div className="text-sm text-gray-500">2 giờ trước</div>
-                      <div className="font-medium">❌ Từ chối KPI của Lê Văn C</div>
-                      <div className="text-xs text-gray-600">Cần bổ sung thông tin</div>
+                      <div className="text-sm text-gray-500">{t.groupLeader.dashboard.hourAgo.replace('{count}', '2')}</div>
+                      <div className="font-medium">{t.groupLeader.dashboard.rejectedKPIOf.replace('{name}', 'Lê Văn C')}</div>
+                      <div className="text-xs text-gray-600">{t.groupLeader.dashboard.needsMoreInfo}</div>
                     </div>
                   ),
                 },

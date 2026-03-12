@@ -2,21 +2,10 @@ import { Card, Select, DatePicker, Button, Table, Progress, Row, Col, Statistic,
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Download, TrendingUp, Users, Target, Award, FileText, CheckCircle, Clock, AlertTriangle, BarChart3 } from 'lucide-react';
 import type { ColumnsType } from 'antd/es/table';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-
-const performanceData = [
-  { month: 'T1', completed: 85, inProgress: 10, delayed: 5 },
-  { month: 'T2', completed: 78, inProgress: 15, delayed: 7 },
-  { month: 'T3', completed: 92, inProgress: 5, delayed: 3 },
-];
-
-const kpiStatusData = [
-  { name: 'Hoàn thành', value: 65, color: '#4C9C2E' },
-  { name: 'Đang thực hiện', value: 25, color: '#FFA500' },
-  { name: 'Chậm tiến độ', value: 10, color: '#FF4D4F' },
-];
 
 const employeePerformance = [
   { name: 'Nguyễn Văn A', kpis: 5, completed: 4, progress: 85, score: 4.5 },
@@ -24,17 +13,31 @@ const employeePerformance = [
   { name: 'Lê Văn C', kpis: 6, completed: 5, progress: 92, score: 4.8 },
 ];
 
-const trendData = [
-  { week: 'Tuần 1', performance: 75 },
-  { week: 'Tuần 2', performance: 78 },
-  { week: 'Tuần 3', performance: 82 },
-  { week: 'Tuần 4', performance: 85 },
-];
-
 export const TeamReportsPage = () => {
+  const { t } = useTranslation();
+  
+  const performanceData = [
+    { month: t.teamLeader.teamReports.month1, completed: 85, inProgress: 10, delayed: 5 },
+    { month: t.teamLeader.teamReports.month2, completed: 78, inProgress: 15, delayed: 7 },
+    { month: t.teamLeader.teamReports.month3, completed: 92, inProgress: 5, delayed: 3 },
+  ];
+
+  const kpiStatusData = [
+    { name: t.teamLeader.teamReports.completed, value: 65, color: '#4C9C2E' },
+    { name: t.teamLeader.teamReports.inProgress, value: 25, color: '#FFA500' },
+    { name: t.teamLeader.teamReports.delayed, value: 10, color: '#FF4D4F' },
+  ];
+
+  const trendData = [
+    { week: t.teamLeader.teamReports.week.replace('{count}', '1'), performance: 75 },
+    { week: t.teamLeader.teamReports.week.replace('{count}', '2'), performance: 78 },
+    { week: t.teamLeader.teamReports.week.replace('{count}', '3'), performance: 82 },
+    { week: t.teamLeader.teamReports.week.replace('{count}', '4'), performance: 85 },
+  ];
+  
   const columns: ColumnsType<typeof employeePerformance[0]> = [
     {
-      title: 'Nhân viên',
+      title: t.teamLeader.teamReports.employee,
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
@@ -42,21 +45,21 @@ export const TeamReportsPage = () => {
       render: (text) => <span className="font-semibold text-gray-900">{text}</span>,
     },
     {
-      title: 'Tổng KPI',
+      title: t.teamLeader.teamReports.totalKPIsLabel,
       dataIndex: 'kpis',
       key: 'kpis',
       align: 'center',
       width: 100,
-      render: (value) => <Tag color="blue">{value} KPI</Tag>,
+      render: (value) => <Tag color="blue">{t.teamLeader.teamReports.kpiCount.replace('{count}', String(value))}</Tag>,
     },
     {
-      title: 'Hoàn thành',
+      title: t.teamLeader.teamReports.completedLabel,
       dataIndex: 'completed',
       key: 'completed',
       align: 'center',
       width: 120,
       render: (value, record) => (
-        <Tooltip title={`${value} trong tổng số ${record.kpis} KPI`}>
+        <Tooltip title={t.teamLeader.teamReports.completedCount.replace('{completed}', String(value)).replace('{total}', String(record.kpis))}>
           <Tag color="green" className='flex items-center w-fit gap-2 mx-auto' icon={<CheckCircle size={14} />}>
             {value}/{record.kpis}
           </Tag>
@@ -64,14 +67,14 @@ export const TeamReportsPage = () => {
       ),
     },
     {
-      title: 'Tiến độ',
+      title: t.teamLeader.teamReports.progress,
       dataIndex: 'progress',
       key: 'progress',
       width: 200,
       render: (value) => (
         <div className="space-y-1">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-600">Hoàn thành</span>
+            <span className="text-gray-600">{t.teamLeader.teamReports.completed}</span>
             <span className="font-semibold">{value}%</span>
           </div>
           <Progress 
@@ -87,7 +90,7 @@ export const TeamReportsPage = () => {
       sorter: (a, b) => a.progress - b.progress,
     },
     {
-      title: 'Điểm đánh giá',
+      title: t.teamLeader.teamReports.rating,
       dataIndex: 'score',
       key: 'score',
       align: 'center',
@@ -116,9 +119,9 @@ export const TeamReportsPage = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
             <BarChart3 size={32} className="text-primary" />
-            Báo cáo Team
+            {t.teamLeader.teamReports.title}
           </h1>
-          <p className="text-gray-500">Phân tích hiệu suất và tiến độ của team</p>
+          <p className="text-gray-500">{t.teamLeader.teamReports.subtitle}</p>
         </div>
         <Button 
           type="primary" 
@@ -126,7 +129,7 @@ export const TeamReportsPage = () => {
           size="middle"
           className="bg-primary"
         >
-          Xuất báo cáo
+          {t.teamLeader.teamReports.exportReport}
         </Button>
       </div>
 
@@ -134,16 +137,16 @@ export const TeamReportsPage = () => {
       <Card className="shadow-md">
         <div className="flex gap-4 flex-wrap">
           <Select defaultValue="all" style={{ width: 200 }} size="middle">
-            <Select.Option value="all">Tất cả nhân viên</Select.Option>
+            <Select.Option value="all">{t.teamLeader.teamReports.allEmployees}</Select.Option>
             <Select.Option value="1">Nguyễn Văn A</Select.Option>
             <Select.Option value="2">Trần Thị B</Select.Option>
             <Select.Option value="3">Lê Văn C</Select.Option>
           </Select>
           <RangePicker size="middle" />
           <Select defaultValue="monthly" style={{ width: 150 }} size="middle">
-            <Select.Option value="weekly">Theo tuần</Select.Option>
-            <Select.Option value="monthly">Theo tháng</Select.Option>
-            <Select.Option value="quarterly">Theo quý</Select.Option>
+            <Select.Option value="weekly">{t.teamLeader.teamReports.weekly}</Select.Option>
+            <Select.Option value="monthly">{t.teamLeader.teamReports.monthly}</Select.Option>
+            <Select.Option value="quarterly">{t.teamLeader.teamReports.quarterly}</Select.Option>
           </Select>
         </div>
       </Card>
@@ -153,7 +156,7 @@ export const TeamReportsPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-blue-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng nhân viên</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamReports.totalMembers}</span>}
               value={12}
               prefix={<Users size={20} className="text-blue-500" />}
               valueStyle={{ color: '#1890ff', fontSize: '25px', fontWeight: 'bold' }}
@@ -164,7 +167,7 @@ export const TeamReportsPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-purple-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tổng KPI</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamReports.totalKPIs}</span>}
               value={48}
               prefix={<Target size={20} className="text-purple-500" />}
               valueStyle={{ color: '#722ed1', fontSize: '25px', fontWeight: 'bold' }}
@@ -175,7 +178,7 @@ export const TeamReportsPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-green-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Tiến độ TB</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamReports.avgProgress}</span>}
               value={85}
               suffix="%"
               prefix={<TrendingUp size={20} className="text-green-500" />}
@@ -187,7 +190,7 @@ export const TeamReportsPage = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-md border-l-4 border-l-orange-500 !max-h-20 hover:shadow-lg transition-shadow">
             <Statistic
-              title={<span className="text-gray-600 font-medium">Điểm TB</span>}
+              title={<span className="text-gray-600 font-medium">{t.teamLeader.teamReports.avgScore}</span>}
               value={4.5}
               precision={1}
               prefix={<Award size={20} className="text-orange-500" />}
@@ -204,7 +207,7 @@ export const TeamReportsPage = () => {
           title={
             <div className="flex items-center gap-2">
               <BarChart3 size={20} className="text-primary" />
-              <span className="font-semibold">Hiệu suất theo tháng</span>
+              <span className="font-semibold">{t.teamLeader.teamReports.performanceByMonth}</span>
             </div>
           }
           className="shadow-md"
@@ -216,9 +219,9 @@ export const TeamReportsPage = () => {
               <YAxis />
               <RechartsTooltip />
               <Legend />
-              <Bar dataKey="completed" fill="#4C9C2E" name="Hoàn thành" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="inProgress" fill="#FFA500" name="Đang thực hiện" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="delayed" fill="#FF4D4F" name="Chậm tiến độ" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="completed" fill="#4C9C2E" name={t.teamLeader.teamReports.completed} radius={[8, 8, 0, 0]} />
+              <Bar dataKey="inProgress" fill="#FFA500" name={t.teamLeader.teamReports.inProgress} radius={[8, 8, 0, 0]} />
+              <Bar dataKey="delayed" fill="#FF4D4F" name={t.teamLeader.teamReports.delayed} radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -228,7 +231,7 @@ export const TeamReportsPage = () => {
           title={
             <div className="flex items-center gap-2">
               <Target size={20} className="text-primary" />
-              <span className="font-semibold">Phân bổ trạng thái KPI</span>
+              <span className="font-semibold">{t.teamLeader.teamReports.kpiStatusDistribution}</span>
             </div>
           }
           className="shadow-md"
@@ -259,7 +262,7 @@ export const TeamReportsPage = () => {
           title={
             <div className="flex items-center gap-2">
               <TrendingUp size={20} className="text-primary" />
-              <span className="font-semibold">Xu hướng hiệu suất</span>
+              <span className="font-semibold">{t.teamLeader.teamReports.performanceTrend}</span>
             </div>
           }
           className="shadow-md"
@@ -276,7 +279,7 @@ export const TeamReportsPage = () => {
                 dataKey="performance" 
                 stroke="#4C9C2E" 
                 strokeWidth={3}
-                name="Hiệu suất (%)"
+                name={t.teamLeader.teamReports.performance}
                 dot={{ fill: '#4C9C2E', r: 6 }}
                 activeDot={{ r: 8 }}
               />
@@ -289,7 +292,7 @@ export const TeamReportsPage = () => {
           title={
             <div className="flex items-center gap-2">
               <Award size={20} className="text-primary" />
-              <span className="font-semibold">Top performers</span>
+              <span className="font-semibold">{t.teamLeader.teamReports.topPerformers}</span>
             </div>
           }
           className="shadow-md"
@@ -313,7 +316,7 @@ export const TeamReportsPage = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-primary">{emp.score.toFixed(1)}</p>
-                    <p className="text-xs text-gray-500">{emp.progress}% hoàn thành</p>
+                    <p className="text-xs text-gray-500">{t.teamLeader.teamReports.completionRate.replace('{percent}', String(emp.progress))}</p>
                   </div>
                 </div>
               ))}
@@ -326,7 +329,7 @@ export const TeamReportsPage = () => {
         title={
           <div className="flex items-center gap-2">
             <FileText size={20} className="text-primary" />
-            <span className="font-semibold">Chi tiết hiệu suất nhân viên</span>
+            <span className="font-semibold">{t.teamLeader.teamReports.employeePerformanceDetail}</span>
           </div>
         }
         className="shadow-md"
@@ -338,7 +341,7 @@ export const TeamReportsPage = () => {
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            showTotal: (total) => `Tổng ${total} nhân viên`,
+            showTotal: (total) => t.teamLeader.teamReports.totalEmployees.replace('{count}', String(total)),
           }}
           scroll={{ x: 900 }}
           bordered

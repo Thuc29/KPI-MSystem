@@ -355,7 +355,7 @@ export const KPIDashboardPage = () => {
         title={
           <div className="flex items-center gap-2">
             <FileText size={20} className="text-primary" />
-            <span className="text-lg font-semibold">Danh sách hồ sơ</span>
+            <span className="text-lg font-semibold">{t.kpiList.recordList}</span>
           </div>
         }
       >
@@ -385,7 +385,7 @@ export const KPIDashboardPage = () => {
             showSizeChanger: true,
             showTotal: (total) => (
               <span className="font-medium">
-                Tổng <span className="text-red-500">{total}</span> hồ sơ
+                {t.kpiList.total} <span className="text-red-500">{total}</span> {t.kpiList.records}
               </span>
             ),
           }}

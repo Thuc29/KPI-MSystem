@@ -35,12 +35,14 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import type { ITeamPlan, ITeamObjective } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export const CreateStrategyPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
   const [teamPlans, setTeamPlans] = useState<ITeamPlan[]>([]);
@@ -99,10 +101,10 @@ export const CreateStrategyPage = () => {
         const updated = [...teamPlans];
         updated[currentTeamIndex] = newTeamPlan;
         setTeamPlans(updated);
-        toast.success('Cập nhật kế hoạch team thành công');
+        toast.success(t.groupLeader.createStrategy.teamUpdated);
       } else {
         setTeamPlans([...teamPlans, newTeamPlan]);
-        toast.success('Thêm kế hoạch team thành công');
+        toast.success(t.groupLeader.createStrategy.teamAdded);
       }
 
       setIsTeamModalVisible(false);
@@ -114,15 +116,15 @@ export const CreateStrategyPage = () => {
 
   const handleDeleteTeamPlan = (index: number) => {
     Modal.confirm({
-      title: 'Xác nhận xóa',
-      content: 'Bạn có chắc chắn muốn xóa kế hoạch team này?',
-      okText: 'Xóa',
-      cancelText: 'Hủy',
+      title: t.groupLeader.createStrategy.confirmDelete,
+      content: t.groupLeader.createStrategy.confirmDeleteMessage,
+      okText: t.groupLeader.createStrategy.delete,
+      cancelText: t.groupLeader.createStrategy.cancel,
       okButtonProps: { danger: true },
       onOk: () => {
         const updated = teamPlans.filter((_, i) => i !== index);
         setTeamPlans(updated);
-        toast.success('Đã xóa kế hoạch team');
+        toast.success(t.groupLeader.createStrategy.teamDeleted);
       },
     });
   };
@@ -158,7 +160,7 @@ export const CreateStrategyPage = () => {
       updated[currentTeamIndex].objectives.push(newObjective);
       setTeamPlans(updated);
 
-      toast.success('Thêm mục tiêu thành công');
+      toast.success(t.groupLeader.createStrategy.objectiveAdded);
       setIsObjectiveModalVisible(false);
       objectiveForm.resetFields();
     } catch (error) {
@@ -168,16 +170,16 @@ export const CreateStrategyPage = () => {
 
   const handleDeleteObjective = (teamIndex: number, objIndex: number) => {
     Modal.confirm({
-      title: 'Xác nhận xóa',
-      content: 'Bạn có chắc chắn muốn xóa mục tiêu này?',
-      okText: 'Xóa',
-      cancelText: 'Hủy',
+      title: t.groupLeader.createStrategy.confirmDelete,
+      content: t.groupLeader.createStrategy.confirmDeleteMessage,
+      okText: t.groupLeader.createStrategy.delete,
+      cancelText: t.groupLeader.createStrategy.cancel,
       okButtonProps: { danger: true },
       onOk: () => {
         const updated = [...teamPlans];
         updated[teamIndex].objectives = updated[teamIndex].objectives.filter((_:any, i:any) => i !== objIndex);
         setTeamPlans(updated);
-        toast.success('Đã xóa mục tiêu');
+        toast.success(t.groupLeader.createStrategy.objectiveDeleted);
       },
     });
   };
@@ -186,10 +188,10 @@ export const CreateStrategyPage = () => {
     try {
       const values = await form.validateFields();
       console.log('Save draft:', { ...values, teamPlans, status: 'draft' });
-      toast.success('Đã lưu nháp chiến lược');
+      toast.success(t.groupLeader.createStrategy.draftSaved);
       navigate('/strategy');
     } catch (error) {
-      toast.error('Vui lòng điền đầy đủ thông tin');
+      toast.error(t.groupLeader.createStrategy.fillAllInfo);
     }
   };
 
@@ -198,27 +200,27 @@ export const CreateStrategyPage = () => {
       const values = await form.validateFields();
       
       if (teamPlans.length === 0) {
-        toast.error('Vui lòng thêm ít nhất một kế hoạch team');
+        toast.error(t.groupLeader.createStrategy.addAtLeastOneTeam);
         return;
       }
 
       const hasObjectives = teamPlans.every(tp => tp.objectives.length > 0);
       if (!hasObjectives) {
-        toast.error('Mỗi team phải có ít nhất một mục tiêu');
+        toast.error(t.groupLeader.createStrategy.eachTeamNeedsObjective);
         return;
       }
 
       console.log('Submit strategy:', { ...values, teamPlans, status: 'pending_ceo' });
-      toast.success('Đã gửi chiến lược đến CEO để phê duyệt');
+      toast.success(t.groupLeader.createStrategy.strategySent);
       navigate('/strategy');
     } catch (error) {
-      toast.error('Vui lòng điền đầy đủ thông tin');
+      toast.error(t.groupLeader.createStrategy.fillAllInfo);
     }
   };
 
   const teamColumns: ColumnsType<ITeamPlan> = [
     {
-      title: 'Team',
+      title: t.groupLeader.createStrategy.teamLeader,
       dataIndex: 'teamName',
       key: 'teamName',
       render: (text, record) => (
@@ -229,25 +231,25 @@ export const CreateStrategyPage = () => {
       ),
     },
     {
-      title: 'Số mục tiêu',
+      title: t.groupLeader.createStrategy.targetCount,
       key: 'objectives',
       align: 'center',
       width: 120,
       render: (_, record) => (
         <Tag color={record.objectives.length > 0 ? 'blue' : 'default'}>
-          {record.objectives.length} mục tiêu
+          {record.objectives.length} {t.groupLeader.createStrategy.objectives}
         </Tag>
       ),
     },
     {
-      title: 'Ngân sách',
+      title: t.groupLeader.createStrategy.budget,
       dataIndex: 'budget',
       key: 'budget',
       width: 150,
       render: (budget) => budget ? `${budget.toLocaleString()} VNĐ` : '-',
     },
     {
-      title: 'Thời gian',
+      title: t.groupLeader.createStrategy.startDate,
       key: 'timeline',
       width: 200,
       render: (_, record) => {
@@ -261,7 +263,7 @@ export const CreateStrategyPage = () => {
       },
     },
     {
-      title: 'Hành động',
+      title: t.groupLeader.createStrategy.action,
       key: 'action',
       width: 200,
       align: 'center',
@@ -273,7 +275,7 @@ export const CreateStrategyPage = () => {
             icon={<Plus size={14} />}
             onClick={() => handleAddObjective(index)}
             className='border border-blue-500'
-            title="Thêm mục tiêu"
+            title={t.groupLeader.createStrategy.addObjective}
             />
             <Button
             type="link"
@@ -281,7 +283,7 @@ export const CreateStrategyPage = () => {
             icon={<Edit size={14} color='#eab308' />}
             onClick={() => handleEditTeamPlan(index)}
             className='border border-yellow-500'
-            title="Chỉnh sửa"
+            title={t.common.edit}
             />
             <Button
             type="link"
@@ -290,7 +292,7 @@ export const CreateStrategyPage = () => {
             icon={<Trash2 size={14} />}
             onClick={() => handleDeleteTeamPlan(index)}
             className='border border-red-500'
-            title="Xóa"
+            title={t.groupLeader.createStrategy.delete}
             />
         </Space>
       ),
@@ -299,15 +301,15 @@ export const CreateStrategyPage = () => {
 
   const steps = [
     {
-      title: 'Thông tin cơ bản',
+      title: t.groupLeader.createStrategy.step1,
       icon: <FileText size={20} />,
     },
     {
-      title: 'Kế hoạch các Team',
+      title: t.groupLeader.createStrategy.step2,
       icon: <Users size={20} />,
     },
     {
-      title: 'Xem xét & Gửi',
+      title: t.groupLeader.createStrategy.step3,
       icon: <Send size={20} />,
     },
   ];
@@ -319,16 +321,16 @@ export const CreateStrategyPage = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
             <Target size={30} className="text-primary" />
-            Tạo Chiến lược mới
+            {t.groupLeader.createStrategy.title}
           </h1>
-          <p className="text-gray-500">Tạo kế hoạch chiến lược cho bộ phận và gửi CEO phê duyệt</p>
+          <p className="text-gray-500">{t.groupLeader.createStrategy.subtitle}</p>
         </div>
         <Button
           icon={<ArrowLeft size={16} />}
           onClick={() => navigate('/strategy')}
           className='items-center'
         >
-          Quay lại
+          {t.groupLeader.createStrategy.backToList}
         </Button>
       </div>
 
@@ -339,8 +341,8 @@ export const CreateStrategyPage = () => {
 
       {/* Alert */}
       <Alert
-        message="Lưu ý về Chiến lược"
-        description="Chiến lược bao gồm các kế hoạch của các team khác nhau trong bộ phận. Mỗi team sẽ có các mục tiêu cụ thể. CEO sẽ xem được chi tiết mục tiêu của team, không xem được KPI cá nhân của nhân viên."
+        message={t.groupLeader.createStrategy.alertTitle}
+        description={t.groupLeader.createStrategy.alertMessage}
         type="info"
         showIcon
         className='p-3'
@@ -357,16 +359,16 @@ export const CreateStrategyPage = () => {
       >
         {/* Step 1: Basic Info */}
         {currentStep === 0 && (
-          <Card title="Thông tin cơ bản" className="shadow-md">
+          <Card title={t.groupLeader.createStrategy.step1} className="shadow-md">
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item
-                  label="Tiêu đề chiến lược"
+                  label={t.groupLeader.createStrategy.strategyTitle}
                   name="title"
-                  rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+                  rules={[{ required: true, message: t.groupLeader.createStrategy.strategyTitleRequired }]}
                 >
                   <Input 
-                    placeholder="VD: Chiến lược tăng trưởng Q4/2024"
+                    placeholder={t.groupLeader.createStrategy.strategyTitlePlaceholder}
                     size="middle"
                     prefix={<Target size={16} />}
                   />
@@ -375,34 +377,34 @@ export const CreateStrategyPage = () => {
 
               <Col span={24}>
                 <Form.Item
-                  label="Mô tả"
+                  label={t.groupLeader.createStrategy.description}
                   name="description"
-                  rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
+                  rules={[{ required: true, message: t.groupLeader.createStrategy.descriptionRequired }]}
                 >
                   <TextArea 
                     rows={4}
-                    placeholder="Mô tả tổng quan về chiến lược..."
+                    placeholder={t.groupLeader.createStrategy.descriptionPlaceholder}
                   />
                 </Form.Item>
               </Col>
 
               <Col span={8}>
                 <Form.Item
-                  label="Kỳ"
+                  label={t.groupLeader.createStrategy.period}
                   name="period"
                   rules={[{ required: true }]}
                 >
                   <Select size="middle">
-                    <Option value="yearly">Cả năm</Option>
-                    <Option value="half-yearly">6 tháng</Option>
-                    <Option value="quarterly">Quý</Option>
+                    <Option value="yearly">{t.groupLeader.strategy.yearly}</Option>
+                    <Option value="half-yearly">{t.groupLeader.strategy.halfYearly}</Option>
+                    <Option value="quarterly">{t.groupLeader.strategy.quarterly}</Option>
                   </Select>
                 </Form.Item>
               </Col>
 
               <Col span={8}>
                 <Form.Item
-                  label="Năm"
+                  label={t.groupLeader.createStrategy.year}
                   name="year"
                   rules={[{ required: true }]}
                 >
@@ -417,21 +419,21 @@ export const CreateStrategyPage = () => {
 
               <Col span={8}>
                 <Form.Item
-                  label="Quý (nếu có)"
+                  label={t.groupLeader.createStrategy.quarter}
                   name="quarter"
                 >
-                  <Select size="middle" allowClear placeholder="Chọn quý">
-                    <Option value={1}>Quý 1</Option>
-                    <Option value={2}>Quý 2</Option>
-                    <Option value={3}>Quý 3</Option>
-                    <Option value={4}>Quý 4</Option>
+                  <Select size="middle" allowClear placeholder={t.groupLeader.createStrategy.selectQuarter}>
+                    <Option value={1}>{t.groupLeader.createStrategy.quarter1}</Option>
+                    <Option value={2}>{t.groupLeader.createStrategy.quarter2}</Option>
+                    <Option value={3}>{t.groupLeader.createStrategy.quarter3}</Option>
+                    <Option value={4}>{t.groupLeader.createStrategy.quarter4}</Option>
                   </Select>
                 </Form.Item>
               </Col>
 
               <Col span={12}>
                 <Form.Item
-                  label="Tổng ngân sách (VNĐ)"
+                  label={t.groupLeader.createStrategy.totalBudget}
                   name="totalBudget"
                 >
                   <InputNumber
@@ -446,25 +448,25 @@ export const CreateStrategyPage = () => {
 
               <Col span={12}>
                 <Form.Item
-                  label="Tác động dự kiến"
+                  label={t.groupLeader.createStrategy.expectedImpact}
                   name="expectedImpact"
                 >
                   <Input 
                     size="middle"
-                    placeholder="VD: Tăng 20% doanh thu"
+                    placeholder={t.groupLeader.createStrategy.expectedImpactPlaceholder}
                   />
                 </Form.Item>
               </Col>
 
               <Col span={24}>
                 <Form.Item
-                  label="Mục tiêu tổng thể"
+                  label={t.groupLeader.createStrategy.overallObjectives}
                   name="overallObjectives"
                 >
                   <Select
                     mode="tags"
                     size="middle"
-                    placeholder="Nhập và nhấn Enter để thêm mục tiêu"
+                    placeholder={t.groupLeader.createStrategy.overallObjectivesPlaceholder}
                     style={{ width: '100%' }}
                   />
                 </Form.Item>
@@ -473,14 +475,14 @@ export const CreateStrategyPage = () => {
 
             <div className="flex justify-end gap-3 mt-6">
               <Button size="middle" onClick={handleSaveDraft} icon={<Save size={16} />}>
-                Lưu nháp
+                {t.groupLeader.createStrategy.saveDraft}
               </Button>
               <Button 
                 type="primary" 
                 size="middle"
                 onClick={() => setCurrentStep(1)}
               >
-                Tiếp theo
+                {t.groupLeader.createStrategy.next}
               </Button>
             </div>
           </Card>
@@ -489,14 +491,14 @@ export const CreateStrategyPage = () => {
         {/* Step 2: Team Plans */}
         {currentStep === 1 && (
           <Card 
-            title="Kế hoạch các Team"
+            title={t.groupLeader.createStrategy.teamPlans}
             extra={
               <Button
                 type="primary"
                 icon={<Plus size={16} />}
                 onClick={handleAddTeamPlan}
               >
-                Thêm Team
+                {t.groupLeader.createStrategy.addTeam}
               </Button>
             }
             className="shadow-md"
@@ -511,7 +513,7 @@ export const CreateStrategyPage = () => {
               expandable={{
                 expandedRowRender: (record) => (
                   <div className="p-1">
-                    <h4 className="font-semibold mb-2">Mục tiêu của {record.teamName}</h4>
+                    <h4 className="font-semibold mb-2">{t.groupLeader.createStrategy.objectivesOf.replace('{teamName}', record.teamName)}</h4>
                     {record.objectives.length > 0 ? (
                       <div className="space-y-2">
                         {record.objectives.map((obj:any, index:any) => (
@@ -519,19 +521,19 @@ export const CreateStrategyPage = () => {
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
-                                  <Tag color="blue">Trọng số: {obj.weight}%</Tag>
+                                  <Tag color="blue">{t.groupLeader.createStrategy.weight}: {obj.weight}%</Tag>
                                   {obj.category && <Tag>{obj.category}</Tag>}
                                 </div>
                                 <h5 className="font-semibold text-base mb-1">{obj.title}</h5>
                                 <p className="text-gray-600 text-sm mb-2">{obj.description}</p>
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                   <div>
-                                    <span className="text-gray-500">Mục tiêu: </span>
+                                    <span className="text-gray-500">{t.groupLeader.createStrategy.target}: </span>
                                     <span className="font-medium">{obj.target} {obj.unit}</span>
                                   </div>
                                   {obj.expectedOutcome && (
                                     <div>
-                                      <span className="text-gray-500">Kết quả mong đợi: </span>
+                                      <span className="text-gray-500">{t.groupLeader.createStrategy.expectedOutcome}: </span>
                                       <span className="font-medium">{obj.expectedOutcome}</span>
                                     </div>
                                   )}
@@ -544,7 +546,7 @@ export const CreateStrategyPage = () => {
                                 icon={<Trash2 size={14} />}
                                 onClick={() => handleDeleteObjective(teamPlans.indexOf(record), index)}
                               >
-                                Xóa
+                                {t.groupLeader.createStrategy.delete}
                               </Button>
                             </div>
                           </Card>
@@ -552,8 +554,8 @@ export const CreateStrategyPage = () => {
                       </div>
                     ) : (
                       <Alert
-                        message="Chưa có mục tiêu"
-                        description="Vui lòng thêm ít nhất một mục tiêu cho team này"
+                        message={t.groupLeader.createStrategy.noObjectives}
+                        description={t.groupLeader.createStrategy.noObjectivesMessage}
                         type="warning"
                         showIcon
                         className='p-3'
@@ -566,11 +568,11 @@ export const CreateStrategyPage = () => {
 
             <div className="flex justify-between mt-6">
               <Button size="middle" onClick={() => setCurrentStep(0)}>
-                Quay lại
+                {t.groupLeader.createStrategy.back}
               </Button>
               <div className="flex gap-3">
                 <Button size="middle" onClick={handleSaveDraft} icon={<Save size={16} />}>
-                  Lưu nháp
+                  {t.groupLeader.createStrategy.saveDraft}
                 </Button>
                 <Button 
                   type="primary" 
@@ -578,7 +580,7 @@ export const CreateStrategyPage = () => {
                   onClick={() => setCurrentStep(2)}
                   disabled={teamPlans.length === 0}
                 >
-                  Tiếp theo
+                  {t.groupLeader.createStrategy.next}
                 </Button>
               </div>
             </div>
@@ -587,39 +589,39 @@ export const CreateStrategyPage = () => {
 
         {/* Step 3: Review & Submit */}
         {currentStep === 2 && (
-          <Card title="Xem xét & Gửi" className="shadow-md">
+          <Card title={t.groupLeader.createStrategy.reviewTitle} className="shadow-md">
             <div className="space-y-3">
               <Alert
-                message="Kiểm tra kỹ thông tin trước khi gửi"
-                description="Sau khi gửi, chiến lược sẽ được chuyển đến CEO để phê duyệt. Bạn không thể chỉnh sửa trong quá trình chờ duyệt."
+                message={t.groupLeader.createStrategy.reviewAlert}
+                description={t.groupLeader.createStrategy.reviewAlertMessage}
                 type="info"
                 showIcon
                 className='p-2'
               />
 
-              <Divider>Tổng quan</Divider>
+              <Divider>{t.groupLeader.createStrategy.overview}</Divider>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl">
                   <div className="text-2xl font-bold text-blue-600">{teamPlans.length}</div>
-                  <div className="text-sm text-gray-600">Team tham gia</div>
+                  <div className="text-sm text-gray-600">{t.groupLeader.createStrategy.teamsParticipating}</div>
                 </div>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-xl">
                   <div className="text-2xl font-bold text-green-600">
                     {teamPlans.reduce((sum, tp) => sum + tp.objectives.length, 0)}
                   </div>
-                  <div className="text-sm text-gray-600">Tổng mục tiêu</div>
+                  <div className="text-sm text-gray-600">{t.groupLeader.createStrategy.totalObjectives}</div>
                 </div>
               </div>
 
-              <Divider>Chi tiết các Team</Divider>
+              <Divider>{t.groupLeader.createStrategy.teamDetails}</Divider>
               {teamPlans.map((team, index) => (
                 <Card key={team.id} size="small" className="mb-3">
                   <h4 className="font-bold text-lg mb-1">{team.teamName}</h4>
                   <div className="text-sm font-semibold text-gray-600 mb-2">
-                    Team Leader: {team.teamLeaderName}
+                    {t.groupLeader.createStrategy.teamLeader}: {team.teamLeaderName}
                   </div>
                   <div className="flex gap-2">
-                    <Tag color="blue">{team.objectives.length} mục tiêu</Tag>
+                    <Tag color="blue">{team.objectives.length} {t.groupLeader.createStrategy.objectives}</Tag>
                     {team.budget && <Tag color="green">{team.budget.toLocaleString()} VNĐ</Tag>}
                   </div>
                 </Card>
@@ -628,11 +630,11 @@ export const CreateStrategyPage = () => {
 
             <div className="flex justify-between mt-6">
               <Button size="middle" onClick={() => setCurrentStep(1)}>
-                Quay lại
+                {t.groupLeader.createStrategy.back}
               </Button>
               <div className="flex gap-3">
                 <Button size="middle" onClick={handleSaveDraft} icon={<Save size={16} />}>
-                  Lưu nháp
+                  {t.groupLeader.createStrategy.saveDraft}
                 </Button>
                 <Button 
                   type="primary" 
@@ -640,7 +642,7 @@ export const CreateStrategyPage = () => {
                   icon={<Send size={16} />}
                   onClick={handleSubmit}
                 >
-                  Gửi CEO phê duyệt
+                  {t.groupLeader.createStrategy.sendToCEO}
                 </Button>
               </div>
             </div>
@@ -650,21 +652,21 @@ export const CreateStrategyPage = () => {
 
       {/* Team Modal */}
       <Modal
-        title={currentTeamIndex !== null ? 'Chỉnh sửa kế hoạch Team' : 'Thêm kế hoạch Team'}
+        title={currentTeamIndex !== null ? t.groupLeader.createStrategy.editTeamPlan : t.groupLeader.createStrategy.addTeamPlan}
         open={isTeamModalVisible}
         onOk={handleSaveTeamPlan}
         onCancel={() => setIsTeamModalVisible(false)}
         width={600}
-        okText="Lưu"
-        cancelText="Hủy"
+        okText={t.groupLeader.createStrategy.save}
+        cancelText={t.groupLeader.createStrategy.cancel}
       >
         <Form form={teamForm} layout="vertical">
           <Form.Item
-            label="Team Leader"
+            label={t.groupLeader.createStrategy.teamLeader}
             name="teamLeaderId"
-            rules={[{ required: true, message: 'Vui lòng chọn Team Leader' }]}
+            rules={[{ required: true, message: t.groupLeader.createStrategy.teamLeaderRequired }]}
           >
-            <Select size="middle" placeholder="Chọn Team Leader">
+            <Select size="middle" placeholder={t.groupLeader.createStrategy.selectTeamLeader}>
               {teamLeaders.map(tl => (
                 <Option key={tl.id} value={tl.id}>
                   {tl.name} - {tl.team}
@@ -673,7 +675,7 @@ export const CreateStrategyPage = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="Ngân sách (VNĐ)" name="budget">
+          <Form.Item label={t.groupLeader.createStrategy.budget} name="budget">
             <InputNumber
               size="middle"
               style={{ width: '100%' }}
@@ -682,21 +684,21 @@ export const CreateStrategyPage = () => {
             />
           </Form.Item>
 
-          <Form.Item label="Tài nguyên" name="resources">
+          <Form.Item label={t.groupLeader.createStrategy.resources} name="resources">
             <TextArea 
               rows={2}
-              placeholder="Nhập các tài nguyên, phân cách bằng dấu phẩy"
+              placeholder={t.groupLeader.createStrategy.resourcesPlaceholder}
             />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Ngày bắt đầu" name="startDate">
+              <Form.Item label={t.groupLeader.createStrategy.startDate} name="startDate">
                 <Input type="date" size="middle" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Ngày kết thúc" name="endDate">
+              <Form.Item label={t.groupLeader.createStrategy.endDate} name="endDate">
                 <Input type="date" size="middle" />
               </Form.Item>
             </Col>
@@ -706,91 +708,91 @@ export const CreateStrategyPage = () => {
 
       {/* Objective Modal */}
       <Modal
-        title="Thêm mục tiêu cho Team"
+        title={t.groupLeader.createStrategy.addObjectiveForTeam}
         open={isObjectiveModalVisible}
         onOk={handleSaveObjective}
         onCancel={() => setIsObjectiveModalVisible(false)}
         width={700}
-        okText="Thêm"
-        cancelText="Hủy"
+        okText={t.groupLeader.createStrategy.addObjective}
+        cancelText={t.groupLeader.createStrategy.cancel}
       >
         <Form form={objectiveForm} layout="vertical">
           <Form.Item
-            label="Tiêu đề mục tiêu"
+            label={t.groupLeader.createStrategy.objectiveTitle}
             name="title"
-            rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+            rules={[{ required: true, message: t.groupLeader.createStrategy.objectiveTitleRequired }]}
           >
-            <Input size="middle" placeholder="VD: Tăng doanh số bán hàng" />
+            <Input size="middle" placeholder={t.groupLeader.createStrategy.objectiveTitlePlaceholder} />
           </Form.Item>
 
           <Form.Item
-            label="Mô tả"
+            label={t.groupLeader.createStrategy.objectiveDescription}
             name="description"
-            rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
+            rules={[{ required: true, message: t.groupLeader.createStrategy.objectiveDescriptionRequired }]}
           >
-            <TextArea rows={3} placeholder="Mô tả chi tiết mục tiêu..." />
+            <TextArea rows={3} placeholder={t.groupLeader.createStrategy.objectiveDescriptionPlaceholder} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item
-                label="Trọng số (%)"
+                label={t.groupLeader.createStrategy.weight}
                 name="weight"
-                rules={[{ required: true, message: 'Vui lòng nhập trọng số' }]}
+                rules={[{ required: true, message: t.groupLeader.createStrategy.weightRequired }]}
               >
                 <InputNumber size="middle" min={0} max={100} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                label="Mục tiêu"
+                label={t.groupLeader.createStrategy.target}
                 name="target"
-                rules={[{ required: true, message: 'Vui lòng nhập mục tiêu' }]}
+                rules={[{ required: true, message: t.groupLeader.createStrategy.targetRequired }]}
               >
-                <Input size="middle" placeholder="VD: 100" />
+                <Input size="middle" placeholder={t.groupLeader.createStrategy.targetPlaceholder} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                label="Đơn vị"
+                label={t.groupLeader.createStrategy.unit}
                 name="unit"
-                rules={[{ required: true, message: 'Vui lòng nhập đơn vị' }]}
+                rules={[{ required: true, message: t.groupLeader.createStrategy.unitRequired }]}
               >
-                <Input size="middle" placeholder="VD: triệu VNĐ" />
+                <Input size="middle" placeholder={t.groupLeader.createStrategy.unitPlaceholder} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item label="Danh mục" name="category">
-            <Select size="middle" placeholder="Chọn danh mục">
-              <Option value="revenue">Doanh thu</Option>
-              <Option value="customer">Khách hàng</Option>
-              <Option value="quality">Chất lượng</Option>
-              <Option value="efficiency">Hiệu suất</Option>
-              <Option value="innovation">Đổi mới</Option>
+          <Form.Item label={t.groupLeader.createStrategy.category} name="category">
+            <Select size="middle" placeholder={t.groupLeader.createStrategy.categoryPlaceholder}>
+              <Option value="revenue">{t.groupLeader.createStrategy.categoryRevenue}</Option>
+              <Option value="customer">{t.groupLeader.createStrategy.categoryCustomer}</Option>
+              <Option value="quality">{t.groupLeader.createStrategy.categoryQuality}</Option>
+              <Option value="efficiency">{t.groupLeader.createStrategy.categoryEfficiency}</Option>
+              <Option value="innovation">{t.groupLeader.createStrategy.categoryInnovation}</Option>
             </Select>
           </Form.Item>
 
-          <Form.Item label="Phương pháp đo lường" name="measurementMethod">
-            <TextArea rows={2} placeholder="Mô tả cách đo lường mục tiêu..." />
+          <Form.Item label={t.groupLeader.createStrategy.measurementMethod} name="measurementMethod">
+            <TextArea rows={2} placeholder={t.groupLeader.createStrategy.measurementMethodPlaceholder} />
           </Form.Item>
 
-          <Form.Item label="Tiêu chí đánh giá" name="evaluationCriteria">
-            <TextArea rows={2} placeholder="Tiêu chí để đánh giá hoàn thành..." />
+          <Form.Item label={t.groupLeader.createStrategy.evaluationCriteria} name="evaluationCriteria">
+            <TextArea rows={2} placeholder={t.groupLeader.createStrategy.evaluationCriteriaPlaceholder} />
           </Form.Item>
 
-          <Form.Item label="Kết quả mong đợi" name="expectedOutcome">
-            <Input size="middle" placeholder="VD: Tăng 20% so với quý trước" />
+          <Form.Item label={t.groupLeader.createStrategy.expectedOutcome} name="expectedOutcome">
+            <Input size="middle" placeholder={t.groupLeader.createStrategy.expectedOutcomePlaceholder} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Ngày bắt đầu" name="startDate">
+              <Form.Item label={t.groupLeader.createStrategy.startDate} name="startDate">
                 <Input type="date" size="middle" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Ngày kết thúc" name="endDate">
+              <Form.Item label={t.groupLeader.createStrategy.endDate} name="endDate">
                 <Input type="date" size="middle" />
               </Form.Item>
             </Col>

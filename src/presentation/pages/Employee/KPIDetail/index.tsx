@@ -7,9 +7,10 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { kpiApi } from '../../../../infrastructure/api';
 import { storage, calculateTotalWeight, isWeightValid, getCurrentStep } from '../../../../infrastructure/utils';
-import { APPROVAL_STEPS } from '../../../../core/constants';
+import { getApprovalSteps } from '../../../../core/constants';
 import type { IKPIRecord, IKPITarget, KPITargetFormValues, RejectFormValues, IBackendRes } from '../../../../core/models';
 import type { ColumnsType } from 'antd/es/table';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { TextArea } = Input;
 const { Panel } = Collapse;
@@ -17,6 +18,7 @@ const { Option } = Select;
 
 export const KPIDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const [kpi, setKpi] = useState<IKPIRecord | null>(null);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,7 +51,7 @@ export const KPIDetailPage = () => {
         setKpi(backendRes.data);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể tải thông tin KPI');
+      toast.error(error?.response?.data?.message || t.kpiDetail.cannotLoadKPI);
     } finally {
       setLoading(false);
     }
@@ -90,13 +92,13 @@ export const KPIDetailPage = () => {
     
     const isValidType = isImage || isPDF || isDoc || isExcel;
     if (!isValidType) {
-      message.error('Chỉ hỗ trợ file ảnh, PDF, Word, Excel!');
+      message.error(t.progress.onlySupportsFiles);
       return Upload.LIST_IGNORE;
     }
 
     const isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
-      message.error('File phải nhỏ hơn 10MB!');
+      message.error(t.progress.fileTooLarge);
       return Upload.LIST_IGNORE;
     }
 
@@ -155,11 +157,11 @@ export const KPIDetailPage = () => {
     try {
       await kpiApi.update(kpi.id, { targets: updatedTargets });
       setKpi({ ...kpi, targets: updatedTargets });
-      toast.success('Đã thêm mục tiêu');
+      toast.success(t.kpiDetail.targetAdded);
       setIsModalOpen(false);
       setFileList([]);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể thêm mục tiêu');
+      toast.error(error?.response?.data?.message || t.kpiDetail.cannotAddTarget);
     }
   };
 
@@ -171,9 +173,9 @@ export const KPIDetailPage = () => {
     try {
       await kpiApi.update(kpi.id, { targets: updatedTargets });
       setKpi({ ...kpi, targets: updatedTargets });
-      toast.success('Đã xóa mục tiêu');
+      toast.success(t.kpiDetail.targetDeleted);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể xóa mục tiêu');
+      toast.error(error?.response?.data?.message || t.kpiDetail.cannotDeleteTarget);
     }
   };
 
@@ -213,12 +215,12 @@ export const KPIDetailPage = () => {
     try {
       await kpiApi.update(kpi.id, { targets: updatedTargets });
       setKpi({ ...kpi, targets: updatedTargets });
-      toast.success('Đã cập nhật mục tiêu');
+      toast.success(t.kpiDetail.targetUpdated);
       setIsEditModalOpen(false);
       setEditingTarget(null);
       setEditFileList([]);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể cập nhật mục tiêu');
+      toast.error(error?.response?.data?.message || t.kpiDetail.cannotUpdateTarget);
     }
   };
 
@@ -226,16 +228,16 @@ export const KPIDetailPage = () => {
     if (!kpi) return;
 
     if (!isWeightValid(kpi.targets)) {
-      toast.error('Tổng trọng số phải bằng 100%');
+      toast.error(t.kpiDetail.totalWeightMustBe100);
       return;
     }
 
     try {
       await kpiApi.submit(kpi.id);
-      toast.success('Đã gửi hồ sơ KPI');
+      toast.success(t.kpiDetail.recordSubmitted);
       fetchKPIDetail();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể gửi hồ sơ');
+      toast.error(error?.response?.data?.message || t.kpiDetail.cannotSubmitRecord);
     }
   };
 
@@ -244,10 +246,10 @@ export const KPIDetailPage = () => {
 
     try {
       await kpiApi.approve(kpi.id);
-      toast.success('Đã phê duyệt hồ sơ KPI');
+      toast.success(t.kpiDetail.recordApproved);
       fetchKPIDetail();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể phê duyệt');
+      toast.error(error?.response?.data?.message || t.kpiDetail.cannotApprove);
     }
   };
 
@@ -256,11 +258,11 @@ export const KPIDetailPage = () => {
 
     try {
       await kpiApi.reject(kpi.id, values.reason);
-      toast.success('Đã từ chối hồ sơ KPI');
+      toast.success(t.kpiDetail.recordRejected);
       setIsRejectModalOpen(false);
       fetchKPIDetail();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể từ chối');
+      toast.error(error?.response?.data?.message || t.kpiDetail.cannotReject);
     }
   };
 
@@ -272,25 +274,25 @@ export const KPIDetailPage = () => {
 
   const columns: ColumnsType<IKPITarget> = [
     {
-      title: 'Mục tiêu',
+      title: t.kpiDetail.targetTitle,
       dataIndex: 'title',
       key: 'title',
       width: '20%',
     },
     {
-      title: 'Chi tiết kế hoạch',
+      title: t.kpiDetail.planDetail,
       dataIndex: 'description',
       key: 'description',
       width: '25%',
     },
     {
-      title: 'Trọng số (%)',
+      title: t.kpiDetail.weight,
       dataIndex: 'weight',
       key: 'weight',
       width: '10%',
     },
     {
-      title: 'Chỉ tiêu',
+      title: t.kpiDetail.targetValue,
       key: 'target',
       width: '15%',
       render: (_, record) => (
@@ -300,7 +302,7 @@ export const KPIDetailPage = () => {
       ),
     },
     {
-      title: 'File đính kèm',
+      title: t.kpiDetail.attachments,
       key: 'attachments',
       width: '15%',
       render: (_, record) => (
@@ -334,21 +336,21 @@ export const KPIDetailPage = () => {
             })}
           </div>
         ) : (
-          <span className="text-gray-400 text-xs">Không có</span>
+          <span className="text-gray-400 text-xs">{t.kpiDetail.noAttachments}</span>
         )
       ),
     },
     ...(canEdit ? [{
-      title: 'Hành động',
+      title: t.kpiDetail.actions,
       key: 'action',
       width: '15%',
       render: (_: any, record: IKPITarget) => (
         <>
         <Popconfirm
-          title="Xóa mục tiêu này?"
+          title={t.kpiDetail.deleteConfirm}
           onConfirm={() => handleDeleteTarget(record.id)}
-          okText="Xóa"
-          cancelText="Hủy"
+          okText={t.common.delete}
+          cancelText={t.common.cancel}
         >
           <Button type="link" danger icon={<Trash2 size={16} />} />
         </Popconfirm>
@@ -360,20 +362,20 @@ export const KPIDetailPage = () => {
   ];
 
   if (loading || !kpi) {
-    return <div className="p-6">Đang tải...</div>;
+    return <div className="p-6">{t.common.loading}</div>;
   }
 
   return (
     <div className="max-w-7xl mx-auto">
       <Card className="mb-2">
         <div className="mb-4">
-          <h1 className="text-3xl font-bold text-primary mb-2">Hồ sơ KPI: {kpi.id}</h1>
+          <h1 className="text-3xl font-bold text-primary mb-2">{t.kpiDetail.title} {kpi.id}</h1>
           <div className="grid grid-cols-2 gap-2 mt-2">
-            <div><span className="font-semibold">Nhân viên:</span> {kpi.employeeName}</div>
-            <div><span className="font-semibold">Phòng ban:</span> {kpi.department}</div>
-            <div><span className="font-semibold">Năm:</span> {kpi.year}</div>
+            <div><span className="font-semibold">{t.kpiDetail.employee}</span> {kpi.employeeName}</div>
+            <div><span className="font-semibold">{t.kpiDetail.department}</span> {kpi.department}</div>
+            <div><span className="font-semibold">{t.kpiDetail.year}</span> {kpi.year}</div>
             <div>
-              <span className="font-semibold">Tổng trọng số:</span>{' '}
+              <span className="font-semibold">{t.kpiDetail.totalWeight}</span>{' '}
               <span className={totalWeight === 100 ? 'text-green-600' : 'text-red-600'}>
                 {totalWeight}%
               </span>
@@ -382,7 +384,7 @@ export const KPIDetailPage = () => {
 
           {/* Weight progress bar */}
           <div className="mt-3">
-            <div className="text-sm font-medium text-gray-700 mb-2">Phần trăm trọng số</div>
+            <div className="text-sm font-medium text-gray-700 mb-2">{t.kpiDetail.weightPercentage}</div>
             <div className="relative bg-gray-200 rounded-full h-2 overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
@@ -392,26 +394,26 @@ export const KPIDetailPage = () => {
               />
             </div>
             <div className="flex justify-between mt-1 text-xs text-gray-600">
-              <div className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span> Phân bổ</div>
-              <div className="flex items-center gap-1"><span className="w-2 h-2 bg-gray-300 rounded-full"></span> Còn lại</div>
+              <div className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span> {t.kpiDetail.allocated}</div>
+              <div className="flex items-center gap-1"><span className="w-2 h-2 bg-gray-300 rounded-full"></span> {t.kpiDetail.remaining}</div>
             </div>
           </div>
         </div>
 
-        <Steps current={getCurrentStep(kpi.status)} items={APPROVAL_STEPS} className='border'/>
+        <Steps current={getCurrentStep(kpi.status)} items={getApprovalSteps(t)} className='border'/>
       </Card>
 
       <Card
         title={
           <div className="flex items-center gap-3">
-            <span>Danh sách mục tiêu KPI</span>
+            <span>{t.kpiDetail.targetListTitle}</span>
             {kpi.groups && kpi.groups.length > 0 && (
               <>
                 <Tag color="purple" icon={<FolderOpen size={14} />}>
-                  {kpi.groups.length} nhóm
+                  {t.kpiDetail.groupCount.replace('{count}', String(kpi.groups.length))}
                 </Tag>
                 <Tag color="blue">
-                  {kpi.targets.length} mục tiêu
+                  {t.kpiDetail.targetCount.replace('{count}', String(kpi.targets.length))}
                 </Tag>
               </>
             )}
@@ -425,7 +427,7 @@ export const KPIDetailPage = () => {
               onClick={handleAddTarget}
               className="bg-primary rounded-xl"
             >
-              Thêm mục tiêu
+              {t.kpiDetail.addTarget}
             </Button>
           )
         }
@@ -454,7 +456,7 @@ export const KPIDetailPage = () => {
                         <span className="font-semibold text-base text-purple-700">
                           #{groupIndex + 1} {group.name}
                         </span>
-                        <Tag color="purple">{group.targets.length} mục tiêu</Tag>
+                        <Tag color="purple">{t.kpiDetail.targetCount.replace('{count}', String(group.targets.length))}</Tag>
                         <Tag color="green">{groupWeight}%</Tag>
                       </div>
                     </div>
@@ -474,7 +476,7 @@ export const KPIDetailPage = () => {
                     pagination={false}
                     bordered
                     size="small"
-                    locale={{ emptyText: 'Chưa có mục tiêu nào' }}
+                    locale={{ emptyText: t.kpiDetail.noTargets }}
                   />
                 </Panel>
               );
@@ -488,7 +490,7 @@ export const KPIDetailPage = () => {
             rowKey="id"
             pagination={false}
             bordered
-            locale={{ emptyText: 'Chưa có mục tiêu nào' }}
+            locale={{ emptyText: t.kpiDetail.noTargets }}
           />
         )}
 
@@ -501,7 +503,7 @@ export const KPIDetailPage = () => {
               disabled={!isWeightValid(kpi.targets)}
               className="bg-primary rounded-xl"
             >
-              Gửi hồ sơ
+              {t.kpiDetail.submitRecord}
             </Button>
           )}
 
@@ -513,14 +515,14 @@ export const KPIDetailPage = () => {
                 onClick={handleApprove}
                 className="bg-green-600 hover:bg-green-700"
               >
-                Phê duyệt
+                {t.kpiDetail.approve}
               </Button>
               <Button
                 danger
                 icon={<X size={18} />}
                 onClick={() => setIsRejectModalOpen(true)}
               >
-                Từ chối
+                {t.kpiDetail.reject}
               </Button>
             </Space>
           )}
@@ -528,7 +530,7 @@ export const KPIDetailPage = () => {
       </Card>
 
       <Modal
-        title="Thêm mục tiêu KPI"
+        title={t.kpiDetail.addTargetModal}
         open={isModalOpen}
         onCancel={() => {
           setIsModalOpen(false);
@@ -540,34 +542,34 @@ export const KPIDetailPage = () => {
         <Form form={form} layout="vertical" onFinish={handleSaveTarget}>
           <Form.Item
             name="title"
-            label="Tiêu đề mục tiêu"
-            rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+            label={t.kpiDetail.targetTitleLabel}
+            rules={[{ required: true, message: t.kpiDetail.targetTitleRequired }]}
           >
-            <Input placeholder="VD: Đạt doanh số cá nhân quý & năm" className="bg-gray-50 rounded-xl" />
+            <Input placeholder={t.kpiDetail.targetTitlePlaceholder} className="bg-gray-50 rounded-xl" />
           </Form.Item>
 
           <div className="grid grid-cols-2 gap-3">
             <Form.Item
               name="category"
-              label="Danh mục"
-              rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}
+              label={t.kpiDetail.categoryLabel}
+              rules={[{ required: true, message: t.kpiDetail.categoryRequired }]}
             >
-              <Select placeholder="Chọn danh mục" size="large">
-                <Option value="Doanh số">Doanh số</Option>
-                <Option value="Chất lượng">Chất lượng</Option>
-                <Option value="Hiệu suất">Hiệu suất</Option>
-                <Option value="Phát triển">Phát triển</Option>
-                <Option value="Quản lý">Quản lý</Option>
-                <Option value="Khác">Khác</Option>
+              <Select placeholder={t.kpiDetail.categoryPlaceholder} size="large">
+                <Option value="Doanh số">{t.createKPI.categorySales}</Option>
+                <Option value="Chất lượng">{t.createKPI.categoryQuality}</Option>
+                <Option value="Hiệu suất">{t.createKPI.categoryPerformance}</Option>
+                <Option value="Phát triển">{t.createKPI.categoryDevelopment}</Option>
+                <Option value="Quản lý">{t.createKPI.categoryManagement}</Option>
+                <Option value="Khác">{t.createKPI.categoryOther}</Option>
               </Select>
             </Form.Item>
 
             <Form.Item
               name="weight"
-              label="Trọng số (%)"
-              rules={[{ required: true, message: 'Vui lòng chọn trọng số' }]}
+              label={t.kpiDetail.weightLabel}
+              rules={[{ required: true, message: t.kpiDetail.weightRequired }]}
             >
-              <Select placeholder="Chọn trọng số" size="large">
+              <Select placeholder={t.kpiDetail.weightPlaceholder} size="large">
                 <Option value={5}>5%</Option>
                 <Option value={10}>10%</Option>
                 <Option value={15}>15%</Option>
@@ -585,83 +587,83 @@ export const KPIDetailPage = () => {
           <div className="grid grid-cols-2 gap-3">
             <Form.Item
               name="target"
-              label="Chỉ tiêu"
-              rules={[{ required: true, message: 'Vui lòng nhập chỉ tiêu' }]}
+              label={t.kpiDetail.targetLabel}
+              rules={[{ required: true, message: t.kpiDetail.targetRequired }]}
             >
-              <Input placeholder="Nhập số" className="bg-gray-50 rounded-xl" size="large" />
+              <Input placeholder={t.kpiDetail.targetPlaceholder} className="bg-gray-50 rounded-xl" size="large" />
             </Form.Item>
 
             <Form.Item
               name="unit"
-              label="Đơn vị"
-              rules={[{ required: true, message: 'Vui lòng chọn đơn vị' }]}
+              label={t.kpiDetail.unitLabel}
+              rules={[{ required: true, message: t.kpiDetail.unitRequired }]}
             >
-              <Select placeholder="Chọn đơn vị" size="large" showSearch>
-                <Option value="VNĐ">VNĐ</Option>
-                <Option value="USD">USD</Option>
-                <Option value="%">%</Option>
-                <Option value="Triệu VNĐ">Triệu VNĐ</Option>
-                <Option value="Tỷ VNĐ">Tỷ VNĐ</Option>
-                <Option value="Số lượng">Số lượng</Option>
-                <Option value="Người">Người</Option>
-                <Option value="Khách hàng">Khách hàng</Option>
-                <Option value="Dự án">Dự án</Option>
-                <Option value="Hợp đồng">Hợp đồng</Option>
-                <Option value="Giờ">Giờ</Option>
-                <Option value="Ngày">Ngày</Option>
-                <Option value="Tháng">Tháng</Option>
-                <Option value="Điểm">Điểm</Option>
-                <Option value="Lần">Lần</Option>
+              <Select placeholder={t.kpiDetail.unitPlaceholder} size="large" showSearch>
+                <Option value="VNĐ">{t.createKPI.unitVND}</Option>
+                <Option value="USD">{t.createKPI.unitUSD}</Option>
+                <Option value="%">{t.createKPI.unitPercent}</Option>
+                <Option value="Triệu VNĐ">{t.createKPI.unitMillionVND}</Option>
+                <Option value="Tỷ VNĐ">{t.createKPI.unitBillionVND}</Option>
+                <Option value="Số lượng">{t.createKPI.unitQuantity}</Option>
+                <Option value="Người">{t.createKPI.unitPerson}</Option>
+                <Option value="Khách hàng">{t.createKPI.unitCustomer}</Option>
+                <Option value="Dự án">{t.createKPI.unitProject}</Option>
+                <Option value="Hợp đồng">{t.createKPI.unitContract}</Option>
+                <Option value="Giờ">{t.createKPI.unitHour}</Option>
+                <Option value="Ngày">{t.createKPI.unitDay}</Option>
+                <Option value="Tháng">{t.createKPI.unitMonth}</Option>
+                <Option value="Điểm">{t.createKPI.unitPoint}</Option>
+                <Option value="Lần">{t.createKPI.unitTime}</Option>
               </Select>
             </Form.Item>
           </div>
 
           <Form.Item
             name="description"
-            label="Chi tiết kế hoạch"
-            rules={[{ required: true, message: 'Vui lòng nhập chi tiết' }]}
+            label={t.kpiDetail.planDetailLabel}
+            rules={[{ required: true, message: t.kpiDetail.planDetailRequired }]}
           >
-            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder="Mô tả chi tiết kế hoạch thực hiện" className="bg-gray-50 rounded-xl" />
+            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder={t.kpiDetail.planDetailPlaceholder} className="bg-gray-50 rounded-xl" />
           </Form.Item>
 
           <div className="grid grid-cols-2 gap-3">
             <Form.Item
               name="measurementMethod"
-              label="Phương pháp đo lường"
+              label={t.kpiDetail.measurementMethodLabel}
             >
-              <Select placeholder="Chọn phương pháp" allowClear>
-                <Option value="Báo cáo hệ thống">Báo cáo hệ thống</Option>
-                <Option value="Báo cáo thủ công">Báo cáo thủ công</Option>
-                <Option value="Đánh giá 360 độ">Đánh giá 360 độ</Option>
-                <Option value="KPI Dashboard">KPI Dashboard</Option>
-                <Option value="Khảo sát khách hàng">Khảo sát khách hàng</Option>
-                <Option value="Phản hồi quản lý">Phản hồi quản lý</Option>
-                <Option value="Số liệu thực tế">Số liệu thực tế</Option>
-                <Option value="Đo lường tự động">Đo lường tự động</Option>
-                <Option value="Kiểm tra định kỳ">Kiểm tra định kỳ</Option>
+              <Select placeholder={t.kpiDetail.measurementMethodPlaceholder} allowClear>
+                <Option value="Báo cáo hệ thống">{t.createKPI.measurementSystemReport}</Option>
+                <Option value="Báo cáo thủ công">{t.createKPI.measurementManualReport}</Option>
+                <Option value="Đánh giá 360 độ">{t.createKPI.measurement360}</Option>
+                <Option value="KPI Dashboard">{t.createKPI.measurementDashboard}</Option>
+                <Option value="Khảo sát khách hàng">{t.createKPI.measurementCustomerSurvey}</Option>
+                <Option value="Phản hồi quản lý">{t.createKPI.measurementManagerFeedback}</Option>
+                <Option value="Số liệu thực tế">{t.createKPI.measurementActualData}</Option>
+                <Option value="Đo lường tự động">{t.createKPI.measurementAutomatic}</Option>
+                <Option value="Kiểm tra định kỳ">{t.createKPI.measurementPeriodic}</Option>
               </Select>
             </Form.Item>
 
             <Form.Item
               name="evaluationCriteria"
-              label="Tiêu chí đánh giá"
+              label={t.kpiDetail.evaluationCriteriaLabel}
             >
-              <Select placeholder="Chọn tiêu chí" allowClear>
-                <Option value="Đạt 100%">Đạt 100%</Option>
-                <Option value="Đạt trên 90%">Đạt trên 90%</Option>
-                <Option value="Đạt trên 80%">Đạt trên 80%</Option>
-                <Option value="Đạt trên 70%">Đạt trên 70%</Option>
-                <Option value="Tăng trưởng so với kỳ trước">Tăng trưởng so với kỳ trước</Option>
-                <Option value="Duy trì ổn định">Duy trì ổn định</Option>
-                <Option value="Không giảm">Không giảm</Option>
-                <Option value="Theo kế hoạch">Theo kế hoạch</Option>
-                <Option value="Hoàn thành đúng hạn">Hoàn thành đúng hạn</Option>
-                <Option value="Chất lượng cao">Chất lượng cao</Option>
+              <Select placeholder={t.kpiDetail.evaluationCriteriaPlaceholder} allowClear>
+                <Option value="Đạt 100%">{t.createKPI.criteria100}</Option>
+                <Option value="Đạt trên 90%">{t.createKPI.criteriaAbove90}</Option>
+                <Option value="Đạt trên 80%">{t.createKPI.criteriaAbove80}</Option>
+                <Option value="Đạt trên 70%">{t.createKPI.criteriaAbove70}</Option>
+                <Option value="Tăng trưởng so với kỳ trước">{t.createKPI.criteriaGrowth}</Option>
+                <Option value="Duy trì ổn định">{t.createKPI.criteriaMaintain}</Option>
+                <Option value="Không giảm">{t.createKPI.criteriaNoDecrease}</Option>
+                <Option value="Theo kế hoạch">{t.createKPI.criteriaAsPlanned}</Option>
+                <Option value="Hoàn thành đúng hạn">{t.createKPI.criteriaOnTime}</Option>
+                <Option value="Chất lượng cao">{t.createKPI.criteriaHighQuality}</Option>
               </Select>
             </Form.Item>
           </div>
 
-          <Form.Item label="File đính kèm (tài liệu, ảnh minh họa)">
+          <Form.Item label={t.kpiDetail.attachmentLabel}>
             <Upload
               fileList={fileList}
               onChange={handleUploadChange}
@@ -675,12 +677,12 @@ export const KPIDetailPage = () => {
               {fileList.length < 5 && (
                 <div className="text-center">
                   <UploadIcon size={24} className="mx-auto mb-1 text-gray-400" />
-                  <div className="text-xs">Upload</div>
+                  <div className="text-xs">{t.kpiDetail.uploadText}</div>
                 </div>
               )}
             </Upload>
             <p className="text-xs text-gray-500 mt-1">
-              Hỗ trợ ảnh, PDF, Word, Excel. Tối đa 5 file, mỗi file &lt; 10MB
+              {t.kpiDetail.attachmentHint}
             </p>
           </Form.Item>
 
@@ -689,9 +691,9 @@ export const KPIDetailPage = () => {
               <Button onClick={() => {
                 setIsModalOpen(false);
                 setFileList([]);
-              }}>Hủy</Button>
+              }}>{t.common.cancel}</Button>
               <Button type="primary" htmlType="submit" icon={<Save size={16} />}>
-                Lưu
+                {t.common.save}
               </Button>
             </Space>
           </Form.Item>
@@ -699,7 +701,7 @@ export const KPIDetailPage = () => {
       </Modal>
 
       <Modal
-        title="Chỉnh sửa mục tiêu KPI"
+        title={t.kpiDetail.editTargetModal}
         open={isEditModalOpen}
         onCancel={() => {
           setIsEditModalOpen(false);
@@ -712,34 +714,34 @@ export const KPIDetailPage = () => {
         <Form form={editForm} layout="vertical" onFinish={handleEditTarget}>
           <Form.Item
             name="title"
-            label="Tiêu đề mục tiêu"
-            rules={[{ required: true, message: 'Vui lòng nhập tiêu đề' }]}
+            label={t.kpiDetail.targetTitleLabel}
+            rules={[{ required: true, message: t.kpiDetail.targetTitleRequired }]}
           >
-            <Input placeholder="VD: Đạt doanh số cá nhân quý & năm" className="bg-gray-50 rounded-xl" />
+            <Input placeholder={t.kpiDetail.targetTitlePlaceholder} className="bg-gray-50 rounded-xl" />
           </Form.Item>
 
           <div className="grid grid-cols-2 gap-3">
             <Form.Item
               name="category"
-              label="Danh mục"
-              rules={[{ required: true, message: 'Vui lòng chọn danh mục' }]}
+              label={t.kpiDetail.categoryLabel}
+              rules={[{ required: true, message: t.kpiDetail.categoryRequired }]}
             >
-              <Select placeholder="Chọn danh mục" size="large">
-                <Option value="Doanh số">Doanh số</Option>
-                <Option value="Chất lượng">Chất lượng</Option>
-                <Option value="Hiệu suất">Hiệu suất</Option>
-                <Option value="Phát triển">Phát triển</Option>
-                <Option value="Quản lý">Quản lý</Option>
-                <Option value="Khác">Khác</Option>
+              <Select placeholder={t.kpiDetail.categoryPlaceholder} size="large">
+                <Option value="Doanh số">{t.createKPI.categorySales}</Option>
+                <Option value="Chất lượng">{t.createKPI.categoryQuality}</Option>
+                <Option value="Hiệu suất">{t.createKPI.categoryPerformance}</Option>
+                <Option value="Phát triển">{t.createKPI.categoryDevelopment}</Option>
+                <Option value="Quản lý">{t.createKPI.categoryManagement}</Option>
+                <Option value="Khác">{t.createKPI.categoryOther}</Option>
               </Select>
             </Form.Item>
 
             <Form.Item
               name="weight"
-              label="Trọng số (%)"
-              rules={[{ required: true, message: 'Vui lòng chọn trọng số' }]}
+              label={t.kpiDetail.weightLabel}
+              rules={[{ required: true, message: t.kpiDetail.weightRequired }]}
             >
-              <Select placeholder="Chọn trọng số" size="large">
+              <Select placeholder={t.kpiDetail.weightPlaceholder} size="large">
                 <Option value={5}>5%</Option>
                 <Option value={10}>10%</Option>
                 <Option value={15}>15%</Option>
@@ -757,83 +759,83 @@ export const KPIDetailPage = () => {
           <div className="grid grid-cols-2 gap-3">
             <Form.Item
               name="target"
-              label="Chỉ tiêu"
-              rules={[{ required: true, message: 'Vui lòng nhập chỉ tiêu' }]}
+              label={t.kpiDetail.targetLabel}
+              rules={[{ required: true, message: t.kpiDetail.targetRequired }]}
             >
-              <Input placeholder="Nhập số" className="bg-gray-50 rounded-xl" size="large" />
+              <Input placeholder={t.kpiDetail.targetPlaceholder} className="bg-gray-50 rounded-xl" size="large" />
             </Form.Item>
 
             <Form.Item
               name="unit"
-              label="Đơn vị"
-              rules={[{ required: true, message: 'Vui lòng chọn đơn vị' }]}
+              label={t.kpiDetail.unitLabel}
+              rules={[{ required: true, message: t.kpiDetail.unitRequired }]}
             >
-              <Select placeholder="Chọn đơn vị" size="large" showSearch>
-                <Option value="VNĐ">VNĐ</Option>
-                <Option value="USD">USD</Option>
-                <Option value="%">%</Option>
-                <Option value="Triệu VNĐ">Triệu VNĐ</Option>
-                <Option value="Tỷ VNĐ">Tỷ VNĐ</Option>
-                <Option value="Số lượng">Số lượng</Option>
-                <Option value="Người">Người</Option>
-                <Option value="Khách hàng">Khách hàng</Option>
-                <Option value="Dự án">Dự án</Option>
-                <Option value="Hợp đồng">Hợp đồng</Option>
-                <Option value="Giờ">Giờ</Option>
-                <Option value="Ngày">Ngày</Option>
-                <Option value="Tháng">Tháng</Option>
-                <Option value="Điểm">Điểm</Option>
-                <Option value="Lần">Lần</Option>
+              <Select placeholder={t.kpiDetail.unitPlaceholder} size="large" showSearch>
+                <Option value="VNĐ">{t.createKPI.unitVND}</Option>
+                <Option value="USD">{t.createKPI.unitUSD}</Option>
+                <Option value="%">{t.createKPI.unitPercent}</Option>
+                <Option value="Triệu VNĐ">{t.createKPI.unitMillionVND}</Option>
+                <Option value="Tỷ VNĐ">{t.createKPI.unitBillionVND}</Option>
+                <Option value="Số lượng">{t.createKPI.unitQuantity}</Option>
+                <Option value="Người">{t.createKPI.unitPerson}</Option>
+                <Option value="Khách hàng">{t.createKPI.unitCustomer}</Option>
+                <Option value="Dự án">{t.createKPI.unitProject}</Option>
+                <Option value="Hợp đồng">{t.createKPI.unitContract}</Option>
+                <Option value="Giờ">{t.createKPI.unitHour}</Option>
+                <Option value="Ngày">{t.createKPI.unitDay}</Option>
+                <Option value="Tháng">{t.createKPI.unitMonth}</Option>
+                <Option value="Điểm">{t.createKPI.unitPoint}</Option>
+                <Option value="Lần">{t.createKPI.unitTime}</Option>
               </Select>
             </Form.Item>
           </div>
 
           <Form.Item
             name="description"
-            label="Chi tiết kế hoạch"
-            rules={[{ required: true, message: 'Vui lòng nhập chi tiết' }]}
+            label={t.kpiDetail.planDetailLabel}
+            rules={[{ required: true, message: t.kpiDetail.planDetailRequired }]}
           >
-            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder="Mô tả chi tiết kế hoạch thực hiện" className="bg-gray-50 rounded-xl" />
+            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder={t.kpiDetail.planDetailPlaceholder} className="bg-gray-50 rounded-xl" />
           </Form.Item>
 
           <div className="grid grid-cols-2 gap-3">
             <Form.Item
               name="measurementMethod"
-              label="Phương pháp đo lường"
+              label={t.kpiDetail.measurementMethodLabel}
             >
-              <Select placeholder="Chọn phương pháp" allowClear>
-                <Option value="Báo cáo hệ thống">Báo cáo hệ thống</Option>
-                <Option value="Báo cáo thủ công">Báo cáo thủ công</Option>
-                <Option value="Đánh giá 360 độ">Đánh giá 360 độ</Option>
-                <Option value="KPI Dashboard">KPI Dashboard</Option>
-                <Option value="Khảo sát khách hàng">Khảo sát khách hàng</Option>
-                <Option value="Phản hồi quản lý">Phản hồi quản lý</Option>
-                <Option value="Số liệu thực tế">Số liệu thực tế</Option>
-                <Option value="Đo lường tự động">Đo lường tự động</Option>
-                <Option value="Kiểm tra định kỳ">Kiểm tra định kỳ</Option>
+              <Select placeholder={t.kpiDetail.measurementMethodPlaceholder} allowClear>
+                <Option value="Báo cáo hệ thống">{t.createKPI.measurementSystemReport}</Option>
+                <Option value="Báo cáo thủ công">{t.createKPI.measurementManualReport}</Option>
+                <Option value="Đánh giá 360 độ">{t.createKPI.measurement360}</Option>
+                <Option value="KPI Dashboard">{t.createKPI.measurementDashboard}</Option>
+                <Option value="Khảo sát khách hàng">{t.createKPI.measurementCustomerSurvey}</Option>
+                <Option value="Phản hồi quản lý">{t.createKPI.measurementManagerFeedback}</Option>
+                <Option value="Số liệu thực tế">{t.createKPI.measurementActualData}</Option>
+                <Option value="Đo lường tự động">{t.createKPI.measurementAutomatic}</Option>
+                <Option value="Kiểm tra định kỳ">{t.createKPI.measurementPeriodic}</Option>
               </Select>
             </Form.Item>
 
             <Form.Item
               name="evaluationCriteria"
-              label="Tiêu chí đánh giá"
+              label={t.kpiDetail.evaluationCriteriaLabel}
             >
-              <Select placeholder="Chọn tiêu chí" allowClear>
-                <Option value="Đạt 100%">Đạt 100%</Option>
-                <Option value="Đạt trên 90%">Đạt trên 90%</Option>
-                <Option value="Đạt trên 80%">Đạt trên 80%</Option>
-                <Option value="Đạt trên 70%">Đạt trên 70%</Option>
-                <Option value="Tăng trưởng so với kỳ trước">Tăng trưởng so với kỳ trước</Option>
-                <Option value="Duy trì ổn định">Duy trì ổn định</Option>
-                <Option value="Không giảm">Không giảm</Option>
-                <Option value="Theo kế hoạch">Theo kế hoạch</Option>
-                <Option value="Hoàn thành đúng hạn">Hoàn thành đúng hạn</Option>
-                <Option value="Chất lượng cao">Chất lượng cao</Option>
+              <Select placeholder={t.kpiDetail.evaluationCriteriaPlaceholder} allowClear>
+                <Option value="Đạt 100%">{t.createKPI.criteria100}</Option>
+                <Option value="Đạt trên 90%">{t.createKPI.criteriaAbove90}</Option>
+                <Option value="Đạt trên 80%">{t.createKPI.criteriaAbove80}</Option>
+                <Option value="Đạt trên 70%">{t.createKPI.criteriaAbove70}</Option>
+                <Option value="Tăng trưởng so với kỳ trước">{t.createKPI.criteriaGrowth}</Option>
+                <Option value="Duy trì ổn định">{t.createKPI.criteriaMaintain}</Option>
+                <Option value="Không giảm">{t.createKPI.criteriaNoDecrease}</Option>
+                <Option value="Theo kế hoạch">{t.createKPI.criteriaAsPlanned}</Option>
+                <Option value="Hoàn thành đúng hạn">{t.createKPI.criteriaOnTime}</Option>
+                <Option value="Chất lượng cao">{t.createKPI.criteriaHighQuality}</Option>
               </Select>
             </Form.Item>
           </div>
 
-          <Form.Item label="File đính kèm (tài liệu, ảnh minh họa)">
+          <Form.Item label={t.kpiDetail.attachmentLabel}>
             <Upload
               fileList={editFileList}
               onChange={handleEditUploadChange}
@@ -847,12 +849,12 @@ export const KPIDetailPage = () => {
               {editFileList.length < 5 && (
                 <div className="text-center">
                   <UploadIcon size={24} className="mx-auto mb-1 text-gray-400" />
-                  <div className="text-xs">Upload</div>
+                  <div className="text-xs">{t.kpiDetail.uploadText}</div>
                 </div>
               )}
             </Upload>
             <p className="text-xs text-gray-500 mt-1">
-              Hỗ trợ ảnh, PDF, Word, Excel. Tối đa 5 file, mỗi file &lt; 10MB
+              {t.kpiDetail.attachmentHint}
             </p>
           </Form.Item>
 
@@ -862,9 +864,9 @@ export const KPIDetailPage = () => {
                 setIsEditModalOpen(false);
                 setEditingTarget(null);
                 setEditFileList([]);
-              }}>Hủy</Button>
+              }}>{t.common.cancel}</Button>
               <Button type="primary" htmlType="submit" icon={<Save size={16} />}>
-                Lưu
+                {t.common.save}
               </Button>
             </Space>
           </Form.Item>
@@ -872,7 +874,7 @@ export const KPIDetailPage = () => {
       </Modal>
 
       <Modal
-        title="Từ chối hồ sơ KPI"
+        title={t.kpiDetail.rejectModal}
         open={isRejectModalOpen}
         onCancel={() => setIsRejectModalOpen(false)}
         footer={null}
@@ -880,17 +882,17 @@ export const KPIDetailPage = () => {
         <Form form={rejectForm} layout="vertical" onFinish={handleReject}>
           <Form.Item
             name="reason"
-            label="Lý do từ chối"
-            rules={[{ required: true, message: 'Vui lòng nhập lý do' }]}
+            label={t.kpiDetail.rejectReasonLabel}
+            rules={[{ required: true, message: t.kpiDetail.rejectReasonRequired }]}
           >
-            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder="Nhập lý do từ chối hồ sơ" className="bg-gray-50 rounded-xl" />
+            <TextArea autoSize={{ minRows: 4, maxRows: 10 }} placeholder={t.kpiDetail.rejectReasonPlaceholder} className="bg-gray-50 rounded-xl" />
           </Form.Item>
 
           <Form.Item>
             <Space className="w-full justify-end">
-              <Button onClick={() => setIsRejectModalOpen(false)}>Hủy</Button>
+              <Button onClick={() => setIsRejectModalOpen(false)}>{t.common.cancel}</Button>
               <Button type="primary" danger htmlType="submit">
-                Xác nhận từ chối
+                {t.kpiDetail.confirmReject}
               </Button>
             </Space>
           </Form.Item>
@@ -900,7 +902,7 @@ export const KPIDetailPage = () => {
       {/* Image Preview Modal */}
       <Modal
         open={previewOpen}
-        title="Xem trước"
+        title={t.kpiDetail.previewTitle}
         footer={null}
         onCancel={() => setPreviewOpen(false)}
       >

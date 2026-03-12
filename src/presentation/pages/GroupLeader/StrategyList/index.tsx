@@ -28,11 +28,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import type { IStrategicPlan } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { Option } = Select;
 
 export const StrategyListPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [strategies, setStrategies] = useState<IStrategicPlan[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -122,7 +124,7 @@ export const StrategyListPage = () => {
       ];
       setStrategies(mockData);
     } catch (error) {
-      toast.error('Không thể tải danh sách chiến lược');
+      toast.error(t.groupLeader.strategy.cannotLoad);
     } finally {
       setLoading(false);
     }
@@ -130,26 +132,26 @@ export const StrategyListPage = () => {
 
   const handleDelete = (id: string) => {
     Modal.confirm({
-      title: 'Xác nhận xóa',
-      content: 'Bạn có chắc chắn muốn xóa chiến lược này?',
-      okText: 'Xóa',
-      cancelText: 'Hủy',
+      title: t.groupLeader.strategy.confirmDelete,
+      content: t.groupLeader.strategy.confirmDeleteMessage,
+      okText: t.groupLeader.strategy.delete,
+      cancelText: t.common.cancel,
       okButtonProps: { danger: true },
       onOk: () => {
         setStrategies(strategies.filter(s => s.id !== id));
-        toast.success('Đã xóa chiến lược');
+        toast.success(t.groupLeader.strategy.deleted);
       },
     });
   };
 
   const getStatusConfig = (status: string) => {
     const configs: Record<string, { color: string; label: string; icon: any }> = {
-      draft: { color: 'default', label: 'Nháp', icon: <FileText size={14} /> },
-      pending_ceo: { color: 'orange', label: 'Chờ CEO duyệt', icon: <Clock size={14} /> },
-      approved: { color: 'green', label: 'Đã duyệt', icon: <CheckCircle size={14} /> },
-      rejected: { color: 'red', label: 'Từ chối', icon: <XCircle size={14} /> },
-      in_execution: { color: 'blue', label: 'Đang thực hiện', icon: <Target size={14} /> },
-      completed: { color: 'success', label: 'Hoàn thành', icon: <CheckCircle size={14} /> },
+      draft: { color: 'default', label: t.groupLeader.strategy.draft, icon: <FileText size={14} /> },
+      pending_ceo: { color: 'orange', label: t.groupLeader.strategy.pendingCEO, icon: <Clock size={14} /> },
+      approved: { color: 'green', label: t.groupLeader.strategy.approved, icon: <CheckCircle size={14} /> },
+      rejected: { color: 'red', label: t.groupLeader.strategy.rejected, icon: <XCircle size={14} /> },
+      in_execution: { color: 'blue', label: t.groupLeader.strategy.inExecution, icon: <Target size={14} /> },
+      completed: { color: 'success', label: t.groupLeader.strategy.completed, icon: <CheckCircle size={14} /> },
     };
     return configs[status] || configs.draft;
   };
@@ -163,7 +165,7 @@ export const StrategyListPage = () => {
 
   const columns: ColumnsType<IStrategicPlan> = [
     {
-      title: 'Mã',
+      title: t.groupLeader.strategy.code,
       dataIndex: 'id',
       key: 'id',
       width: 100,
@@ -172,7 +174,7 @@ export const StrategyListPage = () => {
       ),
     },
     {
-      title: 'Tiêu đề',
+      title: t.groupLeader.strategy.title,
       dataIndex: 'title',
       key: 'title',
       render: (text, record) => (
@@ -183,14 +185,14 @@ export const StrategyListPage = () => {
       ),
     },
     {
-      title: 'Kỳ',
+      title: t.groupLeader.strategy.period,
       key: 'period',
       width: 90,
       render: (_, record) => {
         const periodLabels: Record<string, string> = {
-          yearly: 'Cả năm',
-          'half-yearly': '6 tháng',
-          quarterly: 'Quý',
+          yearly: t.groupLeader.strategy.yearly,
+          'half-yearly': t.groupLeader.strategy.halfYearly,
+          quarterly: t.groupLeader.strategy.quarterly,
         };
         return (
           <div className="text-center">
@@ -203,7 +205,7 @@ export const StrategyListPage = () => {
       },
     },
     {
-      title: 'Số Team',
+      title: t.groupLeader.strategy.teams,
       key: 'teams',
       width: 90,
       align: 'center',
@@ -212,14 +214,14 @@ export const StrategyListPage = () => {
       ),
     },
     {
-      title: 'Ngân sách',
+      title: t.groupLeader.strategy.budget,
       dataIndex: 'totalBudget',
       key: 'totalBudget',
       width: 110,
       render: (budget) => budget ? `${(budget / 1000000).toFixed(0)}M VNĐ` : '-',
     },
     {
-      title: 'Trạng thái',
+      title: t.groupLeader.strategy.status,
       dataIndex: 'status',
       key: 'status',
       width: 150,
@@ -234,21 +236,21 @@ export const StrategyListPage = () => {
       },
     },
     {
-      title: 'Ngày tạo',
+      title: t.groupLeader.strategy.createdDate,
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 100,
       render: (date) => new Date(date).toLocaleDateString('vi-VN'),
     },
     {
-      title: 'Hành động',
+      title: t.groupLeader.strategy.action,
       key: 'action',
       width: 200,
       align: 'center',
       fixed: 'right',
       render: (_, record) => (
         <Space>
-          <Tooltip title="Xem chi tiết">
+          <Tooltip title={t.groupLeader.strategy.viewDetail}>
             <Button
               type="link"
               size="small"
@@ -258,7 +260,7 @@ export const StrategyListPage = () => {
           </Tooltip>
           {record.status === 'draft' && (
             <>
-              <Tooltip title="Chỉnh sửa">
+              <Tooltip title={t.groupLeader.strategy.edit}>
                 <Button
                   type="link"
                   size="small"
@@ -266,7 +268,7 @@ export const StrategyListPage = () => {
                   onClick={() => navigate(`/strategy/edit/${record.id}`)}
                 />
               </Tooltip>
-              <Tooltip title="Xóa">
+              <Tooltip title={t.groupLeader.strategy.delete}>
                 <Button
                   type="link"
                   size="small"
@@ -278,17 +280,17 @@ export const StrategyListPage = () => {
             </>
           )}
           {record.status === 'draft' && (
-            <Tooltip title="Gửi duyệt">
+            <Tooltip title={t.groupLeader.strategy.sendForApproval}>
               <Button
                 type="primary"
                 size="small"
                 icon={<Send size={14} />}
                 onClick={() => {
-                  toast.success('Đã gửi chiến lược đến CEO');
+                  toast.success(t.groupLeader.strategy.sent);
                   // Update status logic here
                 }}
               >
-                Gửi
+                {t.groupLeader.strategy.send}
               </Button>
             </Tooltip>
           )}
@@ -312,9 +314,9 @@ export const StrategyListPage = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
             <Target size={32} className="text-primary" />
-            Quản lý Chiến lược
+            {t.groupLeader.strategy.listTitle}
           </h1>
-          <p className="text-gray-500">Quản lý các kế hoạch chiến lược của bộ phận</p>
+          <p className="text-gray-500">{t.groupLeader.strategy.listSubtitle}</p>
         </div>
         <Button
           type="primary"
@@ -323,7 +325,7 @@ export const StrategyListPage = () => {
           onClick={() => navigate('/strategy/create')}
           className="bg-primary"
         >
-          Tạo Chiến lược mới
+          {t.groupLeader.strategy.createNew}
         </Button>
       </div>
 
@@ -331,7 +333,7 @@ export const StrategyListPage = () => {
       <Card className="shadow-md">
         <div className="flex gap-4">
           <Input
-            placeholder="Tìm kiếm chiến lược..."
+            placeholder={t.groupLeader.strategy.searchPlaceholder}
             prefix={<Search size={16} />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -344,13 +346,13 @@ export const StrategyListPage = () => {
             style={{ width: 200 }}
             size="middle"
           >
-            <Option value="all">Tất cả trạng thái</Option>
-            <Option value="draft">Nháp</Option>
-            <Option value="pending_ceo">Chờ CEO duyệt</Option>
-            <Option value="approved">Đã duyệt</Option>
-            <Option value="rejected">Từ chối</Option>
-            <Option value="in_execution">Đang thực hiện</Option>
-            <Option value="completed">Hoàn thành</Option>
+            <Option value="all">{t.groupLeader.strategy.allStatus}</Option>
+            <Option value="draft">{t.groupLeader.strategy.draft}</Option>
+            <Option value="pending_ceo">{t.groupLeader.strategy.pendingCEO}</Option>
+            <Option value="approved">{t.groupLeader.strategy.approved}</Option>
+            <Option value="rejected">{t.groupLeader.strategy.rejected}</Option>
+            <Option value="in_execution">{t.groupLeader.strategy.inExecution}</Option>
+            <Option value="completed">{t.groupLeader.strategy.completed}</Option>
           </Select>
         </div>
       </Card>
@@ -366,7 +368,7 @@ export const StrategyListPage = () => {
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            showTotal: (total) => `Tổng ${total} chiến lược`,
+            showTotal: (total) => t.groupLeader.strategy.totalStrategies.replace('{count}', total.toString()),
           }}
           bordered
         />

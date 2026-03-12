@@ -1,51 +1,54 @@
 import { Card, Select, Progress, Tag } from 'antd';
 import { BarChart, Bar, LineChart, Line, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Building2, Users, Target, Award, DollarSign, Activity } from 'lucide-react';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { Option } = Select;
 
-const companyMetrics = [
-  { metric: 'Hiệu suất', value: 85, target: 90 },
-  { metric: 'Chất lượng', value: 88, target: 85 },
-  { metric: 'Tiến độ', value: 82, target: 80 },
-  { metric: 'Sáng tạo', value: 78, target: 75 },
-  { metric: 'Hợp tác', value: 90, target: 85 },
-  { metric: 'Khách hàng', value: 92, target: 90 },
-];
-
-const departmentPerformance = [
-  { dept: 'Sales', q1: 82, q2: 85, q3: 88, target: 85 },
-  { dept: 'Marketing', q1: 75, q2: 78, q3: 80, target: 80 },
-  { dept: 'IT', q1: 88, q2: 90, q3: 92, target: 90 },
-  { dept: 'HR', q1: 85, q2: 86, q3: 88, target: 85 },
-];
-
-const monthlyTrend = [
-  { month: 'T1', revenue: 850, kpi: 82, employees: 42 },
-  { month: 'T2', revenue: 920, kpi: 85, employees: 43 },
-  { month: 'T3', revenue: 980, kpi: 88, employees: 45 },
-  { month: 'T4', revenue: 1050, kpi: 90, employees: 45 },
-];
-
-const topPerformers = [
-  { name: 'Lê Văn C', dept: 'IT', score: 4.8, kpis: 6, completed: 6 },
-  { name: 'Phạm Thị D', dept: 'HR', score: 4.6, kpis: 5, completed: 5 },
-  { name: 'Nguyễn Văn A', dept: 'Sales', score: 4.5, kpis: 5, completed: 4 },
-];
-
 export const ExecutiveDashboardPage = () => {
+  const { t } = useTranslation();
+
+  const companyMetrics = [
+    { metric: t.ceo.executiveDashboard.companyMetrics.performance, value: 85, target: 90 },
+    { metric: t.ceo.executiveDashboard.companyMetrics.quality, value: 88, target: 85 },
+    { metric: t.ceo.executiveDashboard.companyMetrics.progress, value: 82, target: 80 },
+    { metric: t.ceo.executiveDashboard.companyMetrics.innovation, value: 78, target: 75 },
+    { metric: t.ceo.executiveDashboard.companyMetrics.collaboration, value: 90, target: 85 },
+    { metric: t.ceo.executiveDashboard.companyMetrics.customer, value: 92, target: 90 },
+  ];
+
+  const departmentPerformance = [
+    { dept: t.ceo.executiveDashboard.departments.sales, q1: 82, q2: 85, q3: 88, target: 85 },
+    { dept: t.ceo.executiveDashboard.departments.marketing, q1: 75, q2: 78, q3: 80, target: 80 },
+    { dept: t.ceo.executiveDashboard.departments.it, q1: 88, q2: 90, q3: 92, target: 90 },
+    { dept: t.ceo.executiveDashboard.departments.hr, q1: 85, q2: 86, q3: 88, target: 85 },
+  ];
+
+  const monthlyTrend = [
+    { month: t.ceo.executiveDashboard.months.jan, revenue: 850, kpi: 82, employees: 42 },
+    { month: t.ceo.executiveDashboard.months.feb, revenue: 920, kpi: 85, employees: 43 },
+    { month: t.ceo.executiveDashboard.months.mar, revenue: 980, kpi: 88, employees: 45 },
+    { month: t.ceo.executiveDashboard.months.apr, revenue: 1050, kpi: 90, employees: 45 },
+  ];
+
+  const topPerformers = [
+    { name: 'Lê Văn C', dept: t.ceo.executiveDashboard.departments.it, score: 4.8, kpis: 6, completed: 6 },
+    { name: 'Phạm Thị D', dept: t.ceo.executiveDashboard.departments.hr, score: 4.6, kpis: 5, completed: 5 },
+    { name: 'Nguyễn Văn A', dept: t.ceo.executiveDashboard.departments.sales, score: 4.5, kpis: 5, completed: 4 },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Executive Dashboard</h1>
-          <p className="text-gray-600 mt-1">Tổng quan hiệu suất toàn công ty</p>
+          <h1 className="text-2xl font-bold text-gray-800">{t.ceo.executiveDashboard.title}</h1>
+          <p className="text-gray-600 mt-1">{t.ceo.executiveDashboard.subtitle}</p>
         </div>
         <Select defaultValue="q3" style={{ width: 150 }}>
-          <Option value="q1">Quý 1/2024</Option>
-          <Option value="q2">Quý 2/2024</Option>
-          <Option value="q3">Quý 3/2024</Option>
-          <Option value="q4">Quý 4/2024</Option>
+          <Option value="q1">{t.ceo.executiveDashboard.quarter1}</Option>
+          <Option value="q2">{t.ceo.executiveDashboard.quarter2}</Option>
+          <Option value="q3">{t.ceo.executiveDashboard.quarter3}</Option>
+          <Option value="q4">{t.ceo.executiveDashboard.quarter4}</Option>
         </Select>
       </div>
 
@@ -54,7 +57,7 @@ export const ExecutiveDashboardPage = () => {
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Tổng doanh thu</p>
+              <p className="text-gray-600 text-sm">{t.ceo.executiveDashboard.metrics.totalRevenue}</p>
               <p className="text-3xl font-bold text-primary">3.8B</p>
               <div className="flex items-center gap-1 mt-1">
                 <TrendingUp size={14} className="text-green-600" />
@@ -70,7 +73,7 @@ export const ExecutiveDashboardPage = () => {
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Hiệu suất TB</p>
+              <p className="text-gray-600 text-sm">{t.ceo.executiveDashboard.metrics.avgPerformance}</p>
               <p className="text-3xl font-bold text-blue-600">85.8%</p>
               <div className="flex items-center gap-1 mt-1">
                 <TrendingUp size={14} className="text-green-600" />
@@ -86,7 +89,7 @@ export const ExecutiveDashboardPage = () => {
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">Tổng nhân viên</p>
+              <p className="text-gray-600 text-sm">{t.ceo.executiveDashboard.metrics.totalEmployees}</p>
               <p className="text-3xl font-bold text-purple-600">45</p>
               <div className="flex items-center gap-1 mt-1">
                 <TrendingUp size={14} className="text-green-600" />
@@ -102,7 +105,7 @@ export const ExecutiveDashboardPage = () => {
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 text-sm">KPI hoàn thành</p>
+              <p className="text-gray-600 text-sm">{t.ceo.executiveDashboard.metrics.kpiCompleted}</p>
               <p className="text-3xl font-bold text-orange-600">92%</p>
               <div className="flex items-center gap-1 mt-1">
                 <TrendingDown size={14} className="text-red-600" />
@@ -119,21 +122,21 @@ export const ExecutiveDashboardPage = () => {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Company Radar */}
-        <Card title="Chỉ số tổng thể công ty">
+        <Card title={t.ceo.executiveDashboard.charts.companyMetrics}>
           <ResponsiveContainer width="100%" height={350}>
             <RadarChart data={companyMetrics}>
               <PolarGrid />
               <PolarAngleAxis dataKey="metric" />
               <PolarRadiusAxis angle={90} domain={[0, 100]} />
               <Radar 
-                name="Thực tế" 
+                name={t.ceo.executiveDashboard.legend.actual}
                 dataKey="value" 
                 stroke="#4C9C2E" 
                 fill="#4C9C2E" 
                 fillOpacity={0.6} 
               />
               <Radar 
-                name="Mục tiêu" 
+                name={t.ceo.executiveDashboard.legend.target}
                 dataKey="target" 
                 stroke="#FFA500" 
                 fill="#FFA500" 
@@ -146,7 +149,7 @@ export const ExecutiveDashboardPage = () => {
         </Card>
 
         {/* Department Performance */}
-        <Card title="Hiệu suất theo bộ phận">
+        <Card title={t.ceo.executiveDashboard.charts.departmentPerformance}>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={departmentPerformance}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -154,17 +157,17 @@ export const ExecutiveDashboardPage = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="q1" fill="#8884d8" name="Q1" />
-              <Bar dataKey="q2" fill="#82ca9d" name="Q2" />
-              <Bar dataKey="q3" fill="#4C9C2E" name="Q3" />
-              <Bar dataKey="target" fill="#FFA500" name="Target" />
+              <Bar dataKey="q1" fill="#8884d8" name={t.ceo.executiveDashboard.legend.q1} />
+              <Bar dataKey="q2" fill="#82ca9d" name={t.ceo.executiveDashboard.legend.q2} />
+              <Bar dataKey="q3" fill="#4C9C2E" name={t.ceo.executiveDashboard.legend.q3} />
+              <Bar dataKey="target" fill="#FFA500" name={t.ceo.executiveDashboard.legend.target} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
       </div>
 
       {/* Monthly Trend */}
-      <Card title="Xu hướng theo tháng">
+      <Card title={t.ceo.executiveDashboard.charts.monthlyTrend}>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={monthlyTrend}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -179,7 +182,7 @@ export const ExecutiveDashboardPage = () => {
               dataKey="revenue" 
               stroke="#4C9C2E" 
               strokeWidth={2}
-              name="Doanh thu (M)"
+              name={t.ceo.executiveDashboard.legend.revenue}
             />
             <Line 
               yAxisId="right"
@@ -187,7 +190,7 @@ export const ExecutiveDashboardPage = () => {
               dataKey="kpi" 
               stroke="#1890ff" 
               strokeWidth={2}
-              name="KPI (%)"
+              name={t.ceo.executiveDashboard.legend.kpi}
             />
             <Line 
               yAxisId="right"
@@ -195,7 +198,7 @@ export const ExecutiveDashboardPage = () => {
               dataKey="employees" 
               stroke="#722ed1" 
               strokeWidth={2}
-              name="Nhân viên"
+              name={t.ceo.executiveDashboard.legend.employees}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -204,7 +207,7 @@ export const ExecutiveDashboardPage = () => {
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Performers */}
-        <Card title="Top Performers" className="lg:col-span-2">
+        <Card title={t.ceo.executiveDashboard.charts.topPerformers} className="lg:col-span-2">
           <div className="space-y-2">
             {topPerformers.map((performer, index) => (
               <div key={performer.name} className="flex items-center gap-3 py-1 px-3 bg-gray-100 rounded-xl border border-gray-200">
@@ -221,7 +224,7 @@ export const ExecutiveDashboardPage = () => {
                     <Tag color="blue" className='px-1'>{performer.dept}</Tag>
                   </div>
                   <div className="flex items-center gap-3 mt-1 text-sm text-gray-600">
-                    <span>KPI: {performer.completed}/{performer.kpis}</span>
+                    <span>{t.ceo.executiveDashboard.topPerformers.kpi}: {performer.completed}/{performer.kpis}</span>
                     <Progress 
                       percent={(performer.completed / performer.kpis) * 100} 
                       size="small" 
@@ -235,7 +238,7 @@ export const ExecutiveDashboardPage = () => {
                     <Award size={20} className="text-primary" />
                     <span className="text-2xl font-bold text-primary">{performer.score}</span>
                   </div>
-                  <span className="text-xs text-gray-500">Điểm đánh giá</span>
+                  <span className="text-xs text-gray-500">{t.ceo.executiveDashboard.topPerformers.score}</span>
                 </div>
               </div>
             ))}
@@ -243,7 +246,7 @@ export const ExecutiveDashboardPage = () => {
         </Card>
 
         {/* Department Summary */}
-        <Card title="Tổng quan bộ phận">
+        <Card title={t.ceo.executiveDashboard.charts.departmentSummary}>
           <div className="space-y-4">
             {departmentPerformance.map((dept) => (
               <div key={dept.dept} className="space-y-2">
@@ -260,9 +263,9 @@ export const ExecutiveDashboardPage = () => {
                   size="small"
                 />
                 <div className="flex justify-between text-xs text-gray-500">
-                  <span>Target: {dept.target}%</span>
+                  <span>{t.ceo.executiveDashboard.departmentStatus.target}: {dept.target}%</span>
                   <span className={dept.q3 >= dept.target ? 'text-green-600' : 'text-orange-600'}>
-                    {dept.q3 >= dept.target ? '✓ Đạt' : '⚠ Chưa đạt'}
+                    {dept.q3 >= dept.target ? `✓ ${t.ceo.executiveDashboard.departmentStatus.achieved}` : `⚠ ${t.ceo.executiveDashboard.departmentStatus.notAchieved}`}
                   </span>
                 </div>
               </div>

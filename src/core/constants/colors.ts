@@ -6,7 +6,7 @@
 export const BRAND_COLORS = {
   // Màu chủ đạo - Rio Grande (Xanh lá mạ)
   // Màu của năng lượng tái tạo và công nghệ sạch
-  primary: '#C2D500',
+  primary: '#4C9C2E',
   
   // Màu nhấn mạnh - Dark Charcoal (Xám đen)
   // Dùng cho Logo và văn bản, tạo sự vững chãi, uy tín
@@ -14,7 +14,7 @@ export const BRAND_COLORS = {
   
   // Màu bổ trợ 1 - Apple Green (Xanh táo)
   // Tạo chiều sâu khi đổ bóng hoặc gradient cho màu chủ đạo
-  apple: '#8DB600',
+  apple: '#2d5f1b',
   
   // Màu bổ trợ 2 - Light Gray (Xám nhạt)
   // Dùng cho các đường kẻ bảng, phân cách hoặc nền phụ

@@ -38,7 +38,15 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   ceo: 'Giám đốc',
 };
 
-// Approval Steps
+// Approval Steps - now using i18n keys
+export const getApprovalSteps = (t: any) => [
+  { title: t.approvalSteps.employee, description: t.approvalSteps.employeeDesc },
+  { title: t.approvalSteps.manager, description: t.approvalSteps.managerDesc },
+  { title: t.approvalSteps.execution, description: t.approvalSteps.executionDesc },
+  { title: t.approvalSteps.completion, description: t.approvalSteps.completionDesc },
+];
+
+// Legacy constant for backward compatibility (deprecated)
 export const APPROVAL_STEPS = [
   { title: 'Nhân viên', description: 'Tạo hồ sơ' },
   { title: 'Quản lý', description: 'Phê duyệt' },

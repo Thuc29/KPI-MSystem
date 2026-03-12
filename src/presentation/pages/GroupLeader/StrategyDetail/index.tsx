@@ -32,12 +32,14 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import type { IStrategicPlan } from '../../../../core/models';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { TextArea } = Input;
 
 export const StrategyDetailPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const [strategy, setStrategy] = useState<IStrategicPlan | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -228,7 +230,7 @@ export const StrategyDetailPage = () => {
             className=' flex items-center gap-1 underline text-blue-600 font-semibold pb-2 cursor-pointer'
             onClick={() => navigate('/strategy')}
           ><ArrowLeft size={14} />
-            Quay lại
+            {t.groupLeader.strategyDetail.backToList}
           </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
@@ -249,7 +251,7 @@ export const StrategyDetailPage = () => {
                 onClick={handleEdit}
                 size="middle"
               >
-                Chỉnh sửa
+                {t.groupLeader.strategyDetail.edit}
               </Button>
               <Button
                 type="primary"
@@ -258,7 +260,7 @@ export const StrategyDetailPage = () => {
                 size="middle"
                 className="bg-primary"
               >
-                Gửi CEO duyệt
+                {t.groupLeader.strategyDetail.sendToCEO}
               </Button>
             </>
           )}
@@ -272,10 +274,10 @@ export const StrategyDetailPage = () => {
             <AlertTriangle size={24} className="text-red-500 mt-1" />
             <div className="flex-1">
               <h3 className="font-semibold text-red-600 text-lg mb-2">
-                Chiến lược đã bị từ chối
+                {t.groupLeader.strategyDetail.strategyRejected}
               </h3>
               <p className="text-gray-700 mb-3">
-                <span className="font-medium">Lý do: </span>
+                <span className="font-medium">{t.groupLeader.strategyDetail.rejectionReason} </span>
                 {strategy.rejectionReason}
               </p>
               <Button 
@@ -283,7 +285,7 @@ export const StrategyDetailPage = () => {
                 icon={<Edit size={16} />}
                 onClick={handleEdit}
               >
-                Chỉnh sửa và gửi lại
+                {t.groupLeader.strategyDetail.editAndResend}
               </Button>
             </div>
           </div>
@@ -299,7 +301,7 @@ export const StrategyDetailPage = () => {
             </div>
             <div>
               <div className="text-2xl font-bold text-blue-600">{strategy.teamPlans.length}</div>
-              <div className="text-sm text-gray-600">Team tham gia</div>
+              <div className="text-sm text-gray-600">{t.groupLeader.strategyDetail.teamsParticipating}</div>
             </div>
           </div>
         </Card>
@@ -311,7 +313,7 @@ export const StrategyDetailPage = () => {
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">{totalObjectives}</div>
-              <div className="text-sm text-gray-600">Tổng mục tiêu</div>
+              <div className="text-sm text-gray-600">{t.groupLeader.strategyDetail.totalObjectives}</div>
             </div>
           </div>
         </Card>
@@ -325,7 +327,7 @@ export const StrategyDetailPage = () => {
               <div className="text-2xl font-bold text-purple-600">
                 {strategy.totalBudget ? `${(strategy.totalBudget / 1000000).toFixed(0)}M` : '-'}
               </div>
-              <div className="text-sm text-gray-600">Ngân sách (VNĐ)</div>
+              <div className="text-sm text-gray-600">{t.groupLeader.strategyDetail.budget}</div>
             </div>
           </div>
         </Card>
@@ -339,7 +341,7 @@ export const StrategyDetailPage = () => {
               <div className="text-lg font-bold text-orange-600">
                 {strategy.year} {strategy.quarter ? `Q${strategy.quarter}` : ''}
               </div>
-              <div className="text-sm text-gray-600">Kỳ thực hiện</div>
+              <div className="text-sm text-gray-600">{t.groupLeader.strategyDetail.executionPeriod}</div>
             </div>
           </div>
         </Card>
@@ -354,7 +356,7 @@ export const StrategyDetailPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Users size={20} className="text-primary" />
-                <span className="font-semibold">Kế hoạch các Team ({strategy.teamPlans.length})</span>
+                <span className="font-semibold">{t.groupLeader.strategyDetail.teamPlans} ({strategy.teamPlans.length})</span>
               </div>
             }
             className="shadow-md"
@@ -375,12 +377,12 @@ export const StrategyDetailPage = () => {
                         <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <div>
-                          <span className="text-gray-600">Team Leader: </span>
+                          <span className="text-gray-600">{t.groupLeader.strategyDetail.teamLeader}: </span>
                           <span className="font-semibold">{team.teamLeaderName}</span>
                           </div>
                           {team.budget && (
                           <div>
-                            <span className="text-gray-600">Ngân sách: </span>
+                            <span className="text-gray-600">{t.groupLeader.strategyDetail.budget}: </span>
                             <span className="font-semibold">{(team.budget / 1000000).toFixed(0)}M VNĐ</span>
                           </div>
                           )}
@@ -388,7 +390,7 @@ export const StrategyDetailPage = () => {
                         <div className="space-y-2">
                           {team.timeline && (
                           <div>
-                            <span className="text-gray-600">Thời gian: </span>
+                            <span className="text-gray-600">{t.groupLeader.strategyDetail.timeline}: </span>
                             <span className="font-semibold">
                             {team.timeline.startDate} → {team.timeline.endDate}
                             </span>
@@ -396,7 +398,7 @@ export const StrategyDetailPage = () => {
                           )}
                         {team.resources && team.resources.length > 0 && (
                           <div className="col-span-2">
-                          <span className="text-gray-600">Tài nguyên: </span>
+                          <span className="text-gray-600">{t.groupLeader.strategyDetail.resources}: </span>
                           <div className="flex flex-wrap gap-2 mt-1">
                             {team.resources.map((resource, idx) => (
                             <Tag key={idx} color="blue" className='rounded-lg'>{resource}</Tag>
@@ -409,7 +411,7 @@ export const StrategyDetailPage = () => {
 
                     {/* Objectives */}
                     <div className="space-y-3">
-                      <h4 className="font-semibold text-lg">Mục tiêu ({team.objectives.length})</h4>
+                      <h4 className="font-semibold text-lg">{t.groupLeader.strategyDetail.objectives} ({team.objectives.length})</h4>
                       {team.objectives.map((obj, objIndex) => (
                         <Card key={obj.id} size="small" className="border-l-4 border-l-primary">
                           <div className="space-y-2">
@@ -424,42 +426,42 @@ export const StrategyDetailPage = () => {
                                 </div>
                               </div>
                               <Tag color="blue" className='rounded-lg'>
-                                Trọng số: {obj.weight}%
+                                {t.groupLeader.strategyDetail.weight}: {obj.weight}%
                               </Tag>
                             </div>
 
                             <div className="grid grid-cols-2 gap-1 text-sm">
                               <div className="bg-gray-50 p-2 rounded-lg">
-                                <span className="text-gray-600">Mục tiêu: </span>
+                                <span className="text-gray-600">{t.groupLeader.strategyDetail.target}: </span>
                                 <span className="font-semibold">{obj.target} {obj.unit}</span>
                               </div>
                               {obj.category && (
                                 <div className="bg-gray-50 p-2 rounded-lg">
-                                  <span className="text-gray-600">Danh mục: </span>
+                                  <span className="text-gray-600">{t.groupLeader.strategyDetail.category}: </span>
                                   <Tags size="small">{obj.category}</Tags>
                                 </div>
                               )}
                               {obj.startDate && obj.endDate && (
                                 <div className="bg-gray-50 p-2 rounded-lg col-span-2">
-                                  <span className="text-gray-600">Thời gian: </span>
+                                  <span className="text-gray-600">{t.groupLeader.strategyDetail.timeline}: </span>
                                   <span className="font-medium">{obj.startDate} → {obj.endDate}</span>
                                 </div>
                               )}
                               {obj.measurementMethod && (
                                 <div className="bg-gray-50 p-2 rounded-lg col-span-2">
-                                  <span className="text-gray-600">Đo lường: </span>
+                                  <span className="text-gray-600">{t.groupLeader.strategyDetail.measurementMethod}: </span>
                                   <span className="text-gray-800">{obj.measurementMethod}</span>
                                 </div>
                               )}
                               {obj.evaluationCriteria && (
                                 <div className="bg-gray-50 p-2 rounded-lg col-span-2">
-                                  <span className="text-gray-600">Tiêu chí: </span>
+                                  <span className="text-gray-600">{t.groupLeader.strategyDetail.evaluationCriteria}: </span>
                                   <span className="text-gray-800">{obj.evaluationCriteria}</span>
                                 </div>
                               )}
                               {obj.expectedOutcome && (
                                 <div className="bg-blue-50 p-2 rounded-lg col-span-2 border-l-2 border-l-blue-500">
-                                  <span className="text-gray-600">Kết quả mong đợi: </span>
+                                  <span className="text-gray-600">{t.groupLeader.strategyDetail.expectedOutcome}: </span>
                                   <span className="font-medium text-blue-700">{obj.expectedOutcome}</span>
                                 </div>
                               )}
@@ -482,42 +484,42 @@ export const StrategyDetailPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <FileText size={18} className="text-primary" />
-                <span>Thông tin chiến lược</span>
+                <span>{t.groupLeader.strategyDetail.strategyInfo}</span>
               </div>
             }
             className="shadow-md"
           >
             <div className="space-y-3 text-sm">
               <div className='flex items-center gap-2'>
-                <div className="text-gray-600">Mã chiến lược: </div>
+                <div className="text-gray-600">{t.groupLeader.strategyDetail.strategyCode}: </div>
                 <div className="font-mono font-semibold text-primary">{strategy.id}</div>
               </div>
               <Divider className="my-3" />
               <div className='flex items-center justify-between'>
                 <div>
-                <div className="text-gray-600 mb-1">Bộ phận</div>
+                <div className="text-gray-600 mb-1">{t.groupLeader.strategyDetail.department}</div>
                 <Tag color="purple">{strategy.departmentName}</Tag>
               </div>
               <div>
-                <div className="text-gray-600 mb-1">Group Leader</div>
+                <div className="text-gray-600 mb-1">{t.groupLeader.strategyDetail.groupLeader}</div>
                 <div className="font-medium">{strategy.groupLeaderName}</div>
               </div>
               </div>
               <Divider className="my-3" />
              <div className='flex items-center justify-around'>
                <div>
-                <div className="text-gray-600 mb-1">Ngày tạo</div>
+                <div className="text-gray-600 mb-1">{t.groupLeader.strategyDetail.createdDate}</div>
                 <div className="font-medium">{new Date(strategy.createdAt).toLocaleDateString('vi-VN')}</div>
               </div>
               {strategy.submittedAt && (
                 <div>
-                  <div className="text-gray-600 mb-1">Ngày gửi</div>
+                  <div className="text-gray-600 mb-1">{t.groupLeader.strategyDetail.submittedDate}</div>
                   <div className="font-medium">{new Date(strategy.submittedAt).toLocaleDateString('vi-VN')}</div>
                 </div>
               )}
               {strategy.approvedAt && (
                 <div>
-                  <div className="text-gray-600 mb-1">Ngày duyệt</div>
+                  <div className="text-gray-600 mb-1">{t.groupLeader.strategyDetail.approvedDate}</div>
                   <div className="font-medium">{new Date(strategy.approvedAt).toLocaleDateString('vi-VN')}</div>
                 </div>
               )}
@@ -531,7 +533,7 @@ export const StrategyDetailPage = () => {
               title={
                 <div className="flex items-center gap-2">
                   <Target size={18} className="text-primary" />
-                  <span>Mục tiêu tổng thể</span>
+                  <span>{t.groupLeader.strategyDetail.overallObjectives}</span>
                 </div>
               }
               className="shadow-md"
@@ -553,7 +555,7 @@ export const StrategyDetailPage = () => {
               title={
                 <div className="flex items-center gap-2">
                   <TrendingUp size={18} className="text-green-500" />
-                  <span>Tác động dự kiến</span>
+                  <span>{t.groupLeader.strategyDetail.expectedImpact}</span>
                 </div>
               }
               className="shadow-md border-l-4 border-l-green-500"
@@ -567,7 +569,7 @@ export const StrategyDetailPage = () => {
             title={
               <div className="flex items-center gap-2">
                 <Clock size={18} className="text-primary" />
-                <span>Timeline</span>
+                <span>{t.groupLeader.strategyDetail.timeline}</span>
               </div>
             }
             className="shadow-md"
@@ -579,7 +581,7 @@ export const StrategyDetailPage = () => {
                   children: (
                     <div>
                       <div className="text-xs text-gray-500">{new Date(strategy.createdAt).toLocaleDateString('vi-VN')}</div>
-                      <div className="font-medium">Tạo chiến lược</div>
+                      <div className="font-medium">{t.groupLeader.strategyDetail.strategyCreated}</div>
                     </div>
                   ),
                 },
@@ -588,7 +590,7 @@ export const StrategyDetailPage = () => {
                   children: (
                     <div>
                       <div className="text-xs text-gray-500">{new Date(strategy.submittedAt).toLocaleDateString('vi-VN')}</div>
-                      <div className="font-medium">Gửi CEO duyệt</div>
+                      <div className="font-medium">{t.groupLeader.strategyDetail.sentToCEO}</div>
                     </div>
                   ),
                 }] : []),
@@ -597,7 +599,7 @@ export const StrategyDetailPage = () => {
                   children: (
                     <div>
                       <div className="text-xs text-gray-500">{new Date(strategy.approvedAt).toLocaleDateString('vi-VN')}</div>
-                      <div className="font-medium">CEO phê duyệt</div>
+                      <div className="font-medium">{t.groupLeader.strategyDetail.ceoApproved}</div>
                     </div>
                   ),
                 }] : []),
@@ -606,7 +608,7 @@ export const StrategyDetailPage = () => {
                   children: (
                     <div>
                       <div className="text-xs text-gray-500">{new Date(strategy.updatedAt).toLocaleDateString('vi-VN')}</div>
-                      <div className="font-medium">Bị từ chối</div>
+                      <div className="font-medium">{t.groupLeader.strategyDetail.rejected}</div>
                     </div>
                   ),
                 }] : []),

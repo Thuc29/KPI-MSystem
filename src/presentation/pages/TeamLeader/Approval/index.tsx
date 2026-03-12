@@ -34,12 +34,14 @@ import { storage } from '../../../../infrastructure/utils';
 import { KPIStatusTag } from '../../../components';
 import type { IKPIRecord, IKPITarget } from '../../../../core/models';
 import type { ColumnsType } from 'antd/es/table';
+import { useTranslation } from '../../../../infrastructure/i18n';
 
 const { TextArea } = Input;
 const { Panel } = Collapse;
 
 export const ApprovalPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [kpiList, setKpiList] = useState<IKPIRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedKPI, setSelectedKPI] = useState<IKPIRecord | null>(null);
@@ -64,7 +66,7 @@ export const ApprovalPage = () => {
         setKpiList(response.data.data);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể tải danh sách KPI');
+      toast.error(error?.response?.data?.message || t.teamLeader.approval.cannotLoadKPIs);
     } finally {
       setLoading(false);
     }
@@ -102,12 +104,12 @@ export const ApprovalPage = () => {
     try {
       await kpiApi.approve(selectedKPI.id);
       
-      toast.success('Đã phê duyệt KPI');
+      toast.success(t.teamLeader.approval.approved_success);
       setApproveModalVisible(false);
       setSelectedKPI(null);
       fetchKPIList();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể phê duyệt KPI');
+      toast.error(error?.response?.data?.message || t.teamLeader.approval.cannotApprove);
     }
   };
 
@@ -118,13 +120,13 @@ export const ApprovalPage = () => {
     try {
       await kpiApi.reject(selectedKPI.id, values.reason);
       
-      toast.success('Đã từ chối KPI');
+      toast.success(t.teamLeader.approval.rejected_success);
       setRejectModalVisible(false);
       setSelectedKPI(null);
       form.resetFields();
       fetchKPIList();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Không thể từ chối KPI');
+      toast.error(error?.response?.data?.message || t.teamLeader.approval.cannotReject);
     }
   };
 
@@ -161,15 +163,15 @@ export const ApprovalPage = () => {
 
   // Get priority indicator
   const getPriorityIndicator = (days: number) => {
-    if (days >= 2) return { color: 'red', icon: <AlertCircle size={20} className="text-red-500" />, text: 'Khẩn cấp' };
-    if (days >= 1) return { color: 'orange', icon: <Clock size={20} className="text-orange-500" />, text: 'Ưu tiên' };
-    return { color: 'green', icon: <CheckCircle size={20} className="text-green-500" />, text: 'Mới' };
+    if (days >= 2) return { color: 'red', icon: <AlertCircle size={20} className="text-red-500" />, text: t.teamLeader.approval.urgent };
+    if (days >= 1) return { color: 'orange', icon: <Clock size={20} className="text-orange-500" />, text: t.teamLeader.approval.priority };
+    return { color: 'green', icon: <CheckCircle size={20} className="text-green-500" />, text: t.teamLeader.approval.new };
   };
 
   // Columns for pending table
   const pendingColumns: ColumnsType<IKPIRecord> = [
     {
-      title: 'Ưu tiên',
+      title: t.teamLeader.approval.priorityLabel,
       key: 'priority',
       width: 90,
       align: 'center',
@@ -177,7 +179,7 @@ export const ApprovalPage = () => {
         const days = getDaysSinceSubmit(record.submittedAt);
         const priority = getPriorityIndicator(days);
         return (
-          <Tooltip title={`${priority.text} - ${days} ngày trước`}>
+          <Tooltip title={`${priority.text} - ${t.teamLeader.approval.daysAgo.replace('{count}', String(days))}`}>
             <div className="text-2xl">{priority.icon}</div>
           </Tooltip>
         );
@@ -186,7 +188,7 @@ export const ApprovalPage = () => {
         getDaysSinceSubmit(b.submittedAt) - getDaysSinceSubmit(a.submittedAt),
     },
     {
-      title: 'Mã KPI',
+      title: t.teamLeader.approval.kpiCode,
       dataIndex: 'id',
       key: 'id',
       width: 150,
@@ -195,7 +197,7 @@ export const ApprovalPage = () => {
       ),
     },
     {
-      title: 'Nhân viên',
+      title: t.teamLeader.approval.employee,
       dataIndex: 'employeeName',
       key: 'employeeName',
       render: (text, record) => (
@@ -216,7 +218,7 @@ export const ApprovalPage = () => {
       width: 200
     },
     {
-      title: 'Năm/Kỳ',
+      title: t.teamLeader.approval.yearPeriod,
       key: 'period',
       width: 75,
       render: (_, record) => (
@@ -229,7 +231,7 @@ export const ApprovalPage = () => {
       ),
     },
     {
-      title: 'Số mục tiêu',
+      title: t.teamLeader.approval.targetCount,
       key: 'targets',
       width: 100,
       align: 'center',
@@ -240,7 +242,7 @@ export const ApprovalPage = () => {
       ),
     },
     {
-      title: 'Tổng trọng số',
+      title: t.teamLeader.approval.totalWeight,
       key: 'weight',
       width: 110,
       align: 'center',
@@ -255,27 +257,27 @@ export const ApprovalPage = () => {
       },
     },
     {
-      title: 'Ngày gửi',
+      title: t.teamLeader.approval.submittedDate,
       key: 'submittedAt',
       width: 95,
       render: (_, record) => {
         const days = getDaysSinceSubmit(record.submittedAt);
         return (
           <div className="text-gray-600 text-sm">
-            {days === 0 ? 'Hôm nay' : `${days} ngày trước`}
+            {days === 0 ? t.teamLeader.approval.today : t.teamLeader.approval.daysAgo.replace('{count}', String(days))}
           </div>
         );
       },
     },
     {
-      title: 'Hành động',
+      title: t.teamLeader.approval.action,
       key: 'action',
       width: 200,
       align: 'center',
       fixed: 'right',
       render: (_, record) => (
         <Space>
-          <Tooltip title="Xem chi tiết">
+          <Tooltip title={t.teamLeader.approval.viewDetail}>
             <Button
               size="small"
               icon={<Eye size={14} />}
@@ -290,7 +292,7 @@ export const ApprovalPage = () => {
             onClick={() => showApproveModal(record)}
             className="bg-primary hover:bg-primary-dark rounded-lg"
           >
-            Duyệt
+            {t.teamLeader.approval.approve}
           </Button>
           <Button
             danger
@@ -299,7 +301,7 @@ export const ApprovalPage = () => {
             onClick={() => showRejectModal(record)}
             className='rounded-lg'
           >
-            Từ chối
+            {t.teamLeader.approval.reject}
           </Button>
         </Space>
       ),
@@ -309,7 +311,7 @@ export const ApprovalPage = () => {
   // Columns for approved/rejected table
   const historyColumns: ColumnsType<IKPIRecord> = [
     {
-      title: 'Mã KPI',
+      title: t.teamLeader.approval.kpiCode,
       dataIndex: 'id',
       key: 'id',
       width: 150,
@@ -318,7 +320,7 @@ export const ApprovalPage = () => {
       ),
     },
     {
-      title: 'Nhân viên',
+      title: t.teamLeader.approval.employee,
       dataIndex: 'employeeName',
       key: 'employeeName',
       render: (text, record) => (
@@ -329,36 +331,36 @@ export const ApprovalPage = () => {
       ),
     },
     {
-      title: 'Năm',
+      title: t.teamLeader.approval.year,
       dataIndex: 'year',
       key: 'year',
       width: 100,
     },
     {
-      title: 'Số mục tiêu',
+      title: t.teamLeader.approval.targetCount,
       key: 'targets',
       width: 120,
       align: 'center',
       render: (_, record) => (
-        <Tag color="blue">{record.targets.length} mục tiêu</Tag>
+        <Tag color="blue">{record.targets.length} {t.teamLeader.approval.targets}</Tag>
       ),
     },
     {
-      title: 'Trạng thái',
+      title: t.teamLeader.approval.status,
       dataIndex: 'status',
       key: 'status',
       width: 150,
       render: (status) => <KPIStatusTag status={status} />,
     },
     {
-      title: 'Ngày cập nhật',
+      title: t.teamLeader.approval.updatedDate,
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       width: 150,
       render: (date) => new Date(date).toLocaleDateString('vi-VN'),
     },
     {
-      title: 'Hành động',
+      title: t.teamLeader.approval.action,
       key: 'action',
       width: 120,
       align: 'center',
@@ -368,7 +370,7 @@ export const ApprovalPage = () => {
           icon={<Eye size={14} />}
           onClick={() => navigate(`/kpi/${record.id}`)}
         >
-          Xem
+          {t.teamLeader.approval.view}
         </Button>
       ),
     },
@@ -379,8 +381,8 @@ export const ApprovalPage = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Duyệt KPI</h1>
-          <p className="text-gray-500">Phê duyệt và quản lý KPI của nhân viên</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t.teamLeader.approval.title}</h1>
+          <p className="text-gray-500">{t.teamLeader.approval.subtitle}</p>
         </div>
         
       </div>
@@ -395,7 +397,7 @@ export const ApprovalPage = () => {
               label: (
                 <span className="flex items-center gap-2">
                   <Clock size={16} />
-                  Chờ duyệt
+                  {t.teamLeader.approval.pending}
                   <Badge count={pendingKPIs.length} showZero />
                 </span>
               ),
@@ -409,7 +411,7 @@ export const ApprovalPage = () => {
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
-                    showTotal: (total) => `Tổng ${total} hồ sơ`,
+                    showTotal: (total) => t.teamLeader.approval.totalRecords.replace('{count}', String(total)),
                   }}
                   bordered
                 />
@@ -420,7 +422,7 @@ export const ApprovalPage = () => {
               label: (
                 <span className="flex items-center gap-2">
                   <CheckCircle size={16} />
-                  Đã duyệt
+                  {t.teamLeader.approval.approved}
                   <Badge count={approvedKPIs.length} showZero color="green" />
                 </span>
               ),
@@ -433,7 +435,7 @@ export const ApprovalPage = () => {
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
-                    showTotal: (total) => `Tổng ${total} hồ sơ`,
+                    showTotal: (total) => t.teamLeader.approval.totalRecords.replace('{count}', String(total)),
                   }}
                   bordered
                 />
@@ -444,7 +446,7 @@ export const ApprovalPage = () => {
               label: (
                 <span className="flex items-center gap-2">
                   <XCircle size={16} />
-                  Đã từ chối
+                  {t.teamLeader.approval.rejected}
                   <Badge count={rejectedKPIs.length} showZero color="red" />
                 </span>
               ),
@@ -457,7 +459,7 @@ export const ApprovalPage = () => {
                   pagination={{
                     pageSize: 10,
                     showSizeChanger: true,
-                    showTotal: (total) => `Tổng ${total} hồ sơ`,
+                    showTotal: (total) => t.teamLeader.approval.totalRecords.replace('{count}', String(total)),
                   }}
                   bordered
                 />
@@ -474,7 +476,7 @@ export const ApprovalPage = () => {
         title={
           <div className="flex items-center gap-2">
             <FileText size={20} className="text-primary" />
-            <span>Chi tiết KPI - {selectedKPI?.id}</span>
+            <span>{t.teamLeader.approval.kpiDetail} - {selectedKPI?.id}</span>
           </div>
         }
         open={detailModalVisible}
@@ -493,7 +495,7 @@ export const ApprovalPage = () => {
                   }}
                   className="bg-primary hover:bg-primary-dark rounded-lg"
                 >
-                  Phê duyệt
+                  {t.teamLeader.approval.approve}
                 </Button>
                 <Button
                   danger
@@ -504,7 +506,7 @@ export const ApprovalPage = () => {
                   }}
                   className='rounded-lg'
                 >
-                  Từ chối
+                  {t.teamLeader.approval.reject}
                 </Button>
               </>
             )}
@@ -518,26 +520,26 @@ export const ApprovalPage = () => {
             {/* Basic Info */}
             <Card size="small" className="bg-gray-50">
               <Descriptions column={2} size="small">
-                <Descriptions.Item label="Nhân viên">
+                <Descriptions.Item label={t.teamLeader.approval.employee}>
                   <span className="font-semibold">{selectedKPI.employeeName}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Phòng ban">
+                <Descriptions.Item label={t.teamLeader.approval.department}>
                   <span className="font-semibold">{selectedKPI.department}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Năm">
+                <Descriptions.Item label={t.teamLeader.approval.year}>
                   <span className="font-semibold">{selectedKPI.year}</span>
                 </Descriptions.Item>
-                <Descriptions.Item label="Quý">
+                <Descriptions.Item label={t.teamLeader.approval.quarter}>
                   {selectedKPI.quarter ? (
                     <Tag color="blue">Q{selectedKPI.quarter}</Tag>
                   ) : (
-                    <span className="text-gray-400">Cả năm</span>
+                    <span className="text-gray-400">{t.teamLeader.approval.fullYear}</span>
                   )}
                 </Descriptions.Item>
-                <Descriptions.Item label="Trạng thái">
+                <Descriptions.Item label={t.teamLeader.approval.status}>
                   <KPIStatusTag status={selectedKPI.status} />
                 </Descriptions.Item>
-                <Descriptions.Item label="Tổng trọng số">
+                <Descriptions.Item label={t.teamLeader.approval.totalWeight}>
                   <Tag color={selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0) === 100 ? 'success' : 'error'} className="text-base rounded-lg font-bold">
                     {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%
                   </Tag>
@@ -549,10 +551,10 @@ export const ApprovalPage = () => {
             <div className="border-t pt-2">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold text-lg">
-                  Danh sách mục tiêu ({selectedKPI.targets.length})
+                  {t.teamLeader.approval.targetList} ({selectedKPI.targets.length})
                 </h4>
                 <Tag color="blue" className='flex items-center gap-1 rounded-lg' icon={<FileText size={14} /> }>
-                  {selectedKPI.targets.length} mục tiêu
+                  {selectedKPI.targets.length} {t.teamLeader.approval.targets}
                 </Tag>
               </div>
 
@@ -622,19 +624,19 @@ export const ApprovalPage = () => {
             <div className="border-t pt-4 bg-green-50 p-4 rounded-lg">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Tổng trọng số</p>
+                  <p className="text-sm text-gray-600 mb-1">{t.teamLeader.approval.totalWeightLabel}</p>
                   <p className="text-3xl font-bold text-green-600">
                     {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600 mb-1">Tổng số mục tiêu</p>
+                  <p className="text-sm text-gray-600 mb-1">{t.teamLeader.approval.totalTargets}</p>
                   <p className="text-3xl font-bold text-blue-600">
                     {selectedKPI.targets.length}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600 mb-1">File đính kèm</p>
+                  <p className="text-sm text-gray-600 mb-1">{t.teamLeader.approval.totalAttachments}</p>
                   <p className="text-3xl font-bold text-purple-600">
                     {selectedKPI.targets.reduce((sum, t) => sum + (t.attachments?.length || 0), 0)}
                   </p>
@@ -650,25 +652,25 @@ export const ApprovalPage = () => {
         title={
           <div className="flex items-center gap-2">
             <CheckCircle size={20} className="text-green-500" />
-            <span>Xác nhận phê duyệt</span>
+            <span>{t.teamLeader.approval.confirmApprove}</span>
           </div>
         }
         open={approveModalVisible}
         onOk={handleApprove}
         onCancel={() => setApproveModalVisible(false)}
-        okText="Phê duyệt"
-        cancelText="Hủy"
+        okText={t.teamLeader.approval.approve}
+        cancelText={t.teamLeader.approval.cancel}
         okButtonProps={{ className: 'bg-primary hover:bg-primary-dark' }}
       >
         {selectedKPI && (
           <div className="space-y-4">
             <Alert
-              message="Bạn có chắc chắn muốn phê duyệt KPI này?"
+              message={t.teamLeader.approval.confirmApproveMessage}
               description={
                 <div className="mt-2">
-                  <p><strong>Nhân viên:</strong> {selectedKPI.employeeName}</p>
-                  <p><strong>Năm:</strong> {selectedKPI.year}</p>
-                  <p><strong>Số mục tiêu:</strong> {selectedKPI.targets.length}</p>
+                  <p><strong>{t.teamLeader.approval.employee}:</strong> {selectedKPI.employeeName}</p>
+                  <p><strong>{t.teamLeader.approval.year}:</strong> {selectedKPI.year}</p>
+                  <p><strong>{t.teamLeader.approval.targetCount}:</strong> {selectedKPI.targets.length}</p>
                 </div>
               }
               type="info"
@@ -684,7 +686,7 @@ export const ApprovalPage = () => {
         title={
           <div className="flex items-center gap-2">
             <XCircle size={20} className="text-red-500" />
-            <span>Từ chối KPI</span>
+            <span>{t.teamLeader.approval.rejectKPI}</span>
           </div>
         }
         open={rejectModalVisible}
@@ -693,28 +695,28 @@ export const ApprovalPage = () => {
           setRejectModalVisible(false);
           form.resetFields();
         }}
-        okText="Từ chối"
-        cancelText="Hủy"
+        okText={t.teamLeader.approval.reject}
+        cancelText={t.teamLeader.approval.cancel}
         okButtonProps={{ danger: true }}
       >
         {selectedKPI && (
           <Form form={form} layout="vertical" onFinish={handleReject}>
             <div className="mb-4">
-              <p><strong>Nhân viên:</strong> {selectedKPI.employeeName}</p>
-              <p><strong>Năm:</strong> {selectedKPI.year}</p>
+              <p><strong>{t.teamLeader.approval.employee}:</strong> {selectedKPI.employeeName}</p>
+              <p><strong>{t.teamLeader.approval.year}:</strong> {selectedKPI.year}</p>
             </div>
 
             <Form.Item
               name="reason"
-              label="Lý do từ chối"
+              label={t.teamLeader.approval.rejectReason}
               rules={[
-                { required: true, message: 'Vui lòng nhập lý do từ chối' },
-                { min: 10, message: 'Lý do phải có ít nhất 10 ký tự' },
+                { required: true, message: t.teamLeader.approval.rejectReasonRequired },
+                { min: 10, message: t.teamLeader.approval.rejectReasonMinLength },
               ]}
             >
               <TextArea
                 rows={4}
-                placeholder="Nhập lý do từ chối chi tiết để nhân viên có thể chỉnh sửa..."
+                placeholder={t.teamLeader.approval.rejectReasonPlaceholder}
                 maxLength={500}
                 showCount
               />
@@ -726,7 +728,7 @@ export const ApprovalPage = () => {
       {/* Image Preview Modal */}
       <Modal
         open={previewOpen}
-        title="Xem trước file"
+        title={t.teamLeader.approval.previewFile}
         footer={null}
         onCancel={() => setPreviewOpen(false)}
         width={800}
@@ -745,6 +747,8 @@ interface TargetDetailCardProps {
 }
 
 const TargetDetailCard = ({ target, index, onPreview }: TargetDetailCardProps) => {
+  const { t } = useTranslation();
+  
   return (
     <Card type="inner" className="mb-3 shadow-sm hover:shadow-md transition-shadow">
       <div className="space-y-2">
@@ -774,7 +778,7 @@ const TargetDetailCard = ({ target, index, onPreview }: TargetDetailCardProps) =
         {/* Target & Unit */}
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-blue-50 px-3 py-2 text-sm gap-2 flex items-center rounded-lg">
-            <p className=" text-gray-600">Chỉ tiêu: </p>
+            <p className=" text-gray-600">{t.teamLeader.approval.targetNumber}: </p>
             <p className=" font-bold text-blue-600">
               {target.target} {target.unit}
             </p>
@@ -782,7 +786,7 @@ const TargetDetailCard = ({ target, index, onPreview }: TargetDetailCardProps) =
           
           {target.measurementMethod && (
             <div className="bg-purple-50 p-3 rounded-lg">
-              <p className="text-xs text-gray-600 mb-1">Phương pháp đo lường</p>
+              <p className="text-xs text-gray-600 mb-1">{t.teamLeader.approval.measurementMethod}</p>
               <p className="text-sm font-medium text-purple-700">{target.measurementMethod}</p>
             </div>
           )}
@@ -791,7 +795,7 @@ const TargetDetailCard = ({ target, index, onPreview }: TargetDetailCardProps) =
         {/* Evaluation Criteria */}
         {target.evaluationCriteria && (
           <div className="bg-green-50 p-3 rounded-lg">
-            <p className="text-xs text-gray-600 mb-1">Tiêu chí đánh giá</p>
+            <p className="text-xs text-gray-600 mb-1">{t.teamLeader.approval.evaluationCriteria}</p>
             <p className="text-sm font-medium text-green-700">{target.evaluationCriteria}</p>
           </div>
         )}
@@ -802,7 +806,7 @@ const TargetDetailCard = ({ target, index, onPreview }: TargetDetailCardProps) =
             <div className="flex items-center gap-2 mb-2">
               <Paperclip size={16} className="text-gray-500" />
               <span className="text-sm font-semibold text-gray-700">
-                File đính kèm ({target.attachments.length})
+                {t.teamLeader.approval.attachments} ({target.attachments.length})
               </span>
             </div>
             <div className="flex flex-wrap gap-2">
