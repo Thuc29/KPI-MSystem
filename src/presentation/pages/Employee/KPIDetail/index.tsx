@@ -412,7 +412,7 @@ export const KPIDetailPage = () => {
                 <Tag color="purple" icon={<FolderOpen size={14} />}>
                   {t.kpiDetail.groupCount.replace('{count}', String(kpi.groups.length))}
                 </Tag>
-                <Tag color="blue">
+                <Tag color="blue" >
                   {t.kpiDetail.targetCount.replace('{count}', String(kpi.targets.length))}
                 </Tag>
               </>

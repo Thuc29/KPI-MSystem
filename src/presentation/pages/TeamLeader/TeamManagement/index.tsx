@@ -767,7 +767,7 @@ export const TeamManagementPage = () => {
         width={1000}
       >
         {selectedKPI && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Basic Info */}
             <Card size="small" className="bg-gray-50">
               <Descriptions column={2} size="small">
@@ -793,7 +793,7 @@ export const TeamManagementPage = () => {
                 <Descriptions.Item label={t.teamLeader.teamManagement.totalWeight}>
                   <Tag 
                     color={selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0) === 100 ? 'success' : 'error'} 
-                    className="text-lg font-bold"
+                    className="text-base font-bold"
                   >
                     {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%
                   </Tag>
@@ -807,8 +807,8 @@ export const TeamManagementPage = () => {
                 <h4 className="font-semibold text-lg">
                   {t.teamLeader.teamManagement.targetList} ({selectedKPI.targets.length})
                 </h4>
-                <Tag color="blue" icon={<FileText size={14} />}>
-                  {selectedKPI.targets.length} {t.teamLeader.teamManagement.targets}
+                <Tag color="blue" className='flex items-center gap-1 rounded-lg' icon={<FileText size={14} /> }>
+                  {selectedKPI.targets.length} {t.teamLeader.approval.targets}
                 </Tag>
               </div>
 
@@ -821,7 +821,7 @@ export const TeamManagementPage = () => {
                     />
                   )}
                   defaultActiveKey={selectedKPI.groups.map(g => g.id)}
-                  className="mb-4"
+                  className="mb-3"
                 >
                   {selectedKPI.groups.map((group, groupIndex) => {
                     const groupWeight = group.targets.reduce((sum, t) => sum + t.weight, 0);
@@ -918,7 +918,7 @@ export const TeamManagementPage = () => {
             <div className="bg-blue-50 p-3 rounded-lg">
               <p><strong>{t.teamLeader.teamManagement.teamLeader}:</strong> {selectedKPI.employeeName}</p>
               <p><strong>{t.teamLeader.teamManagement.year}:</strong> {selectedKPI.year}</p>
-              <p><strong>{t.teamLeader.teamManagement.targetCount}:</strong> {selectedKPI.targets.length}</p>
+              <p><strong>{t.teamLeader.teamManagement.totalTargets}:</strong> {selectedKPI.targets.length}</p>
               <p><strong>{t.teamLeader.teamManagement.totalWeight}:</strong> {selectedKPI.targets.reduce((sum, t) => sum + t.weight, 0)}%</p>
             </div>
           </div>
@@ -983,21 +983,21 @@ const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
   
   return (
     <Card type="inner" className="mb-3 shadow-sm hover:shadow-md transition-shadow">
-      <div className="space-y-3">
+      <div className="space-y-2">
         {/* Header */}
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="border-primary border text-primary rounded-full w-5 h-5 flex items-center justify-center text-sm font-semibold">
                 {index + 1}
               </span>
               <h5 className="font-semibold text-base">{target.title}</h5>
               {target.category && (
-                <Tag color="blue">{target.category}</Tag>
+                <Tag color="blue" className="rounded-lg">{target.category}</Tag>
               )}
             </div>
           </div>
-          <Tag color="green" className="text-lg font-bold px-3 py-1">
+          <Tag color="green" className="text-base font-semibold rounded-lg">
             {target.weight}%
           </Tag>
         </div>
@@ -1008,10 +1008,10 @@ const TargetDetailCard = ({ target, index }: TargetDetailCardProps) => {
         </div>
 
         {/* Target & Unit */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-xs text-gray-600 mb-1">{t.teamLeader.teamManagement.targetNumber}</p>
-            <p className="text-lg font-bold text-blue-600">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-blue-50 px-3 py-2 text-sm gap-2 flex items-center rounded-lg">
+            <p className=" text-gray-600">{t.teamLeader.teamManagement.targetNumber}:</p>
+            <p className=" font-bold text-blue-600">
               {target.target} <span className="text-sm">{target.unit}</span>
             </p>
           </div>
