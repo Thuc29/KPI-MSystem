@@ -85,6 +85,7 @@ export const DepartmentManagementPage = () => {
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [form] = Form.useForm();
   const userRole = storage.getUserRole() || 'gl';
 
@@ -201,13 +202,17 @@ export const DepartmentManagementPage = () => {
     }
   };
 
+  // Unique departments for filter dropdown
+  const uniqueDepartments = Array.from(new Set(teamLeaders.map(l => l.department)));
+
   // Filter team leaders
   const filteredLeaders = teamLeaders.filter(leader => {
     const matchSearch = leader.name.toLowerCase().includes(searchText.toLowerCase()) ||
       leader.email.toLowerCase().includes(searchText.toLowerCase()) ||
       leader.department.toLowerCase().includes(searchText.toLowerCase());
     const matchStatus = statusFilter === 'all' || leader.status === statusFilter;
-    return matchSearch && matchStatus;
+    const matchDept = departmentFilter === 'all' || leader.department === departmentFilter;
+    return matchSearch && matchStatus && matchDept;
   });
 
   const getStatusColor = (status: string) => {
@@ -353,19 +358,6 @@ export const DepartmentManagementPage = () => {
       ),
     },
   ], [t, kpiList]);
-
-  const excellentCount = teamLeaders.filter(m => m.status === 'excellent').length;
-  const avgCount = teamLeaders.filter(m => m.status === 'average').length;
-  const poorCount = teamLeaders.filter(m => m.status === 'poor').length;
-  const totalAvgCompletion = Math.round(
-    teamLeaders.reduce((sum, m) => sum + m.avgCompletion, 0) / teamLeaders.length
-  );
-
-  // Department KPI statistics
-  const totalDeptKPIs = kpiList.length;
-  const pendingApprovalKPIs = kpiList.filter(k => k.status === 'pending_approval');
-  const approvedKPIs = kpiList.filter(k => k.status === 'in_progress' || k.status === 'completed');
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -410,18 +402,29 @@ export const DepartmentManagementPage = () => {
           </div>
         }
         extra={
-          <Space size="middle">
+          <Space size="middle" wrap>
             <AntSearch
               placeholder={t.groupLeader.departmentManagement.searchPlaceholder}
               allowClear
-              style={{ width: 250 }}
+              style={{ width: 220 }}
               prefix={<Search size={16} />}
               onChange={(e) => setSearchText(e.target.value)}
             />
             <Select
+              value={departmentFilter}
+              onChange={setDepartmentFilter}
+              style={{ width: 150 }}
+              suffixIcon={<Building2 size={16} />}
+            >
+              <Option value="all">{t.groupLeader.departmentManagement.allDepartments}</Option>
+              {uniqueDepartments.map(dept => (
+                <Option key={dept} value={dept}>{dept}</Option>
+              ))}
+            </Select>
+            <Select
               value={statusFilter}
               onChange={setStatusFilter}
-              style={{ width: 160 }}
+              style={{ width: 150 }}
               suffixIcon={<Filter size={16} />}
             >
               <Option value="all">{t.groupLeader.departmentManagement.allStatus}</Option>

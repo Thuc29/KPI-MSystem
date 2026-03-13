@@ -861,6 +861,7 @@ export const vi = {
       teamLeaderList: 'Danh sách Team Leader',
       searchPlaceholder: 'Tìm kiếm Team Leader...',
       allStatus: 'Tất cả trạng thái',
+      allDepartments: 'Tất cả bộ phận',
       excellent: 'Xuất sắc',
       good: 'Tốt',
       average: 'Trung bình',
