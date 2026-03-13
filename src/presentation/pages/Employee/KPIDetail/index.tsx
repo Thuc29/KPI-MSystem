@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Steps, Button, Table, Modal, Form, Input, InputNumber, Space, Popconfirm, Collapse, Tag, Upload, Image, message, Select } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
@@ -272,7 +272,7 @@ export const KPIDetailPage = () => {
   const totalWeight = kpi ? calculateTotalWeight(kpi.targets) : 0;
   const weightPercent = totalWeight; // for progress bar animation
 
-  const columns: ColumnsType<IKPITarget> = [
+  const columns: ColumnsType<IKPITarget> = useMemo(() => [
     {
       title: t.kpiDetail.targetTitle,
       dataIndex: 'title',
@@ -359,7 +359,7 @@ export const KPIDetailPage = () => {
       ),
       
     }] : []),
-  ];
+  ], [t, canEdit]);
 
   if (loading || !kpi) {
     return <div className="p-6">{t.common.loading}</div>;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Card, 
   Table, 
@@ -226,7 +226,7 @@ export const StrategicApprovalPage = () => {
     return labels[status] || status;
   };
 
-  const columns: ColumnsType<IStrategicPlan> = [
+  const columns: ColumnsType<IStrategicPlan> = useMemo(() => [
     {
       title: t.ceo.strategicApproval.table.priority,
       key: 'priority',
@@ -322,7 +322,7 @@ export const StrategicApprovalPage = () => {
         </Button>
       ),
     },
-  ];
+  ], [t]);
 
   const pendingStrategies = strategies.filter(s => s.status === 'pending_ceo');
   const approvedStrategies = strategies.filter(s => s.status === 'approved');

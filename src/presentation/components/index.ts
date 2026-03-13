@@ -6,3 +6,4 @@ export { LanguageSwitcher } from './LanguageSwitcher';
 export { TaskList } from './TaskList';
 export { ProgressBar } from './ProgressBar';
 export { KPITargetCard } from './KPITargetCard';
+export { LoadingFallback } from './LoadingFallback';

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Card, 
   Table, 
@@ -230,7 +230,7 @@ export const DepartmentManagementPage = () => {
     return labels[status] || status;
   };
 
-  const columns: ColumnsType<TeamLeader> = [
+  const columns: ColumnsType<TeamLeader> = useMemo(() => [
     {
       title: t.groupLeader.departmentManagement.teamLeader,
       key: 'leader',
@@ -352,7 +352,7 @@ export const DepartmentManagementPage = () => {
         </Space>
       ),
     },
-  ];
+  ], [t, kpiList]);
 
   const excellentCount = teamLeaders.filter(m => m.status === 'excellent').length;
   const avgCount = teamLeaders.filter(m => m.status === 'average').length;

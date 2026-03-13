@@ -1,6 +1,6 @@
 import { Layout, Menu, Avatar, Dropdown, Badge, Tag, Drawer, Button } from 'antd';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { 
   LogOut, 
   User,
@@ -19,7 +19,7 @@ import { storage, getRoleLabel } from '../../infrastructure/utils';
 import { getMenuByRole, BRAND_COLORS } from '../../core/constants';
 import { getUnreadCount } from '../../infrastructure/api/mockNotifications';
 import type { UserRole } from '../../core/models';
-import { LanguageSwitcher } from '../components';
+import { LanguageSwitcher, LoadingFallback } from '../components';
 import { useTranslation } from '../../infrastructure/i18n';
 const { Header, Sider, Content } = Layout;
 
@@ -252,7 +252,9 @@ export const MainLayout = () => {
         
         <Content style={{ margin: '18px 18px 0', overflow: 'initial' }}>
           <div style={{ padding: 20, background: '#fff', minHeight: 'calc(100vh - 120px)', borderRadius: '12px' }} >
-            <Outlet />
+            <Suspense fallback={<LoadingFallback />}>
+              <Outlet />
+            </Suspense>
           </div>
         </Content>
       </Layout>

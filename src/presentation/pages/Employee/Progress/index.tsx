@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {Card, Table, Button, Progress, Tag, Timeline,Modal,Form,InputNumber,Input,Select,Empty,Upload,Image,message } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { 
@@ -176,7 +176,7 @@ export const ProgressPage = () => {
     return { status: 'exception', color: 'red', icon: <AlertTriangle size={16} /> };
   };
 
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<any> = useMemo(() => [
     {
       title: t.progress.target,
       dataIndex: 'title',
@@ -246,7 +246,7 @@ export const ProgressPage = () => {
         </Button>
       ),
     },
-  ];
+  ], [t]);
 
   return (
     <div className="space-y-4">

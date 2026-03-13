@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card, Select, DatePicker, Button, Table, Progress, Row, Col, Statistic, Tag, Tooltip } from 'antd';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Download, TrendingUp, Users, Target, Award, FileText, CheckCircle, Clock, AlertTriangle, BarChart3 } from 'lucide-react';
@@ -35,7 +36,7 @@ export const TeamReportsPage = () => {
     { week: t.teamLeader.teamReports.week.replace('{count}', '4'), performance: 85 },
   ];
   
-  const columns: ColumnsType<typeof employeePerformance[0]> = [
+  const columns: ColumnsType<typeof employeePerformance[0]> = useMemo(() => [
     {
       title: t.teamLeader.teamReports.employee,
       dataIndex: 'name',
@@ -111,7 +112,7 @@ export const TeamReportsPage = () => {
       ),
       sorter: (a, b) => a.score - b.score,
     },
-  ];
+  ], [t]);
 
   return (
     <div className="space-y-4">

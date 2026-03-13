@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Card, Select, Button, Table, Progress } from 'antd';
 import { BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Download, Building2, TrendingUp, Users, Target } from 'lucide-react';
@@ -117,7 +118,7 @@ export const DepartmentReportsPage = () => {
     },
   ];
 
-  const columns: ColumnsType<typeof departmentDetails[0]> = [
+  const columns: ColumnsType<typeof departmentDetails[0]> = useMemo(() => [
     {
       title: t.groupLeader.departmentReports.department,
       dataIndex: 'dept',
@@ -163,7 +164,7 @@ export const DepartmentReportsPage = () => {
       key: 'performance',
       render: (value) => <Progress percent={value} size="small" />,
     },
-  ];
+  ], [t]);
 
   return (
     <div className="space-y-6">

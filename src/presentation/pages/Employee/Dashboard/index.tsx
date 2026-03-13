@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, Row, Col, Statistic, Progress, Button, Timeline, Empty, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { 
@@ -96,8 +96,7 @@ export const EmployeeDashboardPage = () => {
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     .slice(0, 5);
 
-  // Columns for recent KPIs table
-  const columns: ColumnsType<IKPIRecord> = [
+  const columns: ColumnsType<IKPIRecord> = useMemo(() => [
     {
       title: t.kpiList.recordCode,
       dataIndex: 'id',
@@ -145,7 +144,7 @@ export const EmployeeDashboardPage = () => {
         </Button>
       ),
     },
-  ];
+  ], [t, navigate]);
 
   return (
     <div className="space-y-2">

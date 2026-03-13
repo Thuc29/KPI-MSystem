@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { 
   Card, 
   Table, 
@@ -163,7 +163,7 @@ export const StrategyListPage = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const columns: ColumnsType<IStrategicPlan> = [
+  const columns: ColumnsType<IStrategicPlan> = useMemo(() => [
     {
       title: t.groupLeader.strategy.code,
       dataIndex: 'id',
@@ -297,7 +297,7 @@ export const StrategyListPage = () => {
         </Space>
       ),
     },
-  ];
+  ], [t, navigate]);
 
   const stats = {
     total: strategies.length,

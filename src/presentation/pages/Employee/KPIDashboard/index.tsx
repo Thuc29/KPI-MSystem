@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, Table, Button, Statistic, Row, Col, Tag, Collapse } from 'antd';
 import { Plus, Eye, FileText, Clock, CheckCircle, ChevronDown, FolderOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -66,7 +66,7 @@ export const KPIDashboardPage = () => {
   const approvedKPIs = filteredKPIList.filter(k => k.status === 'in_progress' || k.status === 'completed').length;
   const rejectedKPIs = filteredKPIList.filter(k => k.status === 'rejected').length;
 
-  const columns: ColumnsType<IKPIRecord> = [
+  const columns: ColumnsType<IKPIRecord> = useMemo(() => [
     {
       title: t.kpiList.recordCode,
       dataIndex: 'id',
@@ -165,7 +165,7 @@ export const KPIDashboardPage = () => {
         </Button>
       ),
     },
-  ];
+  ], [t, navigate]);
 
   // Expandable row render for KPI groups
   const expandedRowRender = (record: IKPIRecord) => {

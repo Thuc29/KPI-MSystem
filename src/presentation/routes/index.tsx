@@ -1,33 +1,47 @@
+import React, { Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { ProtectedRoute, RoleDashboard } from '../components';
+import { ProtectedRoute, RoleDashboard, LoadingFallback } from '../components';
 import { MainLayout } from '../layouts';
-import {
-  LoginPage,
-  KPIDashboardPage,
-  KPIDetailPage,
-  CreateKPIPage,
-  NotFoundPage,
-  ApprovalPage,
-  NotificationsPage,
-  ProgressPage,
-  TeamManagementPage,
-  ProfilePage,
-  SettingsPage,
-  TeamReportsPage,
-  DepartmentManagementPage,
-  DepartmentReportsPage,
-  ExecutiveDashboardPage,
-  StrategicApprovalPage,
-  OrganizationPage,
-  StrategyListPage,
-  CreateStrategyPage,
-  StrategyDetailPage,
-} from '../pages';
+
+const lazyPage = (importFunc: () => Promise<any>, exportName: string) => {
+  return React.lazy(() => importFunc().then(module => ({ default: module[exportName] })));
+};
+
+const LoginPage = lazyPage(() => import('../pages/Shared/Login'), 'LoginPage');
+const NotFoundPage = lazyPage(() => import('../pages/Shared/NotFound'), 'NotFoundPage');
+const NotificationsPage = lazyPage(() => import('../pages/Shared/Notifications'), 'NotificationsPage');
+const ProfilePage = lazyPage(() => import('../pages/Shared/Profile'), 'ProfilePage');
+const SettingsPage = lazyPage(() => import('../pages/Shared/Settings'), 'SettingsPage');
+
+const KPIDashboardPage = lazyPage(() => import('../pages/Employee/KPIDashboard'), 'KPIDashboardPage');
+const KPIDetailPage = lazyPage(() => import('../pages/Employee/KPIDetail'), 'KPIDetailPage');
+const CreateKPIPage = lazyPage(() => import('../pages/Employee/CreateKPI'), 'CreateKPIPage');
+const ProgressPage = lazyPage(() => import('../pages/Employee/Progress'), 'ProgressPage');
+
+const ApprovalPage = lazyPage(() => import('../pages/TeamLeader/Approval'), 'ApprovalPage');
+const TeamManagementPage = lazyPage(() => import('../pages/TeamLeader/TeamManagement'), 'TeamManagementPage');
+const TeamReportsPage = lazyPage(() => import('../pages/TeamLeader/TeamReports'), 'TeamReportsPage');
+
+const DepartmentManagementPage = lazyPage(() => import('../pages/GroupLeader/DepartmentManagement'), 'DepartmentManagementPage');
+const DepartmentReportsPage = lazyPage(() => import('../pages/GroupLeader/DepartmentReports'), 'DepartmentReportsPage');
+
+const ExecutiveDashboardPage = lazyPage(() => import('../pages/CEO/ExecutiveDashboard'), 'ExecutiveDashboardPage');
+const StrategicApprovalPage = lazyPage(() => import('../pages/CEO/StrategicApproval'), 'StrategicApprovalPage');
+const OrganizationPage = lazyPage(() => import('../pages/CEO/Organization'), 'OrganizationPage');
+const StrategyListPage = lazyPage(() => import('../pages/GroupLeader/StrategyList'), 'StrategyListPage');
+const CreateStrategyPage = lazyPage(() => import('../pages/GroupLeader/CreateStrategy'), 'CreateStrategyPage');
+const StrategyDetailPage = lazyPage(() => import('../pages/GroupLeader/StrategyDetail'), 'StrategyDetailPage');
+
+const withSuspense = (Component: React.ComponentType<any>) => (
+  <Suspense fallback={<LoadingFallback />}>
+    <Component />
+  </Suspense>
+);
 
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <LoginPage />,
+    element: withSuspense(LoginPage),
   },
   {
     path: '/',
@@ -139,6 +153,6 @@ export const router = createBrowserRouter([
   },
   {
     path: '*',
-    element: <NotFoundPage />,
+    element: withSuspense(NotFoundPage),
   },
 ]);
